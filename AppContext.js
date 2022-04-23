@@ -1,7 +1,7 @@
 import React, { Component, createContext, useState } from "react";
 import { Alert } from "react-native";
 import * as MediaLibrary from 'expo-media-library';
-//import { Permission } from "react-native-permissions";
+import { Permission } from "react-native-permissions";
 
 const AppContext = createContext();
 
