@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.cinder92.musicfiles.RNReactNativeGetMusicFilesPackage;
+import com.drazail.rnandroidstore.RNAndroidStorePackage;
 import com.zoontek.rnpermissions.RNPermissionsPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
@@ -36,7 +37,8 @@ public class MainApplication extends Application implements ReactApplication {
       @SuppressWarnings("UnnecessaryLocalVariable")
       List<ReactPackage> packages = new PackageList(this).getPackages();
       // Packages that cannot be autolinked yet can be added manually here, for example:
-      // packages.add(new MyReactNativePackage());
+      //packages.add(new RNReactNativeGetMusicFilesPackage());
+      packages.add(new RNAndroidStorePackage());
       return packages;
     }
 

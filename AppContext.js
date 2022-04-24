@@ -1,8 +1,7 @@
 import React, { Component, createContext, useState } from "react";
 import { Alert, PermissionsAndroid } from "react-native";
-import * as MediaLibrary from 'expo-media-library';
 import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
-import MusicFiles from "react-native-get-music-files";
+import { RNAndroidAudioStore } from "react-native-get-music-files";
 
 const AppContext = createContext();
 
@@ -18,26 +17,33 @@ export class AppProvider extends Component {
 
 
 		// MusicFiles.getAll({
-        //     }).then(tracks => {
+		//     }).then(tracks => {
 		// 		this.setState({
 		// 			audioFile:tracks,
 		// 		})
-        //     }).catch(error => {
-        //     console.log(error)
-    	// })
+		//     }).catch(error => {
+		//     console.log(error)
+		// })
 	}
 
 	getAudioFileUri = async () => {
-		await MediaLibrary.requestPermissionsAsync();
-		let media = await MediaLibrary.getAssetsAsync({mediaType: 'audio'});
-		media = await MediaLibrary.getAssetsAsync({
-			mediaType: 'audio',
-			first: media.totalCount
+		RNAndroidAudioStore.getAll({
+			blured: true,
+			artist: true,
+			duration: true,
+			genre: true,
+			title: true,
+			cover: true,
+			minimumSongDuration: 1000,
+		}).then(tracks => {
+			tracks.map(tracks => {
+				this.setState({
+					audioFile: [...this.state.audioFile, tracks],
+				})
+			})
+		}).catch(error => {
+			console.log(error)
 		})
-		this.setState({
-			audioFile: media.assets.map(media => media.uri),
-		})
-		console.log(this.state.audioFile);
 	}
 
 	getPermissions = async () => {
@@ -51,7 +57,7 @@ export class AppProvider extends Component {
 					console.log('The permission has not been requested / is denied but requestable');
 					request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE).then(res => {
 						console.log(res);
-						if(res == RESULTS.GRANTED) {
+						if (res == RESULTS.GRANTED) {
 							this.getAudioFileUri();
 						}
 					})
@@ -69,13 +75,25 @@ export class AppProvider extends Component {
 			}
 		})
 
-	// 	const permission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
-	// 	if (permission === PermissionsAndroid.RESULTS.GRANTED) {
-    //   console.log("1");
-    // } else {
-    //   console.log("0");
-    // }
+		// 	const permission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+		// 	if (permission === PermissionsAndroid.RESULTS.GRANTED) {
+		//   console.log("1");
+		// } else {
+		//   console.log("0");
+		// }
 	}
+
+	// componentDidMount() {
+	// 	DeviceEventEmitter.addListener(
+	// 		'onBatchReceived',
+	// 		(params) => {
+	// 			this.setState({songs : [
+	// 				...this.state.songs,
+	// 				...params.batch
+	// 			]});
+	// 		}
+	// 	)
+	// }
 
 	componentDidMount() {
 		this.getPermissions();

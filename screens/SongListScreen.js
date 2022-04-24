@@ -9,8 +9,8 @@ export default class SongListScreen extends Component {
 	render() {
 		return (
 			<ScrollView>
-				{this.context.audioFile.map(audio =>
-					<Text key={audio}>{audio}</Text>
+				{this.context.audioFile.map((audio, index) =>
+					<Text key={index.toString()}>{audio.title}</Text>
 				)}
 				
 			</ScrollView>
