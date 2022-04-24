@@ -10,7 +10,7 @@ export default class SongListScreen extends Component {
 		return (
 			<ScrollView>
 				{this.context.audioFile.map(audio =>
-					<Text>{audio.filename}</Text>
+					<Text key={audio}>{audio}</Text>
 				)}
 				
 			</ScrollView>

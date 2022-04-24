@@ -11,12 +11,25 @@ export class AppProvider extends Component {
 		super();
 		this.state = {
 			audioFile: [],
-			storagePermission:''
 		}
 	}
 
-	getAudioFile = async () => {
-		let media = await MediaLibrary.getAssetsAsync();
+	getAudioFileData = () => {
+
+
+		// MusicFiles.getAll({
+        //     }).then(tracks => {
+		// 		this.setState({
+		// 			audioFile:tracks,
+		// 		})
+        //     }).catch(error => {
+        //     console.log(error)
+    	// })
+	}
+
+	getAudioFileUri = async () => {
+		await MediaLibrary.requestPermissionsAsync();
+		let media = await MediaLibrary.getAssetsAsync({mediaType: 'audio'});
 		media = await MediaLibrary.getAssetsAsync({
 			mediaType: 'audio',
 			first: media.totalCount
@@ -25,63 +38,47 @@ export class AppProvider extends Component {
 			audioFile: media.assets.map(media => media.uri),
 		})
 		console.log(this.state.audioFile);
-		// MusicFiles.getAll({
-        //     }).then(tracks => {
-        //       console.log(1)
-		// 					// this.setState({
-		// 					// 	audioFile:tracks,
-		// 					// })
-        //     }).catch(error => {
-        //     console.log(error)
-    // })
-		//console.log(this.state.audioFile);
 	}
 
 	getPermissions = async () => {
-		const permission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
-		if (permission === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log("You can use the camera");
-			this.getAudioFile();
-    } else {
-      console.log("Camera permission denied");
-    }
+		check(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE).then(res => {
+			console.log(res);
+			switch (res) {
+				case RESULTS.UNAVAILABLE:
+					console.log('This feature is not available (on this device / in this context)');
+					break;
+				case RESULTS.DENIED:
+					console.log('The permission has not been requested / is denied but requestable');
+					request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE).then(res => {
+						console.log(res);
+						if(res == RESULTS.GRANTED) {
+							this.getAudioFileUri();
+						}
+					})
+					break;
+				case RESULTS.LIMITED:
+					console.log('The permission is limited: some actions are possible');
+					break;
+				case RESULTS.GRANTED:
+					console.log('The permission is granted');
+					this.getAudioFileUri();
+					break;
+				case RESULTS.BLOCKED:
+					console.log('The permission is denied and not requestable anymore');
+					break;
+			}
+		})
+
+	// 	const permission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+	// 	if (permission === PermissionsAndroid.RESULTS.GRANTED) {
+    //   console.log("1");
+    // } else {
+    //   console.log("0");
+    // }
 	}
 
 	componentDidMount() {
 		this.getPermissions();
-		// check(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE).then(res => {
-		// 	console.log(res);
-		// 	switch (res) {
-		// 		case RESULTS.UNAVAILABLE:
-		// 			console.log('This feature is not available (on this device / in this context)');
-		// 			break;
-		// 		case RESULTS.DENIED:
-		// 			console.log('The permission has not been requested / is denied but requestable');
-		// 			request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE).then(res => {
-		// 				this.setState({ storagePermission: res });
-		// 				// MusicFiles.getAll({
-    //         // }).then(tracks => {
-    //           console.log(1)
-		// 				// 	// this.setState({
-		// 				// 	// 	audioFile:tracks,
-		// 				// 	// })
-    //         // })
-    //         // console.log(error)
-		// 				// this.getAudioFile();
-		// 			})
-		// 			break;
-		// 		case RESULTS.LIMITED:
-		// 			console.log('The permission is limited: some actions are possible');
-		// 			break;
-		// 		case RESULTS.GRANTED:
-		// 			console.log('The permission is granted');
-		// 			//this.getAudioFile();
-		// 			break;
-		// 		case RESULTS.BLOCKED:
-		// 			console.log('The permission is denied and not requestable anymore');
-		// 			break;
-		// 	}
-		// })
 	}
 
 	render() {
