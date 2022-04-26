@@ -1,4 +1,4 @@
-import React, { Component, createContext, useState } from "react";
+import { Component, createContext, createRef } from "react";
 import { Alert, PermissionsAndroid } from "react-native";
 import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { RNAndroidAudioStore } from "react-native-get-music-files";
@@ -8,6 +8,8 @@ const AppContext = createContext();
 export class AppProvider extends Component {
 	constructor() {
 		super();
+		this.playerScreenRef = createRef();
+		this.queueScreenRef = createRef();
 		this.state = {
 			audioFile: [],
 		}
@@ -27,7 +29,8 @@ export class AppProvider extends Component {
 	}
 
 	getAudioFileUri = async () => {
-		RNAndroidAudioStore.getAll({
+		await RNAndroidAudioStore.getAll({
+			id: true,
 			blured: true,
 			artist: true,
 			duration: true,
@@ -44,6 +47,7 @@ export class AppProvider extends Component {
 		}).catch(error => {
 			console.log(error)
 		})
+		console.log(this.state.audioFile);
 	}
 
 	getPermissions = async () => {
@@ -103,6 +107,8 @@ export class AppProvider extends Component {
 		return (
 			<AppContext.Provider value={{
 				audioFile: this.state.audioFile,
+				playerScreenRef: this.playerScreenRef,
+				queueScreenRef: this.queueScreenRef,
 			}}>
 				{this.props.children}
 			</AppContext.Provider>

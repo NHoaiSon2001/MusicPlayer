@@ -26,6 +26,8 @@ target 'MusicPlayer' do
 
   pod 'RNReactNativeGetMusicFiles', :path => '../node_modules/react-native-get-music-files'
 
+  pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
   post_install do |installer|
     react_native_post_install(installer)
 

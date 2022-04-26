@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.swmansion.gesturehandler.RNGestureHandlerPackage;
 import com.cinder92.musicfiles.RNReactNativeGetMusicFilesPackage;
 import com.drazail.rnandroidstore.RNAndroidStorePackage;
 import com.zoontek.rnpermissions.RNPermissionsPackage;

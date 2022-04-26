@@ -20,7 +20,9 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
+    "react-native-gesture-handler": "^2.4.1",
     "react-native-get-music-files": "https://github.com/cinder92/react-native-get-music-files.git",
+    "react-native-modalize": "^2.0.13",
     "react-native-permissions": "^3.3.1",
     "react-native-safe-area-context": "^4.2.4",
     "react-native-web": "0.17.1"
