@@ -1,33 +1,11 @@
 import { Component, createRef, useContext } from 'react';
 import { Dimensions, View, ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Modalize } from 'react-native-modalize';
-import Feather from 'react-native-vector-icons/Feather'
-import AppContext from '../AppContext';
+import QueueHeader from '../components/QueueHeader';
+import QueueFooter from '../components/QueueFooter';
+import AppContext from '../utils/context/AppContext';
 
 const HEADER_HEIGHT = 60;
-
-const QueueHeaderComponent = () => {
-	const context = useContext(AppContext);
-	return (
-		<View style={styles.queueHeaderComponent}>
-			<TouchableOpacity
-				onPress={() => context.queueScreenRef.current?.open('top')}
-				style = {styles.upNextTouchble}
-			>
-				<Text style = {styles.upNextText}>UP NEXT</Text>
-			</TouchableOpacity>
-		</View>
-	)
-}
-
-const QueueFooterComponent = () => {
-	const context = useContext(AppContext);
-	return (
-		<View style={styles.queueFooterComponent}>
-
-		</View>
-	)
-}
 
 export default class QueueScreen extends Component {
 	static contextType = AppContext;
@@ -47,9 +25,8 @@ export default class QueueScreen extends Component {
 				alwaysOpen={HEADER_HEIGHT}
 				tapGestureEnabled={false}
 				disableScrollIfPossible={true}
-				overlayStyle={{backgroundColor:'#001eff'}}
-				HeaderComponent={QueueHeaderComponent}
-				FooterComponent={QueueFooterComponent}
+				HeaderComponent={QueueHeader}
+				FooterComponent={QueueFooter}
 			>
 				{this.context.audioFile.map((audio, index) =>
 					<Text key={index.toString()}>{audio.title}</Text>
@@ -60,23 +37,8 @@ export default class QueueScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-	queueHeaderComponent: {
-		height: HEADER_HEIGHT,
-		width: "100%",
-		justifyContent: 'flex-end',
-		alignItems: 'center',
-	},
 	queueFooterComponent: {
 		justifyContent: 'flex-end',
 		alignItems: 'center',
-	},
-	upNextTouchble: {
-		justifyContent:'center',
-		alignItems: 'center',
-		height: 45,
-		width: 100,
-	},
-	upNextText: {
-		fontSize: 15,
 	},
 });

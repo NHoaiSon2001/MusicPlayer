@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { StyleSheet, Text, View, ScrollView,TouchableOpacity } from 'react-native';
 import PlayerScreen from './PlayerScreen';
 
-import AppContext from '../AppContext';
+import AppContext from '../utils/context/AppContext';
 
 export default class SongListScreen extends Component {
 	static contextType = AppContext;

@@ -1,9 +1,16 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import i18n from '../utils/i18n';
+
 
 export default function ArtistListScreen() {
   return (
     <View style={styles.container}>
-      <Text>ArtistListScreen</Text>
+      <TouchableOpacity onPress={()=>i18n.changeLanguage("en")}>
+        <Text>en</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={()=>i18n.changeLanguage("vi")}>
+        <Text>vi</Text>
+      </TouchableOpacity>
     </View>
   );
 }

@@ -15,20 +15,7 @@ export class AppProvider extends Component {
 		}
 	}
 
-	getAudioFileData = () => {
-
-
-		// MusicFiles.getAll({
-		//     }).then(tracks => {
-		// 		this.setState({
-		// 			audioFile:tracks,
-		// 		})
-		//     }).catch(error => {
-		//     console.log(error)
-		// })
-	}
-
-	getAudioFileUri = async () => {
+	getAudioFile = async () => {
 		await RNAndroidAudioStore.getAll({
 			id: true,
 			blured: true,
@@ -47,7 +34,7 @@ export class AppProvider extends Component {
 		}).catch(error => {
 			console.log(error)
 		})
-		console.log(this.state.audioFile);
+		//console.log(this.state.audioFile);
 	}
 
 	getPermissions = async () => {
@@ -62,7 +49,7 @@ export class AppProvider extends Component {
 					request(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE).then(res => {
 						console.log(res);
 						if (res == RESULTS.GRANTED) {
-							this.getAudioFileUri();
+							this.getAudioFile();
 						}
 					})
 					break;
@@ -71,7 +58,7 @@ export class AppProvider extends Component {
 					break;
 				case RESULTS.GRANTED:
 					console.log('The permission is granted');
-					this.getAudioFileUri();
+					this.getAudioFile();
 					break;
 				case RESULTS.BLOCKED:
 					console.log('The permission is denied and not requestable anymore');

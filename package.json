@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-community/slider": "^4.2.2",
     "@react-navigation/bottom-tabs": "^6.3.1",
     "@react-navigation/native": "^6.0.10",
     "all": "^0.0.0",
@@ -16,9 +17,11 @@
     "expo-media-library": "^14.0.1",
     "expo-splash-screen": "~0.14.1",
     "expo-status-bar": "~1.2.0",
+    "i18next": "^21.6.16",
     "jetifier": "^2.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-i18next": "^9.0.10",
     "react-native": "0.64.3",
     "react-native-gesture-handler": "^2.4.1",
     "react-native-get-music-files": "https://github.com/cinder92/react-native-get-music-files.git",
