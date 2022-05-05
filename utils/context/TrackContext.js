@@ -1,21 +1,12 @@
-import { Component, createContext, createRef } from "react";
+import { Component, createContext } from "react";
 import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { RNAndroidAudioStore } from "react-native-get-music-files";
 
-const AppContext = createContext();
+const TrackContext = createContext();
 
-export class AppProvider extends Component {
-	constructor() {
-		super();
-		this.playerScreenRef = createRef();
-		this.queueScreenRef = createRef();
-		this.state = {
-			audioFile: [],
-		}
-	}
-
+export class TrackProvider extends Component {
 	getAudioFile = async () => {
-		await RNAndroidAudioStore.getAll({
+		RNAndroidAudioStore.getAll({
 			id: true,
 			blured: true,
 			artist: true,
@@ -25,15 +16,15 @@ export class AppProvider extends Component {
 			cover: true,
 			minimumSongDuration: 1000,
 		}).then(tracks => {
+			//console.log(tracks);
 			tracks.map(tracks => {
 				this.setState({
-					audioFile: [...this.state.audioFile, tracks],
+					trackData: [...this.state.trackData, tracks]
 				})
 			})
 		}).catch(error => {
 			console.log(error)
 		})
-		//console.log(this.state.audioFile);
 	}
 
 	getPermissions = async () => {
@@ -64,42 +55,44 @@ export class AppProvider extends Component {
 					break;
 			}
 		})
-
-		// 	const permission = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
-		// 	if (permission === PermissionsAndroid.RESULTS.GRANTED) {
-		//   console.log("1");
-		// } else {
-		//   console.log("0");
-		// }
 	}
 
-	// componentDidMount() {
-	// 	DeviceEventEmitter.addListener(
-	// 		'onBatchReceived',
-	// 		(params) => {
-	// 			this.setState({songs : [
-	// 				...this.state.songs,
-	// 				...params.batch
-	// 			]});
-	// 		}
-	// 	)
-	// }
+	constructor() {
+		super();
+		this.state = {
+			trackData: [],
+			currentTrackIndex: 0,
+		}
+	}
 
-	// componentDidMount() {
-	// 	this.getPermissions();
-	// }
+	componentDidMount() {
+		this.getPermissions();
+	}
+
+	skipForward = () => {
+		this.setState({
+			currentTrackIndex: this.state.currentTrackIndex + 1,
+		})
+	}
+
+	skipBack = () => {
+		this.setState({
+			currentTrackIndex: this.state.currentTrackIndex - 1,
+		})
+	}
 
 	render() {
 		return (
-			<AppContext.Provider value={{
-				audioFile: this.state.audioFile,
-				playerScreenRef: this.playerScreenRef,
-				queueScreenRef: this.queueScreenRef,
+			<TrackContext.Provider value={{
+                trackData: this.state.trackData,
+				currentTrackIndex: this.state.currentTrackIndex,
+				skipForward: this.skipForward,
+				skipBack: this.skipBack,
 			}}>
 				{this.props.children}
-			</AppContext.Provider>
+			</TrackContext.Provider>
 		)
 	}
 }
 
-export default AppContext;
+export default TrackContext;

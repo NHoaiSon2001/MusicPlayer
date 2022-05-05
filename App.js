@@ -3,7 +3,7 @@ import { Dimensions, StyleSheet, Text, View, TouchableOpacity } from 'react-nati
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { AppProvider } from './utils/context/AppContext';
-import { MusicControllProvider } from './utils/context/MusicControllContext';
+import { TrackProvider } from './utils/context/TrackContext';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SongListScreen from './screens/SongListScreen';
 import ArtistListScreen from './screens/ArtistListScreen';
@@ -23,7 +23,7 @@ export default class App extends Component {
   render() {
     return (
       <AppProvider>
-        <MusicControllProvider>
+        <TrackProvider>
           <GestureHandlerRootView style={{width:'100%', height:'100%'}}>
             <NavigationContainer>
               <Tab.Navigator>
@@ -87,7 +87,7 @@ export default class App extends Component {
 
             <PlayerScreen/>
           </GestureHandlerRootView>
-        </MusicControllProvider>
+        </TrackProvider>
       </AppProvider>
     );
   }

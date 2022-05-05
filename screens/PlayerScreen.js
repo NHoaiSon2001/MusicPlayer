@@ -53,10 +53,6 @@ export default class PlayerScreen extends Component {
         super();
     }
 
-    componentDidMount() {
-        this.context.playerScreenRef.current?.open();
-    }
-
     render() {
         return (
             <Modalize

@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, ScrollView,TouchableOpacity } from 'react-nativ
 import PlayerScreen from './PlayerScreen';
 
 import AppContext from '../utils/context/AppContext';
+import TrackContext from '../utils/context/TrackContext';
 
 export default class SongListScreen extends Component {
 	static contextType = AppContext;
@@ -14,10 +15,12 @@ export default class SongListScreen extends Component {
 					<Text>press</Text>
 				</TouchableOpacity>
 				<ScrollView>
-					{this.context.audioFile.map((audio, index) =>
-						<Text key={index.toString()}>{audio.title}</Text>
-					)}
-					
+					<TrackContext.Consumer>{(trackContext) => {
+						return (trackContext.trackData.map((audio, index) =>
+							<Text key={index.toString()}>{audio.author}</Text>
+						))
+					}}
+					</TrackContext.Consumer>
 				</ScrollView>
 			</View>
 		);
