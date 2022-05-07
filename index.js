@@ -1,10 +1,11 @@
 import { registerRootComponent } from 'expo';
 import { AppRegistry, Platform } from 'react-native';
+import TrackPlayer from 'react-native-track-player';
 
 import App from './App';
 
 AppRegistry.registerComponent('main', () => App);
-
+TrackPlayer.registerPlaybackService(() => require('./service.js'));
 // if (Platform.OS === 'android') {
 //     const rootTag = document.getElementById('root') || document.getElementById('main');
 //     AppRegistry.runApplication('main', { rootTag });

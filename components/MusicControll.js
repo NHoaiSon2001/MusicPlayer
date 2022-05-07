@@ -4,26 +4,38 @@ import Slider from "@react-native-community/slider";
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import TrackContext from "../utils/context/TrackContext";
+import TrackPlayer, { State, useProgress, usePlaybackState } from "react-native-track-player";
 
 function MusicControll() {
-    const [play, setPlay] = useState("pause-sharp");
+    const [playPauseIcon, setPlayPauseIcon] = useState(playbackState === State.Playing ? "pause-sharp" : "play-sharp");
+    const progress = useProgress();
+    const playbackState = usePlaybackState();
+
     return (
-        <View style = {styles.musicControllContainer}>
-            <View style = {styles.progressBarContainer}>
-                <Slider
-                    style={styles.progressBar}
-                    thumbTintColor={'#626262'}
-                    maximumTrackTintColor={"#d6d6d6"}
-                    minimumTrackTintColor={'#626262'}
-                />
-                <View style = {styles.progressTitleContainer}>
-                    <Text style = {{fontSize: 13}}>0:00</Text>
-                    <Text style = {{fontSize: 13}}>4:35</Text>
-                </View>
-            </View>
-            <TrackContext.Consumer>
-				{(trackContext) => {
-					return (
+        <TrackContext.Consumer>
+            {(trackContext) => {
+                return (
+                    <View style = {styles.musicControllContainer}>
+                        <View style = {styles.progressBarContainer}>
+                            <Slider
+                                style={styles.progressBar}
+                                value={progress.position}
+                                thumbTintColor={'#626262'}
+                                maximumValue={progress.duration}
+                                maximumTrackTintColor={"#d6d6d6"}
+                                minimumTrackTintColor={'#626262'}
+                                onSlidingComplete={(value) => TrackPlayer.seekTo(value)}
+                            />
+                            <View style = {styles.progressTitleContainer}>
+                                <Text style = {{fontSize: 13}}>
+                                    {new Date(progress.position * 1000).toLocaleTimeString().substring(3)}
+                                </Text>
+                                <Text style = {{fontSize: 13}}>
+                                    {new Date(progress.duration * 1000).toLocaleTimeString().substring(3)}
+                                </Text>
+                            </View>
+                        </View>
+
                         <View style = {styles.controllContainer}>
                             <TouchableOpacity
                                 onPress={() => {}}
@@ -33,7 +45,7 @@ function MusicControll() {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => trackContext.skipBack()}
+                                onPress={() => TrackPlayer.skipToPrevious()}
                                 style = {[styles.controllButton, {marginRight: 20,}]}
                             >
                                 <Ionicons name="play-skip-back-sharp" size={30} color={'#626262'}/>
@@ -41,19 +53,20 @@ function MusicControll() {
 
                             <TouchableOpacity
                                 onPress={() => {
-                                    if(play == "pause-sharp") {
-                                        setPlay("play-sharp")
-                                    } else {
-                                        setPlay("pause-sharp")
-                                    }
+                                    setPlayPauseIcon(playbackState === State.Playing ? "play-sharp" : "pause-sharp");
+                                    trackContext.togglePlayback();
                                 }}
                                 style = {styles.playPauseTouchble}
                             >
-                                <Ionicons name={play} size={35} color={'#626262'}/>
+                                <Ionicons
+                                    name={playbackState === State.Playing ? "pause-sharp" : "play-sharp"}
+                                    size={35}
+                                    color={'#626262'}
+                                />
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => trackContext.skipForward()}
+                                onPress={() => trackContext.skipToNext()}
                                 style = {[styles.controllButton, {marginLeft: 20,}]}
                             >
                                 <Ionicons name="play-skip-forward" size={30} color={'#626262'}/>
@@ -66,10 +79,10 @@ function MusicControll() {
                                 <MaterialCommunityIcons name="repeat-once" size={30} color={'#626262'}/>
                             </TouchableOpacity>
                         </View>
-            		)
-                }}
-            </TrackContext.Consumer>
-        </View>
+                    </View>
+                )
+            }}
+        </TrackContext.Consumer>
     )
 }
 

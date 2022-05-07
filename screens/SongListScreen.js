@@ -11,14 +11,19 @@ export default class SongListScreen extends Component {
 	render() {
 		return (
 			<View>
-				<TouchableOpacity onPress={() => this.context.playerScreenRef.current?.open()}>
-					<Text>press</Text>
-				</TouchableOpacity>
 				<ScrollView>
 					<TrackContext.Consumer>{(trackContext) => {
-						return (trackContext.trackData.map((audio, index) =>
-							<Text key={index.toString()}>{audio.author}</Text>
-						))
+						return (trackContext.allTrack.map((track, index) => (
+							<TouchableOpacity
+								onPress={async () => {
+									await trackContext.setupQueue(trackContext.allTrack, index);
+									await this.context.playerScreenRef.current?.open();
+								}}
+								key={index.toString()}
+							>
+								<Text>{track.url}</Text>
+							</TouchableOpacity>
+						)))
 					}}
 					</TrackContext.Consumer>
 				</ScrollView>

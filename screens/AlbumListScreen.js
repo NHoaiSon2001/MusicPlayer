@@ -1,9 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useContext } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import TrackContext from '../utils/context/TrackContext';
 
 export default function AlbunListScreen() {
+  const context = useContext(TrackContext);
   return (
     <View style={styles.container}>
-      <Text>AlbunListScreen</Text>
+      <TouchableOpacity onPress={() => context.setupPlayer()}>
+					<Text>press</Text>
+			</TouchableOpacity>
     </View>
   );
 }

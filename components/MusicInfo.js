@@ -4,54 +4,52 @@ import TextTicker from "react-native-text-ticker";
 import TrackContext from "../utils/context/TrackContext";
 import { Component, useContext } from "react";
 
-class MusicInfo extends Component {
-	render() {
-		return (
-			<View style={styles.musicInfoContainer}>
-				<View style={styles.coverWrapper}>
-					<Image
-						source={require('../assets/defaults/cover_default.jpg')}
-						style = {styles.coverImage}
-					/>
-				</View>
-
-				<View style = {styles.musicInfoView}>
-					<TrackContext.Consumer>
-						{(trackContext) => {
-							return (
-								<View style = {styles.musicInfoWrapper}>
-									<TextTicker
-										style={styles.titleText}
-										duration={10000}
-										marqueeDelay={500}
-										animationType={'auto'}
-										loop={true}
-										bounce={false}
-										scroll={false}
-									>
-										{trackContext.trackData[trackContext.currentTrackIndex].title}
-									</TextTicker>
-									<TouchableOpacity
-										onPress={() => {}}
-										style = {{alignSelf: "flex-start"}}
-									>
-										<Text style = {{fontSize: 15}}>{trackContext.trackData[trackContext.currentTrackIndex].author}</Text>
-									</TouchableOpacity>
-								</View>
-							)
-						}}
-					</TrackContext.Consumer>
-
-					<TouchableOpacity
-						onPress={() =>{}}
-						style = {styles.favoriteButton}
-					>
-						<AntDesign name="heart" size={25} color={'#626262'}/>
-					</TouchableOpacity>
-				</View>
+function MusicInfo() {
+	return (
+		<View style={styles.musicInfoContainer}>
+			<View style={styles.coverWrapper}>
+				<Image
+					source={require('../assets/defaults/cover_default.jpg')}
+					style = {styles.coverImage}
+				/>
 			</View>
-		)
-	}
+
+			<View style = {styles.musicInfoView}>
+				<TrackContext.Consumer>
+					{(trackContext) => {
+						return (
+							<View style = {styles.musicInfoWrapper}>
+								<TextTicker
+									style={styles.titleText}
+									duration={10000}
+									marqueeDelay={500}
+									animationType={'auto'}
+									loop={true}
+									bounce={false}
+									scroll={false}
+								>
+									{trackContext.currentTrack.title}
+								</TextTicker>
+								<TouchableOpacity
+									onPress={() => {}}
+									style = {{alignSelf: "flex-start"}}
+								>
+									<Text style = {{fontSize: 15}}>{trackContext.currentTrack.artist}</Text>
+								</TouchableOpacity>
+							</View>
+						)
+					}}
+				</TrackContext.Consumer>
+
+				<TouchableOpacity
+					onPress={() =>{}}
+					style = {styles.favoriteButton}
+				>
+					<AntDesign name="heart" size={25} color={'#626262'}/>
+				</TouchableOpacity>
+			</View>
+		</View>
+	)
 }
 
 export default MusicInfo;
