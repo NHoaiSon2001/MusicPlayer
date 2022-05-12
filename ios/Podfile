@@ -28,6 +28,8 @@ target 'MusicPlayer' do
 
   pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
 
+  pod 'RNFS', :path => '../node_modules/react-native-fs'
+
   post_install do |installer|
     react_native_post_install(installer)
 

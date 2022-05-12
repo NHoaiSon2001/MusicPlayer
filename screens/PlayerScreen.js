@@ -1,4 +1,4 @@
-import { Component, createRef, useContext } from 'react';
+import { Component, createRef, useContext, useEffect, useState } from 'react';
 import { Dimensions, View, ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import AppContext from '../utils/context/AppContext';
@@ -14,6 +14,7 @@ const PLAYER_SCREEN_HEIGHT = SCREEN_HEIGHT / 1.1;
 
 const Screen = () => {
     const context = useContext(AppContext);
+
     return (
         <View style = {styles.container}>
             <View style = {styles.header}>
@@ -46,25 +47,20 @@ const Screen = () => {
     )
 }
 
-export default class PlayerScreen extends Component {
-    static contextType = AppContext;
+export default function PlayerScreen() {
+    const context = useContext(AppContext);
 
-    constructor() {
-        super();
-    }
-
-    render() {
-        return (
-            <Modalize
-                ref={this.context.playerScreenRef}
-                modalHeight={PLAYER_SCREEN_HEIGHT}
-                threshold={PLAYER_SCREEN_HEIGHT/4}
-                velocity={100}
-            >
-                <Screen/>
-            </Modalize>
-        )
-    }
+    return (
+        <Modalize
+            ref={context.playerScreenRef}
+            modalHeight={PLAYER_SCREEN_HEIGHT}
+            threshold={PLAYER_SCREEN_HEIGHT/4}
+            velocity={100}
+            snapPoint={60}
+        >
+            <Screen/>
+        </Modalize>
+    )
 }
 
 const styles = StyleSheet.create({

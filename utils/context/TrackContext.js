@@ -2,10 +2,11 @@ import { Component, createContext, useEffect, useState } from "react";
 import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { RNAndroidAudioStore } from "react-native-get-music-files";
 import TrackPlayer, { Capability, Event, RepeatMode, State, usePlaybackState, useProgress, useTrackPlayerEvents } from "react-native-track-player";
+var RNFS = require('react-native-fs');
 
 const TrackContext = createContext();
 
-export function TrackProvider({children}) {
+export function TrackProvider({ children }) {
 	const getAudioFile = async () => {
 		await RNAndroidAudioStore.getAll({
 			id: true,
@@ -15,19 +16,21 @@ export function TrackProvider({children}) {
 			title: true,
 			cover: true,
 			minimumSongDuration: 1000,
-		}).then(tracks => {
+		}).then(async tracks => {
 			//console.log(tracks);
-			//console.log(FileSystem.fileExists('/storage/emulated/0/Music/NewFolder/DualExistenceToaruKagakuNoRailgunTOpening2-Fripside-6384001.mp3'))
-			setAllTrack(tracks.map(track => (
-				
-				{
+			setAllTrack((await Promise.all(tracks.map(async track => ({
+				...track,
+				exists: await RNFS.exists(track.path)
+			}))))
+				.filter(track => track.exists == true)
+				.map(track => ({
 					url: track.path,
 					title: track.title,
 					artist: track.author,
 					album: track.album,
 					duration: track.duration / 1000,
-				}
-			)))
+				}))
+			)
 		}).catch(error => {
 			console.log(error)
 		})
@@ -67,18 +70,27 @@ export function TrackProvider({children}) {
 	const playbackState = usePlaybackState();
 	const [allTrack, setAllTrack] = useState([]);
 	const [currentTrack, setCurrentTrack] = useState({});
+	const [shuffling, setShuffling] = useState(false);
+	const [shuffle, setShuffle] = useState(false);
 
-	const setupQueue = async (queue, index) => {
+	const setupQueue = async (queue, index, shuffle) => {
 		await TrackPlayer.reset();
-		await TrackPlayer.add(queue);
-		await TrackPlayer.skip(index);
-		await TrackPlayer.play();
+		if(shuffle) {
+			await TrackPlayer.add([].concat(queue).sort(() => Math.random() - 0.5));
+		} else {
+			await TrackPlayer.add(queue);
+			await TrackPlayer.skip(index);
+		}
+		setShuffle(shuffle);
+		setTimeout(() => {
+			TrackPlayer.play();
+		}, 500);
 	}
 
 	const togglePlayback = async () => {
 		const trackIndex = await TrackPlayer.getCurrentTrack();
-		if(trackIndex != null) {
-			if(playbackState === State.Playing) {
+		if (trackIndex != null) {
+			if (playbackState === State.Playing) {
 				await TrackPlayer.pause();
 			} else {
 				await TrackPlayer.play();
@@ -86,12 +98,25 @@ export function TrackProvider({children}) {
 		}
 	}
 
-	const skipToNext = async () => {
-		TrackPlayer.skipToNext();
-	}
-
-	const skipToPrevious = async () => {
-		TrackPlayer.skipToPrevious();
+	const toggleShuffle = async () => {
+		setShuffling(true);
+		setShuffle(!shuffle);
+		const queue = await TrackPlayer.getQueue();
+		const removeIndex = queue
+			.map((track, index) => index)
+		await TrackPlayer.remove(removeIndex);
+		if (shuffle) {
+			const newQueue = queue.sort((a, b) => a.title > b.title ? 1 : -1);
+			const newTrackIndex = newQueue.findIndex(track => track.url == currentTrack.url);
+			await TrackPlayer.add(newQueue.filter((track, index) => index < newTrackIndex), 0);
+			await TrackPlayer.add(newQueue.filter((track, index) => index > newTrackIndex));
+		} else {
+			const newQueue = queue
+				.filter(track => track.url != currentTrack.url)
+				.sort(() => Math.random() - 0.5)
+			await TrackPlayer.add(newQueue);
+		}
+		setShuffling(false);
 	}
 
 	useEffect(() => {
@@ -99,24 +124,21 @@ export function TrackProvider({children}) {
 		TrackPlayer.setupPlayer();
 	}, [])
 
-	useTrackPlayerEvents([Event.PlaybackTrackChanged,Event.PlaybackError], async (event) => {
-		if (event.type === Event.PlaybackTrackChanged && event.nextTrack != null) {
-			console.log(event.nextTrack);
-            setCurrentTrack(await TrackPlayer.getTrack(event.nextTrack));
-        }
-		if (event.type === Event.PlaybackError) {
-            console.log(event.message);
-        }
+	useTrackPlayerEvents([Event.PlaybackTrackChanged, Event.PlaybackError], async (event) => {
+		if (event.type === Event.PlaybackTrackChanged && event.nextTrack != null && !shuffling) {
+			setCurrentTrack(await TrackPlayer.getTrack(event.nextTrack));
+		}
 	});
 
 	return (
 		<TrackContext.Provider value={{
 			allTrack: allTrack,
 			currentTrack: currentTrack,
+			shuffle: shuffle,
+			shuffling: shuffling,
 			setupQueue: setupQueue,
-			skipToNext: skipToNext,
-			skipToPrevious: skipToPrevious,
 			togglePlayback: togglePlayback,
+			toggleShuffle: toggleShuffle,
 		}}>
 			{children}
 		</TrackContext.Provider>

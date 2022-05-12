@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
 		padding: 16,
 		borderColor: "#ffffff",
 		shadowColor: '#000000',
-		elevation: 50
+		elevation: 140
 	},
 	coverImage: {
 		height: '100%',

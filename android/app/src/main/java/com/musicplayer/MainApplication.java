@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.rnfs.RNFSPackage;
 import com.swmansion.gesturehandler.RNGestureHandlerPackage;
 import com.cinder92.musicfiles.RNReactNativeGetMusicFilesPackage;
 import com.drazail.rnandroidstore.RNAndroidStorePackage;
@@ -40,6 +41,8 @@ public class MainApplication extends Application implements ReactApplication {
       // Packages that cannot be autolinked yet can be added manually here, for example:
       //packages.add(new RNReactNativeGetMusicFilesPackage());
       packages.add(new RNAndroidStorePackage());
+      // packages.add(new MainReactPackage());
+      // packages.add(new RNFSPackage());
       return packages;
     }
 

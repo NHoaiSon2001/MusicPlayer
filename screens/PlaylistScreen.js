@@ -10,14 +10,13 @@ export default class SongListScreen extends Component {
 	render() {
 		return (
 			<View>
-				<TouchableOpacity onPress={() => this.context.playerScreenRef.current?.open()}>
+				<TouchableOpacity onPress={() => this.context.openPlayer(200)}>
 					<Text>press</Text>
 				</TouchableOpacity>
 				<ScrollView>
 					{this.context.audioFile.map((audio, index) =>
 						<Text key={index.toString()}>{audio.title}</Text>
 					)}
-					
 				</ScrollView>
 			</View>
 		);
