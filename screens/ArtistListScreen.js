@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import FloatingPlayer from '../components/FloatingPlayer';
 import i18n from '../utils/i18n';
 
 
@@ -11,6 +12,8 @@ export default function ArtistListScreen() {
       <TouchableOpacity onPress={()=>i18n.changeLanguage("vi")}>
         <Text>vi</Text>
       </TouchableOpacity>
+
+      <FloatingPlayer/>
     </View>
   );
 }

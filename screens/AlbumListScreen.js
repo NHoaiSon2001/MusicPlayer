@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import FloatingPlayer from '../components/FloatingPlayer';
 import TrackContext from '../utils/context/TrackContext';
 
 export default function AlbunListScreen() {
@@ -9,6 +10,8 @@ export default function AlbunListScreen() {
       <TouchableOpacity onPress={() => context.setupPlayer()}>
 					<Text>press</Text>
 			</TouchableOpacity>
+
+      <FloatingPlayer/>
     </View>
   );
 }

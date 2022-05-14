@@ -1,6 +1,6 @@
-import { Component, useContext} from 'react';
-import { StyleSheet, Text, View, ScrollView,TouchableOpacity } from 'react-native';
-import PlayerScreen from './PlayerScreen';
+import { Component, useContext } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import FloatingPlayer from '../components/FloatingPlayer';
 
 import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
@@ -10,11 +10,12 @@ export default function SongListScreen() {
 	const appContext = useContext(AppContext);
 	const trackContext = useContext(TrackContext);
 	return (
-		<View>
+		<View style = {styles.container}>
 			<TouchableOpacity
 				onPress={async () => {
 					await trackContext.setupQueue(trackContext.allTrack, 0, true);
 					await appContext.openPlayer(1000);
+					await appContext.setHavingPlayer(true);
 				}}
 			>
 				<Text>shuffle all</Text>
@@ -25,6 +26,7 @@ export default function SongListScreen() {
 						onPress={async () => {
 							await trackContext.setupQueue(trackContext.allTrack, index, false);
 							await appContext.openPlayer(1000);
+							await appContext.setHavingPlayer(true);
 						}}
 						key={index.toString()}
 					>
@@ -32,13 +34,15 @@ export default function SongListScreen() {
 					</TouchableOpacity>
 				))}
 			</ScrollView>
+
+
+			<FloatingPlayer />
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
+	container: {
+		flex: 1,
+	},
 });

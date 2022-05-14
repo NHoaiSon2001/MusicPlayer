@@ -21,8 +21,8 @@ function MusicInfo() {
 							<View style = {styles.musicInfoWrapper}>
 								<TextTicker
 									style={styles.titleText}
-									duration={10000}
-									marqueeDelay={500}
+									duration={15000}
+									marqueeDelay={1000}
 									animationType={'auto'}
 									loop={true}
 									bounce={false}

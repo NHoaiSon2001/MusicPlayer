@@ -70,21 +70,37 @@ export function TrackProvider({ children }) {
 	const playbackState = usePlaybackState();
 	const [allTrack, setAllTrack] = useState([]);
 	const [currentTrack, setCurrentTrack] = useState({});
-	const [shuffling, setShuffling] = useState(false);
+	const [setuppingQueue, setSetuppingQueue] = useState(false);
 	const [shuffle, setShuffle] = useState(false);
 
+	const setupPlayer = async () => {
+		await TrackPlayer.setupPlayer();
+		await TrackPlayer.updateOptions({
+			capabilities: [
+				Capability.Play,
+				Capability.Pause,
+				Capability.SkipToPrevious,
+				Capability.SkipToNext,
+				Capability.Stop,
+			]
+		})
+	}
+
 	const setupQueue = async (queue, index, shuffle) => {
+		setSetuppingQueue(true);
 		await TrackPlayer.reset();
 		if(shuffle) {
 			await TrackPlayer.add([].concat(queue).sort(() => Math.random() - 0.5));
 		} else {
 			await TrackPlayer.add(queue);
-			await TrackPlayer.skip(index);
 		}
+		await TrackPlayer.skip(index);
+		setCurrentTrack(await TrackPlayer.getTrack(index));
 		setShuffle(shuffle);
 		setTimeout(() => {
 			TrackPlayer.play();
 		}, 500);
+		setSetuppingQueue(false);
 	}
 
 	const togglePlayback = async () => {
@@ -99,7 +115,7 @@ export function TrackProvider({ children }) {
 	}
 
 	const toggleShuffle = async () => {
-		setShuffling(true);
+		setSetuppingQueue(true);
 		setShuffle(!shuffle);
 		const queue = await TrackPlayer.getQueue();
 		const removeIndex = queue
@@ -116,16 +132,16 @@ export function TrackProvider({ children }) {
 				.sort(() => Math.random() - 0.5)
 			await TrackPlayer.add(newQueue);
 		}
-		setShuffling(false);
+		setSetuppingQueue(false);
 	}
 
-	useEffect(() => {
+	useEffect(async () => {
 		getPermissions();
-		TrackPlayer.setupPlayer();
+		setupPlayer();
 	}, [])
 
 	useTrackPlayerEvents([Event.PlaybackTrackChanged, Event.PlaybackError], async (event) => {
-		if (event.type === Event.PlaybackTrackChanged && event.nextTrack != null && !shuffling) {
+		if (event.type === Event.PlaybackTrackChanged && event.nextTrack != null && !setuppingQueue) {
 			setCurrentTrack(await TrackPlayer.getTrack(event.nextTrack));
 		}
 	});
@@ -135,7 +151,7 @@ export function TrackProvider({ children }) {
 			allTrack: allTrack,
 			currentTrack: currentTrack,
 			shuffle: shuffle,
-			shuffling: shuffling,
+			setuppingQueue: setuppingQueue,
 			setupQueue: setupQueue,
 			togglePlayback: togglePlayback,
 			toggleShuffle: toggleShuffle,

@@ -6,11 +6,29 @@ import QueueFooter from '../components/QueueFooter';
 import AppContext from '../utils/context/AppContext';
 import TrackPlayer from 'react-native-track-player';
 import TrackContext from '../utils/context/TrackContext';
+import FloatingControll from '../components/FloatingControll';
 
 const HEADER_HEIGHT = 60;
+const PLAYER_HEIGHT = 70;
+
+const FooterComponent = () => {
+	const appContext = useContext(AppContext);
+
+	return (
+		<View style = {styles.container}>
+			<TouchableOpacity
+				activeOpacity={1}
+				onPress={() => appContext.queueScreenRef.current?.close('alwaysOpen')}
+				style = {styles.touchable}
+			>
+				<FloatingControll/>
+			</TouchableOpacity>
+		</View>
+	)
+}
 
 export default function QueueScreen(props) {
-	const context = useContext(AppContext);
+	const appContext = useContext(AppContext);
 	const trackContext = useContext(TrackContext);
 	const [queue, setQueue] = useState([]);
 
@@ -22,7 +40,7 @@ export default function QueueScreen(props) {
 
 	return (
 		<Modalize
-			ref={context.queueScreenRef}
+			ref={appContext.queueScreenRef}
 			modalHeight={props.PLAYER_SCREEN_HEIGHT / 1.1}
 			threshold={props.PLAYER_SCREEN_HEIGHT / 4}
 			handlePosition={'inside'}
@@ -31,7 +49,7 @@ export default function QueueScreen(props) {
 			tapGestureEnabled={false}
 			disableScrollIfPossible={true}
 			HeaderComponent={QueueHeader}
-			FooterComponent={QueueFooter}
+			FooterComponent={FooterComponent}
 		>
 			{queue.map((track, index) =>
 				<TouchableOpacity
@@ -48,8 +66,11 @@ export default function QueueScreen(props) {
 }
 
 const styles = StyleSheet.create({
-	queueFooterComponent: {
-		justifyContent: 'flex-end',
-		alignItems: 'center',
+	container: {
+		// justifyContent: 'center',
+		backgroundColor: '#d0d0d0',
 	},
+	touchable: {
+        height: PLAYER_HEIGHT,
+    },
 });

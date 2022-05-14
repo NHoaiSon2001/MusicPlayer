@@ -5,16 +5,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import TrackContext from "../utils/context/TrackContext";
 import TrackPlayer, { State, useProgress, usePlaybackState, RepeatMode, Event, useTrackPlayerEvents } from "react-native-track-player";
-
-const ICONS = {
-    PLAY: "play",
-    PAUSE: "pause",
-    SKIP_PREV: "play-skip-back",
-    SKIP_NEXT: "play-skip-forward",
-    REPEAT_TRACK: "repeat-once",
-    REPEAT_QUEUE: "repeat",
-    SHUFFLE: "shuffle",
-}
+import ICONS from "../assets/ICONS";
 
 const MusicControll = () => {
     const trackContext = useContext(TrackContext);
@@ -116,7 +107,7 @@ const MusicControll = () => {
         await checkCanPrevNext();
     }
 
-    const checkCanPrevNext = async (value) => {
+    const checkCanPrevNext = async () => {
         const trackIndex = await TrackPlayer.getCurrentTrack();
         const repeatMode = await TrackPlayer.getRepeatMode();
         const position = await TrackPlayer.getPosition();
@@ -146,7 +137,7 @@ const MusicControll = () => {
                     value={progress.position}
                     thumbTintColor={'#626262'}
                     maximumValue={progress.duration}
-                    maximumTrackTintColor={'#cacaca'}
+                    maximumTrackTintColor={'#b0b0b0'}
                     minimumTrackTintColor={'#626262'}
                     onSlidingComplete={async (value) => {
                         setCanControl(false);
@@ -170,21 +161,21 @@ const MusicControll = () => {
                     style = {[styles.controllButton, {marginRight: 20,}]}
                     disabled={!canControl}
                 >
-                    <Ionicons name={ICONS.SHUFFLE} size={35} color={trackContext.shuffle ? '#626262' : '#cacaca'}/>
+                    <Ionicons name={ICONS.SHUFFLE} size={35} color={trackContext.shuffle ? '#626262' : '#b0b0b0'}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     onPress={() => skipToPrevious()}
                     style = {[styles.controllButton, {marginRight: 20}]}
-                    disabled={!canPrev || !canControl || trackContext.shuffling}
+                    disabled={!canPrev || !canControl || trackContext.setuppingQueue}
                 >
-                    <Ionicons name={ICONS.SKIP_PREV} size={30} color={canPrev ? '#626262' : '#cacaca'}/>
+                    <Ionicons name={ICONS.SKIP_PREV} size={30} color={canPrev ? '#626262' : '#b0b0b0'}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     onPress={() => {
                         setCanControl(false);
-                        trackContext.togglePlayback();
+                        trackContext.togglePlayback()
                     }}
                     style = {styles.playPauseTouchble}
                     disabled={!canControl}
@@ -199,9 +190,9 @@ const MusicControll = () => {
                 <TouchableOpacity
                     onPress={() => skipToNext()}
                     style = {[styles.controllButton, {marginLeft: 20}]}
-                    disabled={!canNext || !canControl || trackContext.shuffling}
+                    disabled={!canNext || !canControl || trackContext.setuppingQueue}
                 >
-                    <Ionicons name={ICONS.SKIP_NEXT} size={30} color={canNext ? '#626262' : '#cacaca'}/>
+                    <Ionicons name={ICONS.SKIP_NEXT} size={30} color={canNext ? '#626262' : '#b0b0b0'}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -209,7 +200,7 @@ const MusicControll = () => {
                     style = {[styles.controllButton, {marginLeft: 20,}]}
                     disabled={!canControl}
                 >
-                    <MaterialCommunityIcons name={repeatIcon} size={30} color={repeat ? '#626262' : '#cacaca'}/>
+                    <MaterialCommunityIcons name={repeatIcon} size={30} color={repeat ? '#626262' : '#b0b0b0'}/>
                 </TouchableOpacity>
             </View>
         </View>

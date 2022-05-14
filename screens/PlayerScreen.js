@@ -55,7 +55,6 @@ export default function PlayerScreen() {
             ref={context.playerScreenRef}
             modalHeight={PLAYER_SCREEN_HEIGHT}
             threshold={PLAYER_SCREEN_HEIGHT/4}
-            velocity={100}
             snapPoint={60}
         >
             <Screen/>
@@ -66,7 +65,7 @@ export default function PlayerScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f0f0f0",
+        backgroundColor: '#dcdcdc',
         height: PLAYER_SCREEN_HEIGHT,
         width:"100%",
     },
