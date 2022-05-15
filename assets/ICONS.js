@@ -6,6 +6,7 @@ const ICONS = {
     REPEAT_TRACK: "repeat-once",
     REPEAT_QUEUE: "repeat",
     SHUFFLE: "shuffle",
+    REFRESH: 'refresh',
 }
 
 export default ICONS;

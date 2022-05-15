@@ -70,7 +70,7 @@ export function TrackProvider({ children }) {
 	const playbackState = usePlaybackState();
 	const [allTrack, setAllTrack] = useState([]);
 	const [currentTrack, setCurrentTrack] = useState({});
-	const [setuppingQueue, setSetuppingQueue] = useState(false);
+	const [setupingQueue, setSetupingQueue] = useState(false);
 	const [shuffle, setShuffle] = useState(false);
 
 	const setupPlayer = async () => {
@@ -87,7 +87,7 @@ export function TrackProvider({ children }) {
 	}
 
 	const setupQueue = async (queue, index, shuffle) => {
-		setSetuppingQueue(true);
+		setSetupingQueue(true);
 		await TrackPlayer.reset();
 		if(shuffle) {
 			await TrackPlayer.add([].concat(queue).sort(() => Math.random() - 0.5));
@@ -100,7 +100,7 @@ export function TrackProvider({ children }) {
 		setTimeout(() => {
 			TrackPlayer.play();
 		}, 500);
-		setSetuppingQueue(false);
+		setSetupingQueue(false);
 	}
 
 	const togglePlayback = async () => {
@@ -115,7 +115,7 @@ export function TrackProvider({ children }) {
 	}
 
 	const toggleShuffle = async () => {
-		setSetuppingQueue(true);
+		setSetupingQueue(true);
 		setShuffle(!shuffle);
 		const queue = await TrackPlayer.getQueue();
 		const removeIndex = queue
@@ -132,7 +132,7 @@ export function TrackProvider({ children }) {
 				.sort(() => Math.random() - 0.5)
 			await TrackPlayer.add(newQueue);
 		}
-		setSetuppingQueue(false);
+		setSetupingQueue(false);
 	}
 
 	useEffect(async () => {
@@ -141,7 +141,7 @@ export function TrackProvider({ children }) {
 	}, [])
 
 	useTrackPlayerEvents([Event.PlaybackTrackChanged, Event.PlaybackError], async (event) => {
-		if (event.type === Event.PlaybackTrackChanged && event.nextTrack != null && !setuppingQueue) {
+		if (event.type === Event.PlaybackTrackChanged && event.nextTrack != null && !setupingQueue) {
 			setCurrentTrack(await TrackPlayer.getTrack(event.nextTrack));
 		}
 	});
@@ -151,7 +151,7 @@ export function TrackProvider({ children }) {
 			allTrack: allTrack,
 			currentTrack: currentTrack,
 			shuffle: shuffle,
-			setuppingQueue: setuppingQueue,
+			setupingQueue: setupingQueue,
 			setupQueue: setupQueue,
 			togglePlayback: togglePlayback,
 			toggleShuffle: toggleShuffle,

@@ -1,22 +1,33 @@
 import { useState, useEffect, useContext } from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
-import Slider from "@react-native-community/slider";
+import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import TrackContext from "../utils/context/TrackContext";
 import TrackPlayer, { State, useProgress, usePlaybackState, RepeatMode, Event, useTrackPlayerEvents } from "react-native-track-player";
 import ICONS from "../assets/ICONS";
 
+const ACTION = {
+    TOGGLE_PLAYBACK: 1,
+    SKIP_PREV: 2,
+    SKIP_NEXT: 3,
+    SET_REPEAT: 4,
+    SHUFFLE: 5,
+    SEEK_POSITION: 6,
+}
+
 const MusicControll = () => {
     const trackContext = useContext(TrackContext);
     const progress = useProgress();
     const playbackState = usePlaybackState();
-    const [playPauseIcon, setPlayPauseIcon] = useState("");
+    const [playPauseIcon, setPlayPauseIcon] = useState(ICONS.REFRESH);
     const [repeatIcon, setRepeatIcon] = useState("");
     const [canPrev, setCanPrev] = useState(false);
     const [canNext, setCanNext] = useState(false);
     const [repeat, setRepeat] = useState(false);
-    const [canControl, setCanControl] = useState(false);
+    const [canControl, setCanControl] = useState(true);
+    const [newPosition, setNewPosition] = useState(0);
+    const [sliding, setSliding] = useState(false);
 
     useEffect(async () => {
         const repeatMode = await TrackPlayer.getRepeatMode();
@@ -34,26 +45,15 @@ const MusicControll = () => {
                 setRepeat(true);
                 break;
         }
-        checkCanPrevNext();
-    }, []);
-
-    useEffect(() => {
-        setTimeout(() => {
-            if(playbackState === State.Playing && playPauseIcon != ICONS.PAUSE) {
-                setPlayPauseIcon(ICONS.PAUSE);
-            } else if(playbackState === State.Paused && playPauseIcon != ICONS.PLAY) {
+        setTimeout(async () => {
+            if(await TrackPlayer.getState() === State.Paused) {
                 setPlayPauseIcon(ICONS.PLAY);
+            } else {
+                setPlayPauseIcon(ICONS.PAUSE);
             }
-        }, 1);
-	}, [playbackState])
-
-    useEffect(() => {
-        if(!canControl) {
-            setTimeout(() => {
-                setCanControl(true);
-            }, 500);
-        }
-    }, [canControl])
+        }, 200);
+        await checkCanPrevNext();
+    }, []);
 
     useEffect(async () => {
         if(await TrackPlayer.getCurrentTrack() == 0 && progress.position >= 5) {
@@ -61,8 +61,16 @@ const MusicControll = () => {
         }
     }, [progress.position])
 
+    const togglePlayback = async () => {
+        await trackContext.togglePlayback();
+        if(playbackState === State.Paused && playPauseIcon != ICONS.PAUSE) {
+            setPlayPauseIcon(ICONS.PAUSE);
+        } else if(playbackState === State.Playing && playPauseIcon != ICONS.PLAY) {
+            setPlayPauseIcon(ICONS.PLAY);
+        }
+	}
+
     const setRepeatMode = async () => {
-        setCanControl(false);
         switch(repeatIcon) {
             case ICONS.REPEAT_QUEUE:
                 if (!repeat) {
@@ -84,8 +92,6 @@ const MusicControll = () => {
 
     const skipToPrevious = async () => {
         setCanPrev(false);
-        setCanControl(false);
-        console.log("prev");
         if(progress.position >= 5) {
             await TrackPlayer.seekTo(0);
             await checkCanPrevNext();
@@ -96,14 +102,11 @@ const MusicControll = () => {
 
     const skipToNext = async () => {
         setCanNext(false);
-        setCanControl(false);
-        console.log("next");
         await TrackPlayer.skipToNext();
     }
 
     const toggleShuffle = async () => {
         await trackContext.toggleShuffle();
-        setCanControl(false);
         await checkCanPrevNext();
     }
 
@@ -123,11 +126,53 @@ const MusicControll = () => {
         }
     }
 
+    const seekPosition = async (position) => {
+            await TrackPlayer.seekTo(position);
+            await checkCanPrevNext();
+            setSliding(false);
+    }
+
     useTrackPlayerEvents([Event.PlaybackTrackChanged], async (event) => {
 		if (event.type === Event.PlaybackTrackChanged) {
 			checkCanPrevNext();
 		}
 	});
+
+    const controll = async (action, position) => {
+        setCanControl(false);
+        setTimeout(async () => {
+            if(!canControl) return;
+            switch(action) {
+                case ACTION.TOGGLE_PLAYBACK:
+                    console.log("toggle playback");
+                    await togglePlayback();
+                    break;
+                case ACTION.SKIP_PREV:
+                    console.log("prev");
+                    await skipToPrevious();
+                    break;
+                case ACTION.SKIP_NEXT:
+                    console.log("next");
+                    await skipToNext();
+                    break;
+                case ACTION.SET_REPEAT:
+                    console.log("set repeat");
+                    await setRepeatMode();
+                    break;
+                case ACTION.SHUFFLE:
+                    console.log("shuffle");
+                    await toggleShuffle();
+                    break;
+                case ACTION.SEEK_POSITION:
+                    console.log("seek position");
+                    await seekPosition(position);
+                    break;
+            }
+            setTimeout(() => {
+                setCanControl(true);
+            }, 100);
+        }, 100);
+    }
 
     return (
         <View style = {styles.musicControllContainer}>
@@ -139,15 +184,13 @@ const MusicControll = () => {
                     maximumValue={progress.duration}
                     maximumTrackTintColor={'#b0b0b0'}
                     minimumTrackTintColor={'#626262'}
-                    onSlidingComplete={async (value) => {
-                        setCanControl(false);
-                        await TrackPlayer.seekTo(value);
-                        await checkCanPrevNext();
-                    }}
+                    onSlidingStart={() => setSliding(true)}
+                    onValueChange={(position) => setNewPosition(position)}
+                    onSlidingComplete={(position) => controll(ACTION.SEEK_POSITION, position)}
                 />
                 <View style = {styles.progressTitleContainer}>
                     <Text style = {{fontSize: 13}}>
-                        {new Date(progress.position * 1000).toLocaleTimeString().substring(3)}
+                        {new Date((sliding ? newPosition : progress.position) * 1000).toLocaleTimeString().substring(3)}
                     </Text>
                     <Text style = {{fontSize: 13}}>
                         {new Date(progress.duration * 1000).toLocaleTimeString().substring(3)}
@@ -157,7 +200,7 @@ const MusicControll = () => {
 
             <View style = {styles.controllContainer}>
                 <TouchableOpacity
-                    onPress={() => toggleShuffle()}
+                    onPress={() => controll(ACTION.SHUFFLE)}
                     style = {[styles.controllButton, {marginRight: 20,}]}
                     disabled={!canControl}
                 >
@@ -165,18 +208,15 @@ const MusicControll = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={() => skipToPrevious()}
+                    onPress={() => controll(ACTION.SKIP_PREV)}
                     style = {[styles.controllButton, {marginRight: 20}]}
-                    disabled={!canPrev || !canControl || trackContext.setuppingQueue}
+                    disabled={!canPrev || !canControl}
                 >
                     <Ionicons name={ICONS.SKIP_PREV} size={30} color={canPrev ? '#626262' : '#b0b0b0'}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={() => {
-                        setCanControl(false);
-                        trackContext.togglePlayback()
-                    }}
+                    onPress={()=>controll(ACTION.TOGGLE_PLAYBACK)}
                     style = {styles.playPauseTouchble}
                     disabled={!canControl}
                 >
@@ -188,15 +228,15 @@ const MusicControll = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={() => skipToNext()}
+                    onPress={() => controll(ACTION.SKIP_NEXT)}
                     style = {[styles.controllButton, {marginLeft: 20}]}
-                    disabled={!canNext || !canControl || trackContext.setuppingQueue}
+                    disabled={!canNext || !canControl}
                 >
                     <Ionicons name={ICONS.SKIP_NEXT} size={30} color={canNext ? '#626262' : '#b0b0b0'}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={() => setRepeatMode()}
+                    onPress={() => controll(ACTION.SET_REPEAT)}
                     style = {[styles.controllButton, {marginLeft: 20,}]}
                     disabled={!canControl}
                 >

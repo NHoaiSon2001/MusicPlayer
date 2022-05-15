@@ -9,7 +9,7 @@ const HEADER_HEIGHT = 60;
 function QueueHeader() {
 	const appContext = useContext(AppContext);
 	return (
-		<View style={styles.queueHeaderComponent}>
+		<View style={styles.container}>
 			<TouchableOpacity
 				onPress={() => appContext.queueScreenRef.current?.open('top')}
 				style = {styles.upNextTouchble}
@@ -23,13 +23,10 @@ function QueueHeader() {
 export default QueueHeader;
 
 const styles = StyleSheet.create({
-	queueHeaderComponent: {
+	container: {
+		backgroundColor: '#f0f0f0',
 		height: HEADER_HEIGHT,
 		width: "100%",
-		justifyContent: 'flex-end',
-		alignItems: 'center',
-	},
-	queueFooterComponent: {
 		justifyContent: 'flex-end',
 		alignItems: 'center',
 	},
@@ -37,6 +34,8 @@ const styles = StyleSheet.create({
 		justifyContent:'center',
 		alignItems: 'center',
 		padding: 10,
+		borderBottomWidth: 3,
+		borderBottomColor: '#d0d0d0',
 	},
 	upNextText: {
 		fontSize: 15,

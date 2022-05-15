@@ -1,11 +1,16 @@
 import { useContext, useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import Slider from "@react-native-community/slider";
+import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import TextTicker from "react-native-text-ticker";
 import TrackContext from '../utils/context/TrackContext';
 import TrackPlayer, { State, useProgress, usePlaybackState, RepeatMode, Event, useTrackPlayerEvents } from "react-native-track-player";
 import ICONS from "../assets/ICONS";
+
+const ACTION = {
+    TOGGLE_PLAYBACK: 1,
+    SKIP_NEXT: 3,
+}
 
 const TextLoop = (props) => {
     return (
@@ -31,22 +36,26 @@ function FloatingControll() {
     const [canNext, setCanNext] = useState(false);
 
     useEffect(() => {
+        setTimeout(async () => {
+            if(await TrackPlayer.getState() === State.Paused) {
+                setPlayPauseIcon(ICONS.PLAY);
+            } else {
+                setPlayPauseIcon(ICONS.PAUSE);
+            }
+        }, 300);
         checkCanPrevNext();
 	}, [])
 
-    useEffect(() => {
-        setTimeout(() => {
-            if(playbackState === State.Playing && playPauseIcon != ICONS.PAUSE) {
-                setPlayPauseIcon(ICONS.PAUSE);
-            } else if(playbackState === State.Paused && playPauseIcon != ICONS.PLAY) {
-                setPlayPauseIcon(ICONS.PLAY);
-            }
-        }, 1);
-	}, [playbackState])
+    const togglePlayback = async () => {
+        await trackContext.togglePlayback();
+        if(playbackState === State.Paused && playPauseIcon != ICONS.PAUSE) {
+            setPlayPauseIcon(ICONS.PAUSE);
+        } else if(playbackState === State.Playing && playPauseIcon != ICONS.PLAY) {
+            setPlayPauseIcon(ICONS.PLAY);
+        }
+	}
 
     const skipToNext = async () => {
-        setCanNext(false);
-        console.log("next");
         await TrackPlayer.skipToNext();
     }
 
@@ -66,13 +75,33 @@ function FloatingControll() {
 		}
 	});
 
+    const controll = async (action) => {
+        console.log(newPosition);
+        setCanControl(false);
+        setTimeout(async () => {
+            if(!canControl) return;
+            switch(action) {
+                case ACTION.TOGGLE_PLAYBACK:
+                    console.log("toggle playback");
+                    await togglePlayback();
+                    break;
+                case ACTION.SKIP_NEXT:
+                    console.log("next");
+                    await skipToNext();
+                    break;
+            }
+            setTimeout(() => {
+                setCanControl(true);
+            }, 100);
+        }, 100);
+    }
+
     return (
         <View style = {styles.container}>
             <Slider
                 style={styles.progressBar}
                 value={progress.position}
-                thumbTintColor={'#dcdcdc'}
-                thum
+                thumbImage={require('../assets/defaults/thumb.png')}
                 maximumValue={progress.duration}
                 maximumTrackTintColor={'#dcdcdc'}
                 minimumTrackTintColor={'#626262'}
@@ -88,7 +117,7 @@ function FloatingControll() {
                 <View style = {styles.musicInfo}>
                     <TextLoop style = {styles.titleText} content = {trackContext.currentTrack.title}/>
 
-                    <TextLoop style = {{fontSize: 15}} content = {trackContext.currentTrack.artist}/>
+                    <TextLoop content = {trackContext.currentTrack.artist}/>
                 </View>
 
                 <View style = {styles.buttonContainer}>
@@ -100,7 +129,7 @@ function FloatingControll() {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => trackContext.togglePlayback()}
+                        onPress={() => controll(ACTION.TOGGLE_PLAYBACK)}
                         style = {styles.playPauseTouchble}
                     >
                         <Ionicons
@@ -111,7 +140,7 @@ function FloatingControll() {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => skipToNext()}
+                        onPress={() => controll(ACTION.SKIP_NEXT)}
                         style = {styles.controllButton}
                         disabled={!canNext}
                     >
@@ -133,10 +162,10 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     progressBar: {
-        marginTop: 0,
         position: 'absolute',
         height: 0,
         width: "100%",
+        marginTop: 1,
     },
     controllContainer: {
         flexDirection: 'row',

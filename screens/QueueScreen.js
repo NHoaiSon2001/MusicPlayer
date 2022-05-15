@@ -1,12 +1,12 @@
 import { Component, createRef, useContext, useEffect, useState } from 'react';
-import { Dimensions, View, ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Dimensions, View, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import QueueHeader from '../components/QueueHeader';
-import QueueFooter from '../components/QueueFooter';
 import AppContext from '../utils/context/AppContext';
 import TrackPlayer from 'react-native-track-player';
 import TrackContext from '../utils/context/TrackContext';
 import FloatingControll from '../components/FloatingControll';
+import QueueTrack from '../components/QueueTrack';
 
 const HEADER_HEIGHT = 60;
 const PLAYER_HEIGHT = 70;
@@ -33,10 +33,10 @@ export default function QueueScreen(props) {
 	const [queue, setQueue] = useState([]);
 
 	useEffect(async () => {
-		if(!trackContext.shuffling) {
+		if(!trackContext.setupingQueue) {
 			setQueue(await TrackPlayer.getQueue());
 		}
-	}, [trackContext.shuffling])
+	}, [trackContext.setupingQueue])
 
 	return (
 		<Modalize
@@ -52,14 +52,14 @@ export default function QueueScreen(props) {
 			FooterComponent={FooterComponent}
 		>
 			{queue.map((track, index) =>
-				<TouchableOpacity
-					onPress={async () => {
-						await TrackPlayer.skip(index);
-					}}
+				<TouchableHighlight
+					onPress={async () => await TrackPlayer.skip(index)}
+					style={{backgroundColor: trackContext.currentTrack.url == track.url ? '#dcdcdc' : '#ffffff'}}
+					underlayColor={'#dcdcdc'}
 					key={index.toString()}
 				>
-					<Text>{track.title}</Text>
-				</TouchableOpacity>
+					<QueueTrack track={track} index={index}/>
+				</TouchableHighlight>
 			)}
 		</Modalize>
 	)
@@ -67,7 +67,6 @@ export default function QueueScreen(props) {
 
 const styles = StyleSheet.create({
 	container: {
-		// justifyContent: 'center',
 		backgroundColor: '#d0d0d0',
 	},
 	touchable: {

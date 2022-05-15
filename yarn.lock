@@ -4603,7 +4603,7 @@ prompts@^2.4.0:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.6.0, prop-types@^15.7.2:
+prop-types@^15.5.6, prop-types@^15.6.0, prop-types@^15.7.2:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -4727,6 +4727,20 @@ react-native-safe-area-context@^4.2.4:
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-4.2.4.tgz#4df42819759c4d3c74252c8678c2772cfa2271a6"
   integrity sha512-OOX+W2G4YYufvryonn6Kw6YnyT8ZThkxPHZBD04NLHaZmicUaaDVII/PZ3M5fD1o5N62+T+8K4bCS5Un2ggvkA==
+
+react-native-slider-custom@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/react-native-slider-custom/-/react-native-slider-custom-0.11.0.tgz#a48a84d21805bc3e98d31c64808dce1af7cccc01"
+  integrity sha512-k8K3PWmeK/GB33MAEb7t1SSWqYQ4vOL5lbkShlAMmiNcqQ2kq/oTlLXIawECg3CPgM90FPH/MkcpKObn4302zA==
+  dependencies:
+    prop-types "^15.5.6"
+
+react-native-slider@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/react-native-slider/-/react-native-slider-0.11.0.tgz#b68a0bc43c8422b24cd57947cc5ac2bcdb58fadc"
+  integrity sha512-jV9K87eu9uWr0uJIyrSpBLnCKvVlOySC2wynq9TFCdV9oGgjt7Niq8Q1A8R8v+5GHsuBw/s8vEj1AAkkUi+u+w==
+  dependencies:
+    prop-types "^15.5.6"
 
 react-native-text-ticker@^1.14.0:
   version "1.14.0"

@@ -55,6 +55,7 @@ export default function PlayerScreen() {
             ref={context.playerScreenRef}
             modalHeight={PLAYER_SCREEN_HEIGHT}
             threshold={PLAYER_SCREEN_HEIGHT/4}
+            velocity={4000}
             snapPoint={60}
         >
             <Screen/>
