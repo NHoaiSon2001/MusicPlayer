@@ -7,6 +7,7 @@ import TrackPlayer from 'react-native-track-player';
 import TrackContext from '../utils/context/TrackContext';
 import FloatingControll from '../components/FloatingControll';
 import QueueTrack from '../components/QueueTrack';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 
 const HEADER_HEIGHT = 60;
 const PLAYER_HEIGHT = 70;
@@ -15,11 +16,11 @@ const FooterComponent = () => {
 	const appContext = useContext(AppContext);
 
 	return (
-		<View style = {styles.container}>
+		<View style={styles.footerContainer}>
 			<TouchableOpacity
 				activeOpacity={1}
 				onPress={() => appContext.queueScreenRef.current?.close('alwaysOpen')}
-				style = {styles.touchable}
+				style={{height: PLAYER_HEIGHT}}
 			>
 				<FloatingControll/>
 			</TouchableOpacity>
@@ -31,9 +32,10 @@ export default function QueueScreen(props) {
 	const appContext = useContext(AppContext);
 	const trackContext = useContext(TrackContext);
 	const [queue, setQueue] = useState([]);
+	const [moving, setMoving] = useState(-1);
 
 	useEffect(async () => {
-		if(!trackContext.setupingQueue) {
+		if (!trackContext.setupingQueue) {
 			setQueue(await TrackPlayer.getQueue());
 		}
 	}, [trackContext.setupingQueue])
@@ -47,7 +49,7 @@ export default function QueueScreen(props) {
 			withOverlay={false}
 			alwaysOpen={HEADER_HEIGHT}
 			tapGestureEnabled={false}
-			disableScrollIfPossible={true}
+			panGestureComponentEnabled={true}
 			HeaderComponent={QueueHeader}
 			FooterComponent={FooterComponent}
 		>
@@ -58,7 +60,22 @@ export default function QueueScreen(props) {
 					underlayColor={'#dcdcdc'}
 					key={index.toString()}
 				>
-					<QueueTrack track={track} index={index}/>
+					<View style = {styles.container}>
+						<QueueTrack track={track} index={index}/>
+						<TouchableOpacity
+							style={styles.moveButton}
+							onLongPress={() => setMoving(index)}
+							onPress={() => {
+								setMoving(-1)
+								trackContext.moveTrack(moving, index);
+							}}
+						>
+							{moving != -1
+								? <MaterialIcons name={'file-download-done'} size = {30}/>
+								: <Text style = {styles.indexText}>{index + 1}</Text>
+							}
+						</TouchableOpacity>
+					</View>
 				</TouchableHighlight>
 			)}
 		</Modalize>
@@ -66,10 +83,26 @@ export default function QueueScreen(props) {
 }
 
 const styles = StyleSheet.create({
-	container: {
+	footerContainer: {
 		backgroundColor: '#d0d0d0',
 	},
-	touchable: {
-        height: PLAYER_HEIGHT,
+	container: {
+		borderBottomWidth: 1,
+		borderBottomColor: '#dcdcdc',
+		flexDirection: 'row',
+		justifyContent: "space-between",
+		alignItems: 'center',
+	},
+	moveButton: {
+		minWidth: 41,
+        height: 50,
+        marginRight: 5,
+		justifyContent: 'center',
+		alignItems: 'center',
+		borderRadius: 20,
     },
+    indexText: {
+        fontSize: 15,
+        fontWeight:'bold',
+    }
 });

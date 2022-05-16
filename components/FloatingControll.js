@@ -33,6 +33,7 @@ function FloatingControll() {
     const playbackState = usePlaybackState();
     const trackContext = useContext(TrackContext);
     const [playPauseIcon, setPlayPauseIcon] = useState("");
+    const [canControl, setCanControl] = useState(true);
     const [canNext, setCanNext] = useState(false);
 
     useEffect(() => {
@@ -56,8 +57,13 @@ function FloatingControll() {
 	}
 
     const skipToNext = async () => {
+        if(trackContext.setupingQueue) {
+            checkCanPrevNext();
+            return;
+        }
         await TrackPlayer.skipToNext();
     }
+
 
     const checkCanPrevNext = async () => {
         const trackIndex = await TrackPlayer.getCurrentTrack();
@@ -76,7 +82,6 @@ function FloatingControll() {
 	});
 
     const controll = async (action) => {
-        console.log(newPosition);
         setCanControl(false);
         setTimeout(async () => {
             if(!canControl) return;
@@ -131,6 +136,7 @@ function FloatingControll() {
                     <TouchableOpacity
                         onPress={() => controll(ACTION.TOGGLE_PLAYBACK)}
                         style = {styles.playPauseTouchble}
+                        disabled={!canControl}
                     >
                         <Ionicons
                             name={playPauseIcon}
@@ -140,9 +146,12 @@ function FloatingControll() {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => controll(ACTION.SKIP_NEXT)}
+                        onPress={() => {
+                            setCanNext(false);
+                            controll(ACTION.SKIP_NEXT)
+                        }}
                         style = {styles.controllButton}
-                        disabled={!canNext}
+                        disabled={!canNext || !canControl || !trackContext.setupingQueue}
                     >
                         <Ionicons name={ICONS.SKIP_NEXT} size={20} color={canNext ? '#626262' : '#b0b0b0'}/>
                     </TouchableOpacity>

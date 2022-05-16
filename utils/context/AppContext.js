@@ -10,7 +10,6 @@ export function AppProvider({ children }) {
 	const openPlayer = (timeout) => {
 		playerScreenRef.current?.open();
 		setTimeout(() => {
-			console.log(timeout);
 			playerScreenRef.current?.open('top');
 		}, timeout);
 	}

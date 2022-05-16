@@ -91,7 +91,6 @@ const MusicControll = () => {
     }
 
     const skipToPrevious = async () => {
-        setCanPrev(false);
         if(progress.position >= 5) {
             await TrackPlayer.seekTo(0);
             await checkCanPrevNext();
@@ -101,7 +100,6 @@ const MusicControll = () => {
     }
 
     const skipToNext = async () => {
-        setCanNext(false);
         await TrackPlayer.skipToNext();
     }
 
@@ -208,7 +206,10 @@ const MusicControll = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={() => controll(ACTION.SKIP_PREV)}
+                    onPress={() => {
+                        setCanPrev(false);
+                        controll(ACTION.SKIP_PREV);
+                    }}
                     style = {[styles.controllButton, {marginRight: 20}]}
                     disabled={!canPrev || !canControl}
                 >
@@ -216,7 +217,7 @@ const MusicControll = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={()=>controll(ACTION.TOGGLE_PLAYBACK)}
+                    onPress={()=> controll(ACTION.TOGGLE_PLAYBACK)}
                     style = {styles.playPauseTouchble}
                     disabled={!canControl}
                 >
@@ -228,7 +229,10 @@ const MusicControll = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={() => controll(ACTION.SKIP_NEXT)}
+                    onPress={() => {
+                        setCanNext(false);
+                        controll(ACTION.SKIP_NEXT)
+                    }}
                     style = {[styles.controllButton, {marginLeft: 20}]}
                     disabled={!canNext || !canControl}
                 >

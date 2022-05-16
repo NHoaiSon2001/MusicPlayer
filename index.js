@@ -1,6 +1,7 @@
 import { registerRootComponent } from 'expo';
 import { AppRegistry, Platform } from 'react-native';
 import TrackPlayer from 'react-native-track-player';
+import 'react-native-gesture-handler';
 
 import App from './App';
 

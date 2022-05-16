@@ -24,6 +24,7 @@ export function TrackProvider({ children }) {
 			}))))
 				.filter(track => track.exists == true)
 				.map(track => ({
+					id: track.id,
 					url: track.path,
 					title: track.title,
 					artist: track.author,
@@ -103,6 +104,16 @@ export function TrackProvider({ children }) {
 		setSetupingQueue(false);
 	}
 
+	const moveTrack = async (index, newIndex) => {
+		setSetupingQueue(true);
+		console.log(index);
+		console.log(newIndex);
+		const track = await TrackPlayer.getTrack(index);
+		await TrackPlayer.remove(index);
+		await TrackPlayer.add(track, newIndex);
+		setSetupingQueue(false);
+	}
+
 	const togglePlayback = async () => {
 		const trackIndex = await TrackPlayer.getCurrentTrack();
 		if (trackIndex != null) {
@@ -155,6 +166,7 @@ export function TrackProvider({ children }) {
 			setupQueue: setupQueue,
 			togglePlayback: togglePlayback,
 			toggleShuffle: toggleShuffle,
+			moveTrack: moveTrack,
 		}}>
 			{children}
 		</TrackContext.Provider>
