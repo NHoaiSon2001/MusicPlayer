@@ -1,11 +1,13 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import TrackPlayer from "react-native-track-player";
 import TrackContext from "../utils/context/TrackContext";
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-function QueueTrack(props) {
+const ITEM_HEIGHT = 65;
+
+const Track = React.memo((props) => {
     const trackContext = useContext(TrackContext);
 
     return (
@@ -29,13 +31,13 @@ function QueueTrack(props) {
 
         </View>
     )
-}
+})
 
-export default QueueTrack;
+export default Track;
 
 const styles = StyleSheet.create({
     container: {
-        height: 65,
+        height: ITEM_HEIGHT,
         flexDirection: 'row',
         alignItems: 'center',
         flexGrow: 1,

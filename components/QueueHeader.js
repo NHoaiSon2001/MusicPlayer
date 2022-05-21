@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
@@ -8,10 +8,17 @@ const HEADER_HEIGHT = 60;
 
 function QueueHeader() {
 	const appContext = useContext(AppContext);
+	const trackContext = useContext(TrackContext);
+
 	return (
 		<View style={styles.container}>
 			<TouchableOpacity
-				onPress={() => appContext.queueScreenRef.current?.open('top')}
+				onPress={() => {
+					appContext.queueScreenRef.current?.open('top');
+					setTimeout(() => {
+						appContext.queueRef.current?.scrollToIndex({index: trackContext.currentIndex});
+					}, 1000);
+				}}
 				style = {styles.upNextTouchble}
 			>
 				<Text style = {styles.upNextText}>{i18n.t("UP NEXT")}</Text>

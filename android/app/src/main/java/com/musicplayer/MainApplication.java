@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import androidx.annotation.NonNull;
 
-import com.facebook.react.bridge.JSIModulePackage;
-import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.rnfs.RNFSPackage;
@@ -58,11 +56,6 @@ public class MainApplication extends Application implements ReactApplication {
   public ReactNativeHost getReactNativeHost() {
     return mReactNativeHost;
   }
-
-  // @Override
-  // protected JSIModulePackage getJSIModulePackage() {
-  //   return new ReanimatedJSIModulePackage();
-  // }
 
   @Override
   public void onCreate() {

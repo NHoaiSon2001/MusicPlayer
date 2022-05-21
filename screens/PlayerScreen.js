@@ -8,6 +8,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import i18n from '../utils/i18n';
 import MusicControll from '../components/MusicControll';
 import MusicInfo from '../components/MusicInfo';
+import ICONS from '../assets/ICONS';
 
 const SCREEN_HEIGHT = Dimensions.get('screen').height;
 const PLAYER_SCREEN_HEIGHT = SCREEN_HEIGHT / 1.1;
@@ -22,7 +23,7 @@ const Screen = () => {
                     onPress={() => context.playerScreenRef.current?.close()}
                     style = {styles.headerButton}
                 >
-                    <EvilIcons name='chevron-down' size={50} color={'#676767'}/>
+                    <EvilIcons name={ICONS.PLAYER_SCREEN_CLOSE} size={50} color={'#676767'}/>
                 </TouchableOpacity>
 
                 <View style = {{alignItems: 'center'}}>
@@ -34,7 +35,7 @@ const Screen = () => {
                     onPress={() => {}}
                     style = {styles.headerButton}
                 >
-                    <Ionicons name='ellipsis-vertical-outline' size={25} color={'#676767'}/>
+                    <Ionicons name={ICONS.TRACK_OPTION} size={25} color={'#676767'}/>
                 </TouchableOpacity>
             </View>
 

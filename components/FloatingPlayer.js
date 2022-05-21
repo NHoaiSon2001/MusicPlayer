@@ -20,7 +20,6 @@ function FloatingPlayer() {
 			}, 500);
 		} else {
 			floatingPlayerRef.current?.close();
-            await TrackPlayer.stop();
 		}
 	}, [appContext.havingPlayer])
 
@@ -37,7 +36,7 @@ function FloatingPlayer() {
         >
             <TouchableOpacity
                 activeOpacity={1}
-                onPress={() => appContext.openPlayer(200)}
+                onPress={() => appContext.openPlayer(1000)}
                 style = {styles.touchable}
             >
                 <FloatingControll/>

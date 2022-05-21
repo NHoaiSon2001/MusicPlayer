@@ -151,7 +151,7 @@ function FloatingControll() {
                             controll(ACTION.SKIP_NEXT)
                         }}
                         style = {styles.controllButton}
-                        disabled={!canNext || !canControl || !trackContext.setupingQueue}
+                        disabled={!canNext || !canControl || trackContext.setupingQueue}
                     >
                         <Ionicons name={ICONS.SKIP_NEXT} size={20} color={canNext ? '#626262' : '#b0b0b0'}/>
                     </TouchableOpacity>

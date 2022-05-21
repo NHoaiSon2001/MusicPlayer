@@ -1,7 +1,8 @@
-import { Component, createContext, useEffect, useState } from "react";
+import { Component, createContext, useContext, useEffect, useState } from "react";
 import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { RNAndroidAudioStore } from "react-native-get-music-files";
 import TrackPlayer, { Capability, Event, RepeatMode, State, usePlaybackState, useProgress, useTrackPlayerEvents } from "react-native-track-player";
+import AppContext from "./AppContext";
 var RNFS = require('react-native-fs');
 
 const TrackContext = createContext();
@@ -23,7 +24,7 @@ export function TrackProvider({ children }) {
 				exists: await RNFS.exists(track.path)
 			}))))
 				.filter(track => track.exists == true)
-				.map(track => ({
+				.map((track) => ({
 					id: track.id,
 					url: track.path,
 					title: track.title,
@@ -67,10 +68,11 @@ export function TrackProvider({ children }) {
 		})
 	}
 
-
+	const appContext = useContext(AppContext);
 	const playbackState = usePlaybackState();
 	const [allTrack, setAllTrack] = useState([]);
 	const [currentTrack, setCurrentTrack] = useState({});
+	const [currentIndex, setCurrentIndex] = useState(null);
 	const [setupingQueue, setSetupingQueue] = useState(false);
 	const [shuffle, setShuffle] = useState(false);
 
@@ -96,7 +98,7 @@ export function TrackProvider({ children }) {
 			await TrackPlayer.add(queue);
 		}
 		await TrackPlayer.skip(index);
-		setCurrentTrack(await TrackPlayer.getTrack(index));
+		setCurrent(index);
 		setShuffle(shuffle);
 		setTimeout(() => {
 			TrackPlayer.play();
@@ -105,18 +107,52 @@ export function TrackProvider({ children }) {
 	}
 
 	const moveTrack = async (index, newIndex) => {
+		if(index == newIndex) return;
 		setSetupingQueue(true);
-		console.log(index);
-		console.log(newIndex);
 		const track = await TrackPlayer.getTrack(index);
+		if(currentIndex != index) {
+			await TrackPlayer.remove(index);
+			await TrackPlayer.add(track, newIndex);
+		} else {
+			const moveFrom = (index < newIndex) ? index + 1 : newIndex;
+			const moveTo = (index < newIndex) ? newIndex : index - 1;
+			const queue = await TrackPlayer.getQueue();
+			const removeIndex = queue
+				.map((track, index) => index)
+				.filter((index) => index >= moveFrom && index <= moveTo);
+			const moveTrack = queue.filter((track, index) => index >= moveFrom && index <= moveTo);
+			await TrackPlayer.remove(removeIndex);
+			await TrackPlayer.add(moveTrack, (index < newIndex) ? index : newIndex + 1);
+		}
+		setCurrent(await TrackPlayer.getCurrentTrack());
+		setSetupingQueue(false);
+	}
+
+	const removeTrack = async(index) => {
+		setSetupingQueue(true);
+		if(index != currentIndex) {
+			await TrackPlayer.remove(index);
+			return;
+		}
+		const queueLength = (await TrackPlayer.getQueue()).length;
+		if(queueLength == 1) {
+			appContext.setHavingPlayer(false);
+			return;
+		}
+		if (currentIndex == queueLength - 1){
+			await TrackPlayer.skipToPrevious();
+			setCurrent(currentIndex - 1)
+		} else {
+			await TrackPlayer.skipToNext();
+			setCurrent(currentIndex + 1)
+
+		}
 		await TrackPlayer.remove(index);
-		await TrackPlayer.add(track, newIndex);
 		setSetupingQueue(false);
 	}
 
 	const togglePlayback = async () => {
-		const trackIndex = await TrackPlayer.getCurrentTrack();
-		if (trackIndex != null) {
+		if (currentIndex != null) {
 			if (playbackState === State.Playing) {
 				await TrackPlayer.pause();
 			} else {
@@ -143,7 +179,13 @@ export function TrackProvider({ children }) {
 				.sort(() => Math.random() - 0.5)
 			await TrackPlayer.add(newQueue);
 		}
+		setCurrent(await TrackPlayer.getCurrentTrack());
 		setSetupingQueue(false);
+	}
+
+	const setCurrent = async (index) => {
+		setCurrentTrack(await TrackPlayer.getTrack(index));
+		setCurrentIndex(index);
 	}
 
 	useEffect(async () => {
@@ -153,7 +195,8 @@ export function TrackProvider({ children }) {
 
 	useTrackPlayerEvents([Event.PlaybackTrackChanged, Event.PlaybackError], async (event) => {
 		if (event.type === Event.PlaybackTrackChanged && event.nextTrack != null && !setupingQueue) {
-			setCurrentTrack(await TrackPlayer.getTrack(event.nextTrack));
+			console.log(event.nextTrack);
+			setCurrent(event.nextTrack);
 		}
 	});
 
@@ -163,10 +206,12 @@ export function TrackProvider({ children }) {
 			currentTrack: currentTrack,
 			shuffle: shuffle,
 			setupingQueue: setupingQueue,
+			currentIndex: currentIndex,
 			setupQueue: setupQueue,
 			togglePlayback: togglePlayback,
 			toggleShuffle: toggleShuffle,
 			moveTrack: moveTrack,
+			removeTrack: removeTrack,
 		}}>
 			{children}
 		</TrackContext.Provider>
