@@ -1,3 +1,4 @@
+import { useNavigationContainerRef } from "@react-navigation/native";
 import { useEffect, createContext, useState, useRef } from "react";
 import TrackPlayer from "react-native-track-player";
 
@@ -7,31 +8,30 @@ export function AppProvider({ children }) {
 	const playerScreenRef = useRef();
 	const queueScreenRef = useRef();
 	const queueRef = useRef();
+	const mainNavigationRef = useNavigationContainerRef();
 	const [havingPlayer, setHavingPlayer] = useState(false);
 
-	const openPlayer = (timeout) => {
-		playerScreenRef.current?.open();
-		setTimeout(() => {
-			playerScreenRef.current?.open('top');
-		}, timeout);
-	}
-
-	useEffect(async () => {
+	useEffect(() => {
 		if (!havingPlayer) {
-            playerScreenRef.current?.close();
-            await TrackPlayer.stop();
-            await TrackPlayer.reset();
+            playerScreenRef.current?.close('alwaysOpen');
+            queueScreenRef.current?.close('alwaysOpen');
+            TrackPlayer.stop();
 		}
 	}, [havingPlayer])
+
+	const playerBack = () => {
+        playerScreenRef.current?.close('alwaysOpen');
+	}
 
 	return (
 		<AppContext.Provider value={{
 			playerScreenRef: playerScreenRef,
 			queueScreenRef: queueScreenRef,
 			queueRef: queueRef,
+			mainNavigationRef: mainNavigationRef,
 			havingPlayer: havingPlayer,
-			openPlayer: openPlayer,
 			setHavingPlayer: setHavingPlayer,
+			playerBack: playerBack,
 		}}>
 			{children}
 		</AppContext.Provider>

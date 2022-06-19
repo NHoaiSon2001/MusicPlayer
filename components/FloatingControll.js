@@ -6,11 +6,7 @@ import TextTicker from "react-native-text-ticker";
 import TrackContext from '../utils/context/TrackContext';
 import TrackPlayer, { State, useProgress, usePlaybackState, RepeatMode, Event, useTrackPlayerEvents } from "react-native-track-player";
 import ICONS from "../assets/ICONS";
-
-const ACTION = {
-    TOGGLE_PLAYBACK: 1,
-    SKIP_NEXT: 3,
-}
+import TrackFavourite from './TrackFavorite';
 
 const TextLoop = (props) => {
     return (
@@ -29,43 +25,52 @@ const TextLoop = (props) => {
 }
 
 function FloatingControll() {
+    const trackContext = useContext(TrackContext);
     const progress = useProgress();
     const playbackState = usePlaybackState();
-    const trackContext = useContext(TrackContext);
-    const [playPauseIcon, setPlayPauseIcon] = useState("");
-    const [canControl, setCanControl] = useState(true);
+    const [track, setTrack] = useState({
+		title: "Title",
+		artist: "Artist"
+	});
+    const [playPauseIcon, setPlayPauseIcon] = useState(ICONS.REFRESH);
     const [canNext, setCanNext] = useState(false);
 
-    useEffect(() => {
-        setTimeout(async () => {
-            if(await TrackPlayer.getState() === State.Paused) {
-                setPlayPauseIcon(ICONS.PLAY);
-            } else {
-                setPlayPauseIcon(ICONS.PAUSE);
-            }
-        }, 300);
-        checkCanPrevNext();
-	}, [])
+    useEffect(async () => {
+        const index = await TrackPlayer.getCurrentTrack();
+        if(index != null) {
+            setTrack(await TrackPlayer.getTrack(index));
+        }
+        checkCanNext();
+    }, [])
 
-    const togglePlayback = async () => {
-        await trackContext.togglePlayback();
-        if(playbackState === State.Paused && playPauseIcon != ICONS.PAUSE) {
+    useEffect(() => {
+        if(playbackState === State.Playing && playPauseIcon != ICONS.PAUSE) {
             setPlayPauseIcon(ICONS.PAUSE);
-        } else if(playbackState === State.Playing && playPauseIcon != ICONS.PLAY) {
+        } else if(playbackState === State.Paused && playPauseIcon != ICONS.PLAY) {
             setPlayPauseIcon(ICONS.PLAY);
+        }
+	}, [playbackState])
+
+    const togglePlayback = () => {
+        if (playPauseIcon != ICONS.REFRESH) {
+			if (playbackState === State.Playing) {
+				TrackPlayer.pause();
+                setPlayPauseIcon(ICONS.PLAY);
+			} else {
+				TrackPlayer.play();
+                setPlayPauseIcon(ICONS.PAUSE);
+			}
+		} else {
+            TrackPlayer.skip(0);
         }
 	}
 
     const skipToNext = async () => {
-        if(trackContext.setupingQueue) {
-            checkCanPrevNext();
-            return;
-        }
+        if(await TrackPlayer.getCurrentTrack() == (await TrackPlayer.getQueue()).length - 1 && await TrackPlayer.getRepeatMode() != RepeatMode.Queue) return;
         await TrackPlayer.skipToNext();
     }
 
-
-    const checkCanPrevNext = async () => {
+    const checkCanNext = async () => {
         const trackIndex = await TrackPlayer.getCurrentTrack();
         const repeatMode = await TrackPlayer.getRepeatMode();
         if (trackIndex == (await TrackPlayer.getQueue()).length - 1 && repeatMode != RepeatMode.Queue) {
@@ -75,31 +80,15 @@ function FloatingControll() {
         }
     }
 
-    useTrackPlayerEvents([Event.PlaybackTrackChanged], async (event) => {
+    useTrackPlayerEvents([Event.PlaybackTrackChanged, Event.PlaybackQueueEnded], async (event) => {
 		if (event.type === Event.PlaybackTrackChanged) {
-			checkCanPrevNext();
+			setTrack(await TrackPlayer.getTrack(await TrackPlayer.getCurrentTrack()));
+            checkCanNext();
 		}
+        if (event.type === Event.PlaybackQueueEnded) {
+            setPlayPauseIcon(ICONS.REFRESH);
+        }
 	});
-
-    const controll = async (action) => {
-        setCanControl(false);
-        setTimeout(async () => {
-            if(!canControl) return;
-            switch(action) {
-                case ACTION.TOGGLE_PLAYBACK:
-                    console.log("toggle playback");
-                    await togglePlayback();
-                    break;
-                case ACTION.SKIP_NEXT:
-                    console.log("next");
-                    await skipToNext();
-                    break;
-            }
-            setTimeout(() => {
-                setCanControl(true);
-            }, 100);
-        }, 100);
-    }
 
     return (
         <View style = {styles.container}>
@@ -120,41 +109,39 @@ function FloatingControll() {
                 </View>
 
                 <View style = {styles.musicInfo}>
-                    <TextLoop style = {styles.titleText} content = {trackContext.currentTrack.title}/>
+                    <TextLoop style = {styles.titleText} content = {track.title}/>
 
-                    <TextLoop content = {trackContext.currentTrack.artist}/>
+                    <TextLoop content = {track.artist}/>
                 </View>
 
                 <View style = {styles.buttonContainer}>
-                    <TouchableOpacity
-                        onPress={() => {}}
-                        style = {styles.controllButton}
-                    >
-                        <Ionicons name="heart" size={25} color={'#626262'}/>
-                    </TouchableOpacity>
+                <TrackFavourite
+					track={track}
+					size={25}
+				/>
 
                     <TouchableOpacity
-                        onPress={() => controll(ACTION.TOGGLE_PLAYBACK)}
-                        style = {styles.playPauseTouchble}
-                        disabled={!canControl}
-                    >
-                        <Ionicons
-                            name={playPauseIcon}
-                            size={25}
-                            color={'#626262'}
-                        />
-                    </TouchableOpacity>
+                    onPress={()=> togglePlayback()}
+                    style = {styles.playPauseTouchble}
+                >
+                    <Ionicons
+                        name={playPauseIcon}
+                        size={25}
+                        color={'#626262'}
+                    />
+                </TouchableOpacity>
 
-                    <TouchableOpacity
-                        onPress={() => {
-                            setCanNext(false);
-                            controll(ACTION.SKIP_NEXT)
-                        }}
-                        style = {styles.controllButton}
-                        disabled={!canNext || !canControl || trackContext.setupingQueue}
-                    >
-                        <Ionicons name={ICONS.SKIP_NEXT} size={20} color={canNext ? '#626262' : '#b0b0b0'}/>
-                    </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => skipToNext()}
+                    style = {styles.controllButton}
+                    disabled={!canNext}
+                >
+                    <Ionicons
+                        name={ICONS.SKIP_NEXT}
+                        size={20}
+                        color={!canNext ? '#b0b0b0' : '#626262'}
+                    />
+                </TouchableOpacity>
                 </View>
             </View>
         </View>

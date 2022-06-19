@@ -7,9 +7,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const ITEM_HEIGHT = 65;
 
-const Track = React.memo((props) => {
-    const trackContext = useContext(TrackContext);
-
+const Track = (props) => {
     return (
         <View style = {[styles.container]}>
             <View style = {styles.coverWrapper}>
@@ -21,17 +19,15 @@ const Track = React.memo((props) => {
 
             <View style = {styles.musicInfo}>
                 <Text numberOfLines={2} style = {styles.titleText}>{props.track.title}</Text>
-                    <View style = {{flexDirection: 'row'}}>
-                        <Text>{props.track.artist} • </Text>
-                        <Text>
-                            {new Date(props.track.duration * 1000).toLocaleTimeString().substring(3)}
-                        </Text>
-                    </View>
+                <View style = {{flexDirection: 'row'}}>
+                    <Text style = {{flexShrink: 1}} numberOfLines={1}>{props.track.artist}</Text>
+                    <Text> • {new Date(props.track.duration * 1000).toLocaleTimeString().substring(3)}</Text>
+                </View>
             </View>
 
         </View>
     )
-})
+}
 
 export default Track;
 

@@ -3,39 +3,60 @@ import { Dimensions, View, ScrollView, StyleSheet, Text, TouchableOpacity } from
 import { Modalize } from 'react-native-modalize';
 import AppContext from '../utils/context/AppContext';
 import QueueScreen from './QueueScreen';
-import EvilIcons from 'react-native-vector-icons/EvilIcons'
+import Feather from 'react-native-vector-icons/Feather'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import i18n from '../utils/i18n';
 import MusicControll from '../components/MusicControll';
 import MusicInfo from '../components/MusicInfo';
+import TrackContext from '../utils/context/TrackContext';
 import ICONS from '../assets/ICONS';
+import TextTicker from "react-native-text-ticker";
 
 const SCREEN_HEIGHT = Dimensions.get('screen').height;
+const SCREEN_WIDTH = Dimensions.get('screen').width;
 const PLAYER_SCREEN_HEIGHT = SCREEN_HEIGHT / 1.1;
 
 const Screen = () => {
-    const context = useContext(AppContext);
+    const appContext = useContext(AppContext);
+    const trackContext = useContext(TrackContext);
 
     return (
         <View style = {styles.container}>
             <View style = {styles.header}>
                 <TouchableOpacity
-                    onPress={() => context.playerScreenRef.current?.close()}
+                    onPress={() => appContext.playerScreenRef.current?.close('alwaysOpen')}
                     style = {styles.headerButton}
                 >
-                    <EvilIcons name={ICONS.PLAYER_SCREEN_CLOSE} size={50} color={'#676767'}/>
+                    <Feather name={ICONS.PLAYER_SCREEN_CLOSE} size={35} color={'#676767'}/>
                 </TouchableOpacity>
 
-                <View style = {{alignItems: 'center'}}>
-                    <Text>{i18n.t('PLAYING FROM PLAYLIST')}</Text>
-                    <Text style = {{fontWeight: 'bold'}}>Playlist Name</Text>
+                <View style = {styles.queueInfo}>
+                    <View>
+                        <Text>{i18n.t('PLAYING FROM')} {i18n.t(trackContext.queueInfo.type).toUpperCase()}</Text>
+                    </View>
+
+                    {
+                        trackContext.queueInfo.name.length != 0
+                            ? <TextTicker
+                                    style={styles.queueName}
+                                    duration={15000}
+                                    marqueeDelay={500}
+                                    animationType={'auto'}
+                                    loop={true}
+                                    bounce={false}
+                                    scroll={false}
+                                >
+                                    {trackContext.queueInfo.name}
+                                </TextTicker>
+                            : null
+                    }
                 </View>
 
                 <TouchableOpacity
                     onPress={() => {}}
                     style = {styles.headerButton}
                 >
-                    <Ionicons name={ICONS.TRACK_OPTION} size={25} color={'#676767'}/>
+                    <Ionicons name='ellipsis-vertical-outline' size={25} color={'#676767'}/>
                 </TouchableOpacity>
             </View>
 
@@ -49,15 +70,17 @@ const Screen = () => {
 }
 
 export default function PlayerScreen() {
-    const context = useContext(AppContext);
+    const appContext = useContext(AppContext);
 
     return (
         <Modalize
-            ref={context.playerScreenRef}
+            ref={appContext.playerScreenRef}
             modalHeight={PLAYER_SCREEN_HEIGHT}
             threshold={PLAYER_SCREEN_HEIGHT/4}
-            velocity={4000}
-            snapPoint={60}
+            onBackButtonPress={() => appContext.playerBack()}
+            withHandle={false}
+            alwaysOpen={-200}
+            velocity={100}
         >
             <Screen/>
         </Modalize>
@@ -67,7 +90,7 @@ export default function PlayerScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#dcdcdc',
+        backgroundColor: '#e0e0e0',
         height: PLAYER_SCREEN_HEIGHT,
         width:"100%",
     },
@@ -82,5 +105,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: 40,
         height: 40,
+        borderRadius: 30,
+    },
+    queueInfo: {
+        alignItems: 'center',
+        flexShrink: 1,
+    },
+    queueName: {
+        fontWeight: 'bold',
+        fontSize: 15,
     },
 });

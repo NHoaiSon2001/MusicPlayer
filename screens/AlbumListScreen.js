@@ -1,125 +1,79 @@
-import React, { useState } from 'react';
-import {
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    TouchableHighlight,
-    View,
-} from 'react-native';
+import { useContext } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, TouchableHighlight } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import FloatingPlayer from '../components/FloatingPlayer';
+import TrackContext from '../utils/context/TrackContext';
+import FloatingPlayerArea from '../components/FloatingPlayerArea';
+import AlbumDetailScreen from './AlbumDetailScreen';
+import i18n from '../utils/i18n';
+import Feather from 'react-native-vector-icons/Feather';
+import ICONS from '../assets/ICONS';
+import Album from '../components/Album';
+import FavoriteButton from '../components/FavoriteButton';
+import FavoriteAlbumScreen from './FavoriteAlbumScreen';
+import AlbumList from '../components/AlbumList';
 
-import { SwipeListView } from 'react-native-swipe-list-view';
+const Stack = createStackNavigator();
+
+const ITEM_HEIGHT = 65;
+
+const Screen = ({ navigation }) => {
+  const trackContext = useContext(TrackContext);
+
+  return (
+    <View style={styles.container}>
+      <FavoriteButton/>
+
+      <ScrollView>
+        <AlbumList
+          albums={trackContext.albums}
+          navigation={navigation}
+        />
+        <FloatingPlayerArea/>
+      </ScrollView>
+
+      <FloatingPlayer/>
+    </View>
+  );
+}
 
 export default function AlbumListScreen() {
-    const [listData, setListData] = useState(
-        Array(200)
-            .fill('')
-            .map((_, i) => ({ key: `${i}`, text: `item #${i}` }))
-    );
-
-    const closeRow = (rowMap, rowKey) => {
-        if (rowMap[rowKey]) {
-            rowMap[rowKey].closeRow();
-        }
-    };
-
-    const deleteRow = (rowMap, rowKey) => {
-        closeRow(rowMap, rowKey);
-        const newData = [...listData];
-        const prevIndex = listData.findIndex(item => item.key === rowKey);
-        newData.splice(prevIndex, 1);
-        setListData(newData);
-    };
-
-    const onRowDidOpen = rowKey => {
-        console.log('This row opened', rowKey);
-    };
-
-    const renderItem = data => (
-        <TouchableHighlight
-            onPress={() => console.log('You touched me')}
-            style={styles.rowFront}
-            underlayColor={'#AAA'}
-        >
-            <View>
-                <Text>I am {data.item.text} in a SwipeListView</Text>
-            </View>
-        </TouchableHighlight>
-    );
-
-    const renderHiddenItem = (data, rowMap) => (
-        <View style={styles.rowBack}>
-            <Text>Left</Text>
-            <TouchableOpacity
-                style={[styles.backRightBtn, styles.backRightBtnLeft]}
-                onPress={() => closeRow(rowMap, data.item.key)}
-            >
-                <Text style={styles.backTextWhite}>Close</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={[styles.backRightBtn, styles.backRightBtnRight]}
-                onPress={() => deleteRow(rowMap, data.item.key)}
-            >
-                <Text style={styles.backTextWhite}>Delete</Text>
-            </TouchableOpacity>
-        </View>
-    );
-
-    return (
-        <View style={styles.container}>
-            <SwipeListView
-                data={listData}
-                renderItem={renderItem}
-                renderHiddenItem={renderHiddenItem}
-                leftOpenValue={75}
-                rightOpenValue={-150}
-                previewRowKey={'0'}
-                previewOpenValue={-40}
-                previewOpenDelay={3000}
-                onRowDidOpen={onRowDidOpen}
-            />
-        </View>
-    );
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name='AlbunListScreen' component={Screen}/>
+      <Stack.Screen name='AlbumDetailScreen' component={AlbumDetailScreen}/>
+			<Stack.Screen name='FavoriteScreen' component={FavoriteAlbumScreen}/>
+    </Stack.Navigator>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: 'white',
-        flex: 1,
-        width: 700,
-    },
-    backTextWhite: {
-        color: '#FFF',
-    },
-    rowFront: {
-        alignItems: 'center',
-        backgroundColor: '#CCC',
-        borderBottomColor: 'black',
-        borderBottomWidth: 1,
-        justifyContent: 'center',
-        height: 50,
-    },
-    rowBack: {
-        alignItems: 'center',
-        backgroundColor: '#DDD',
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingLeft: 15,
-    },
-    backRightBtn: {
-        alignItems: 'center',
-        bottom: 0,
-        justifyContent: 'center',
-        position: 'absolute',
-        top: 0,
-        width: 75,
-    },
-    backRightBtnLeft: {
-        backgroundColor: 'blue',
-        right: 75,
-    },
-    backRightBtnRight: {
-        backgroundColor: 'red',
-        right: 0,
-    },
+  container: {
+    flex: 1,
+  },
+  itemContainer: {
+    height: ITEM_HEIGHT,
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexGrow: 1,
+    flexShrink: 1,
+  },
+  coverWrapper: {
+      height: 50,
+      width: 50,
+      marginHorizontal: 10,
+  },
+  coverImage: {
+    height: '100%',
+    width: '100%',
+      borderRadius: 5,
+  },
+  albumInfo: {
+      flexGrow: 1,
+      flexShrink: 1,
+  },
+  titleText: {
+    fontSize: 15,
+    fontWeight:'bold',
+  },
 });

@@ -1,4 +1,8 @@
 const ICONS = {
+    SONGS: 'music-note-outline',
+    ARTISTS: 'account-music-outline',
+    ALBUMS: 'album',
+    PLAYLISTS: 'playlist-music-outline',
     PLAY: "play",
     PAUSE: "pause",
     SKIP_PREV: "play-skip-back",
@@ -12,7 +16,18 @@ const ICONS = {
     QUEUE_MOVE_CANCEL: 'cancel',
     DELETE: 'delete-outline',
     PLAYER_SCREEN_CLOSE: 'chevron-down',
+    BACK: 'chevron-left',
+    NEXT: 'chevron-right',
+    ITEM_UNSELECT: 'checkbox-blank-circle',
+    ITEM_SELECT: 'check-circle',
     TRACK_OPTION: 'ellipsis-vertical',
+    SELECT_ITEM: 'ios-list-outline',
+    SEARCH: 'search-outline',
+    SEARCH_DELETE: 'close-circle',
+    SEARCH_HISTORY_DELETE: 'delete',
+    SETTING: 'settings-outline',
+    FAVORITE: 'heart',
+    NOT_FAVORITE: 'heart-outline',
 }
 
 export default ICONS;

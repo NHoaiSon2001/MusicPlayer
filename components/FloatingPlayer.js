@@ -13,11 +13,9 @@ function FloatingPlayer() {
     const floatingPlayerRef = useRef();
     const appContext = useContext(AppContext);
 
-    useEffect(async () => {
+    useEffect(() => {
 		if (appContext.havingPlayer) {
-			setTimeout(() => {
-				floatingPlayerRef.current?.open();
-			}, 500);
+            floatingPlayerRef.current?.open();
 		} else {
 			floatingPlayerRef.current?.close();
 		}
@@ -26,17 +24,18 @@ function FloatingPlayer() {
     return (
         <Modalize
             ref={floatingPlayerRef}
-            modalHeight={PLAYER_HEIGHT + 10}
+            modalHeight={PLAYER_HEIGHT + 60}
             withOverlay={false}
             withHandle={false}
             threshold={PLAYER_HEIGHT / 2}
+            onBackButtonPress={() => appContext.playerBack()}
             velocity={1000}
             modalStyle={styles.model}
             onClosed={() => appContext.setHavingPlayer(false)}
         >
             <TouchableOpacity
                 activeOpacity={1}
-                onPress={() => appContext.openPlayer(1000)}
+                onPress={() => appContext.playerScreenRef.current?.open('top')}
                 style = {styles.touchable}
             >
                 <FloatingControll/>

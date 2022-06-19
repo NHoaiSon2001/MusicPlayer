@@ -1,4 +1,5 @@
 import { Component, createContext, useContext, useEffect, useState } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { RNAndroidAudioStore } from "react-native-get-music-files";
 import TrackPlayer, { Capability, Event, RepeatMode, State, usePlaybackState, useProgress, useTrackPlayerEvents } from "react-native-track-player";
@@ -6,9 +7,11 @@ import AppContext from "./AppContext";
 var RNFS = require('react-native-fs');
 
 const TrackContext = createContext();
+const data_path = RNFS.DocumentDirectoryPath + "/data.txt";
 
 export function TrackProvider({ children }) {
 	const getAudioFile = async () => {
+		let list;
 		await RNAndroidAudioStore.getAll({
 			id: true,
 			artist: true,
@@ -19,7 +22,7 @@ export function TrackProvider({ children }) {
 			minimumSongDuration: 1000,
 		}).then(async tracks => {
 			//console.log(tracks);
-			setAllTrack((await Promise.all(tracks.map(async track => ({
+			list = (await Promise.all(tracks.map(async track => ({
 				...track,
 				exists: await RNFS.exists(track.path)
 			}))))
@@ -31,11 +34,42 @@ export function TrackProvider({ children }) {
 					artist: track.author,
 					album: track.album,
 					duration: track.duration / 1000,
+					favourite: false
 				}))
-			)
+				.sort((a, b) => a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1)
+			setAllTrack({
+				name: "",
+				type: "All",
+				list: list
+			})
 		}).catch(error => {
 			console.log(error)
 		})
+		await RNAndroidAudioStore.getAlbums()
+			.then(async (albums) => {
+				setAlbums(albums
+					.map(album => ({
+						name: album.album,
+						type: "Album",
+						artist: album.author,
+						list: list.filter(track => track.album == album.album)
+					}))
+					.filter(album => album.list.length != 0)
+					.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)
+				);
+			})
+		await RNAndroidAudioStore.getArtists()
+			.then((artists) => {
+				setArtists(artists
+					.map(artist => ({
+						name: artist.artist,
+						type: "Artist",
+						list: list.filter(track => track.artist == artist.artist)
+					}))
+					.filter(artist => artist.list.length != 0)
+					.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)
+				);
+			})
 	}
 
 	const getPermissions = async () => {
@@ -66,14 +100,22 @@ export function TrackProvider({ children }) {
 					break;
 			}
 		})
+		request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE).then(res =>console.log(res));
 	}
 
 	const appContext = useContext(AppContext);
-	const playbackState = usePlaybackState();
-	const [allTrack, setAllTrack] = useState([]);
-	const [currentTrack, setCurrentTrack] = useState({});
-	const [currentIndex, setCurrentIndex] = useState(null);
-	const [setupingQueue, setSetupingQueue] = useState(false);
+
+	const [allTrack, setAllTrack] = useState({ list: [] });
+	const [albums, setAlbums] = useState([]);
+	const [artists, setArtists] = useState([]);
+	const [favorites, setFavorites] = useState([]);
+
+	const [searchHistory, setSearchHistory] = useState([]);
+
+	const [queueInfo, setQueueInfo] = useState({
+		name: "",
+		type: ""
+	});
 	const [shuffle, setShuffle] = useState(false);
 
 	const setupPlayer = async () => {
@@ -90,128 +132,91 @@ export function TrackProvider({ children }) {
 	}
 
 	const setupQueue = async (queue, index, shuffle) => {
-		setSetupingQueue(true);
-		await TrackPlayer.reset();
-		if(shuffle) {
-			await TrackPlayer.add([].concat(queue).sort(() => Math.random() - 0.5));
-		} else {
-			await TrackPlayer.add(queue);
-		}
-		await TrackPlayer.skip(index);
-		setCurrent(index);
+		saveData();
+		appContext.playerScreenRef.current?.open('top');
+		appContext.setHavingPlayer(true);
 		setShuffle(shuffle);
+		setQueueInfo({
+			name: queue.name,
+			type: queue.type
+		})
+		TrackPlayer.reset();
+		TrackPlayer.add(shuffle
+			? ([].concat(queue.list).sort(() => Math.random() - 0.5))
+			: queue.list);
+		TrackPlayer.skip(index);
 		setTimeout(() => {
 			TrackPlayer.play();
 		}, 500);
-		setSetupingQueue(false);
 	}
 
-	const moveTrack = async (index, newIndex) => {
-		if(index == newIndex) return;
-		setSetupingQueue(true);
-		const track = await TrackPlayer.getTrack(index);
-		if(currentIndex != index) {
-			await TrackPlayer.remove(index);
-			await TrackPlayer.add(track, newIndex);
+	const saveHistory = (value) => {
+		if (value != null) {
+			setSearchHistory([
+				value,
+				...(searchHistory.filter(history => history != value))
+			]);
 		} else {
-			const moveFrom = (index < newIndex) ? index + 1 : newIndex;
-			const moveTo = (index < newIndex) ? newIndex : index - 1;
-			const queue = await TrackPlayer.getQueue();
-			const removeIndex = queue
-				.map((track, index) => index)
-				.filter((index) => index >= moveFrom && index <= moveTo);
-			const moveTrack = queue.filter((track, index) => index >= moveFrom && index <= moveTo);
-			await TrackPlayer.remove(removeIndex);
-			await TrackPlayer.add(moveTrack, (index < newIndex) ? index : newIndex + 1);
+			setSearchHistory([]);
 		}
-		setCurrent(await TrackPlayer.getCurrentTrack());
-		setSetupingQueue(false);
-	}
-
-	const removeTrack = async(index) => {
-		setSetupingQueue(true);
-		if(index != currentIndex) {
-			await TrackPlayer.remove(index);
-			return;
-		}
-		const queueLength = (await TrackPlayer.getQueue()).length;
-		if(queueLength == 1) {
-			appContext.setHavingPlayer(false);
-			return;
-		}
-		if (currentIndex == queueLength - 1){
-			await TrackPlayer.skipToPrevious();
-			setCurrent(currentIndex - 1)
-		} else {
-			await TrackPlayer.skipToNext();
-			setCurrent(currentIndex + 1)
-
-		}
-		await TrackPlayer.remove(index);
-		setSetupingQueue(false);
-	}
-
-	const togglePlayback = async () => {
-		if (currentIndex != null) {
-			if (playbackState === State.Playing) {
-				await TrackPlayer.pause();
-			} else {
-				await TrackPlayer.play();
-			}
-		}
-	}
-
-	const toggleShuffle = async () => {
-		setSetupingQueue(true);
-		setShuffle(!shuffle);
-		const queue = await TrackPlayer.getQueue();
-		const removeIndex = queue
-			.map((track, index) => index)
-		await TrackPlayer.remove(removeIndex);
-		if (shuffle) {
-			const newQueue = queue.sort((a, b) => a.title > b.title ? 1 : -1);
-			const newTrackIndex = newQueue.findIndex(track => track.url == currentTrack.url);
-			await TrackPlayer.add(newQueue.filter((track, index) => index < newTrackIndex), 0);
-			await TrackPlayer.add(newQueue.filter((track, index) => index > newTrackIndex));
-		} else {
-			const newQueue = queue
-				.filter(track => track.url != currentTrack.url)
-				.sort(() => Math.random() - 0.5)
-			await TrackPlayer.add(newQueue);
-		}
-		setCurrent(await TrackPlayer.getCurrentTrack());
-		setSetupingQueue(false);
-	}
-
-	const setCurrent = async (index) => {
-		setCurrentTrack(await TrackPlayer.getTrack(index));
-		setCurrentIndex(index);
+		AsyncStorage.setItem("SearchHistory", JSON.stringify(searchHistory));
 	}
 
 	useEffect(async () => {
 		getPermissions();
 		setupPlayer();
+		const storageSearchHistory = await AsyncStorage.getItem("SearchHistory");
+		if(storageSearchHistory != null) setSearchHistory(JSON.parse(storageSearchHistory));
+		// const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
+		// 	//console.log(appContext.mainNavigationRef.getState())
+		// 	BackHandler.exitApp();
+		// 	return true;
+		// });
+		// const appState = AppState.addEventListener('change', nextAppState => {
+		// 	console.log(nextAppState)
+		// 	// if (nextAppState === '') {
+		// 	// 	console.log('the app is closed');
+		// 	// }
+		// })
+		// return () => {
+		// 	// backHandler.remove();
+		// 	appState.remove();
+		// }
 	}, [])
 
-	useTrackPlayerEvents([Event.PlaybackTrackChanged, Event.PlaybackError], async (event) => {
-		if (event.type === Event.PlaybackTrackChanged && event.nextTrack != null && !setupingQueue) {
-			console.log(event.nextTrack);
-			setCurrent(event.nextTrack);
+	const toggleFavorite = (favorite, track) => {
+		if (!favorite) {
+			setFavorites(favorites.filter(favorite => favorite.id != track.id));
+		} else {
+			setFavorites([...favorites, track].sort((a, b) => a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1));
 		}
-	});
+	}
+
+	const saveData = () => {
+		RNFS.writeFile(data_path, "this is data", 'utf8')
+			.then((success) => {
+			console.log('FILE WRITTEN!');
+		   })
+			.catch((err) => {
+				console.log(err.message);
+			});
+	}
 
 	return (
 		<TrackContext.Provider value={{
 			allTrack: allTrack,
-			currentTrack: currentTrack,
+			albums: albums,
+			artists: artists,
+			searchHistory: searchHistory,
+			queueInfo: queueInfo,
 			shuffle: shuffle,
-			setupingQueue: setupingQueue,
-			currentIndex: currentIndex,
+			favorites: favorites,
 			setupQueue: setupQueue,
-			togglePlayback: togglePlayback,
-			toggleShuffle: toggleShuffle,
-			moveTrack: moveTrack,
-			removeTrack: removeTrack,
+			setQueueInfo: setQueueInfo,
+			saveHistory: saveHistory,
+			setFavorites: setFavorites,
+			toggleFavorite: toggleFavorite,
+			saveData: saveData,
 		}}>
 			{children}
 		</TrackContext.Provider>

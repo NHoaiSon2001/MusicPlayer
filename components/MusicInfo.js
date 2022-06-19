@@ -1,10 +1,28 @@
+import React from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
-import AntDesign from 'react-native-vector-icons/AntDesign'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import TextTicker from "react-native-text-ticker";
 import TrackContext from "../utils/context/TrackContext";
-import { Component, useContext } from "react";
+import { Component, useContext, useEffect, useMemo, useState } from "react";
+import TrackPlayer, { useTrackPlayerEvents, Event } from "react-native-track-player";
+import AppContext from "../utils/context/AppContext";
+import ICONS from "../assets/ICONS";
+import TrackFavourite from "./TrackFavorite";
 
-function MusicInfo() {
+const MusicInfo = () => {
+	const appContext = useContext(AppContext);
+	const trackContext = useContext(TrackContext);
+	const [track, setTrack] = useState({
+		title: "Title",
+		artist: "Artist"
+	});
+
+	useTrackPlayerEvents([Event.PlaybackTrackChanged], async (event) => {
+		if (event.type === Event.PlaybackTrackChanged) {
+			setTrack(await TrackPlayer.getTrack(await TrackPlayer.getCurrentTrack()));
+		}
+	});
+
 	return (
 		<View style={styles.musicInfoContainer}>
 			<View style={styles.coverWrapper}>
@@ -15,38 +33,37 @@ function MusicInfo() {
 			</View>
 
 			<View style = {styles.musicInfoView}>
-				<TrackContext.Consumer>
-					{(trackContext) => {
-						return (
-							<View style = {styles.musicInfoWrapper}>
-								<TextTicker
-									style={styles.titleText}
-									duration={15000}
-									marqueeDelay={1000}
-									animationType={'auto'}
-									loop={true}
-									bounce={false}
-									scroll={false}
-								>
-									{trackContext.currentTrack.title}
-								</TextTicker>
-								<TouchableOpacity
-									onPress={() => {}}
-									style = {{alignSelf: "flex-start"}}
-								>
-									<Text style = {{fontSize: 15}}>{trackContext.currentTrack.artist}</Text>
-								</TouchableOpacity>
-							</View>
-						)
-					}}
-				</TrackContext.Consumer>
+				<View style = {styles.musicInfoWrapper}>
+					<TextTicker
+						style={styles.titleText}
+						duration={15000}
+						marqueeDelay={500}
+						animationType={'auto'}
+						loop={true}
+						bounce={false}
+						scroll={false}
+					>
+						{track.title}
+					</TextTicker>
+					<TouchableOpacity
+						onPress={() => {
+							appContext.playerBack();
+							appContext.mainNavigationRef.navigate("MainNavigator");
+							appContext.mainNavigationRef.navigate("Artists");
+							setTimeout(() => {
+								appContext.mainNavigationRef.navigate("ArtistDetailScreen", {artist: trackContext.artists.find(({name}) => name === track.artist)});
+							}, 10);
+						}}
+						style = {{alignSelf: "flex-start"}}
+					>
+						<Text style = {{fontSize: 15}}>{track.artist}</Text>
+					</TouchableOpacity>
+				</View>
 
-				<TouchableOpacity
-					onPress={() =>{}}
-					style = {styles.favoriteButton}
-				>
-					<AntDesign name="heart" size={25} color={'#626262'}/>
-				</TouchableOpacity>
+				<TrackFavourite
+					track={track}
+					size={30}
+				/>
 			</View>
 		</View>
 	)
@@ -88,7 +105,7 @@ const styles = StyleSheet.create({
 		fontSize: 25,
 		fontWeight:'bold',
 	},
-	favoriteButton: {
+	favouriteButton: {
 		borderRadius: 20,
         height: 40,
         width: 40,
