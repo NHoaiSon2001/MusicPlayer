@@ -25,16 +25,20 @@ const Screen = ({ navigation }) => {
 
 			<View style = {styles.headerContainer}>
 				<View style = {styles.controllContainer}>
-					<TouchableOpacity
-						onPress={() => trackContext.setupQueue(trackContext.allTrack, 0, true)}
-						activeOpacity={1}
-						style = {styles.shuffleButtonTouable}
-					>
-						<View style = {styles.shuffleButtonContainer}>
-							<Ionicons name={ICONS.SHUFFLE} size={30} color={'#626262'}/>
-							<Text style = {styles.shuffleButtonText}>{i18n.t("Shuffle playback")}</Text>
-						</View>
-					</TouchableOpacity>
+					{
+						trackContext.allTrack.list.length != 0
+							? <TouchableOpacity
+								onPress={() => trackContext.setupQueue(trackContext.allTrack, 0, true)}
+								activeOpacity={1}
+								style = {styles.shuffleButtonTouable}
+							>
+								<View style = {styles.shuffleButtonContainer}>
+									<Ionicons name={ICONS.SHUFFLE} size={30} color={'#626262'}/>
+									<Text style = {styles.shuffleButtonText}>{i18n.t("Shuffle playback")}</Text>
+								</View>
+							</TouchableOpacity>
+							: <View/>
+					}
 
 					<View style = {styles.controllContainer}>
 						<TouchableOpacity

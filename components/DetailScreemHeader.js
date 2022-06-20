@@ -1,4 +1,4 @@
-import { useContext} from 'react';
+import { useContext } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
 import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
@@ -13,20 +13,20 @@ import i18n from '../utils/i18n';
 import TextTicker from "react-native-text-ticker";
 
 export default function DetailScreenHeader({ data, navigation, searchValue }) {
-	const trackContext = useContext(TrackContext);
+    const trackContext = useContext(TrackContext);
 
-	return (
-        <View style = {styles.headerContainer}>
-            <View style = {styles.headerNameContainer}>
-                <View style = {[styles.headerNameContainer, {flexShrink: 1}]}>
+    return (
+        <View style={styles.headerContainer}>
+            <View style={styles.headerNameContainer}>
+                <View style={[styles.headerNameContainer, { flexShrink: 1 }]}>
                     <TouchableOpacity
                         onPress={() => navigation.goBack()}
-                        style = {styles.headerButton}
+                        style={styles.headerButton}
                     >
-                        <Feather name={ICONS.BACK} size={30}/>
+                        <Feather name={ICONS.BACK} size={30} />
                     </TouchableOpacity>
 
-                    <View style = {{flexShrink: 1}}>
+                    <View style={{ flexShrink: 1 }}>
                         <TextTicker
                             style={styles.headerNameText}
                             duration={15000}
@@ -41,12 +41,12 @@ export default function DetailScreenHeader({ data, navigation, searchValue }) {
                     </View>
                 </View>
 
-                <View style = {styles.headerNameContainer}>
+                <View style={styles.headerNameContainer}>
                     <TouchableOpacity
-                        onPress={() => navigation.navigate("SearchScreen", {data: data})}
-                        style = {styles.headerButton}
+                        onPress={() => navigation.navigate("SearchScreen", { data: data })}
+                        style={styles.headerButton}
                     >
-                        <Ionicons name={ICONS.SEARCH} size={25}/>
+                        <Ionicons name={ICONS.SEARCH} size={25} />
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -54,94 +54,100 @@ export default function DetailScreenHeader({ data, navigation, searchValue }) {
                             data: data.list,
                             index: null
                         })}
-                        style = {styles.headerButton}
+                        style={styles.headerButton}
                     >
-                        <Ionicons name={ICONS.SELECT_ITEM} size={30}/>
+                        <Ionicons name={ICONS.SELECT_ITEM} size={30} />
                     </TouchableOpacity>
                 </View>
             </View>
 
-            <View style = {styles.controllContainer}>
-                <TouchableOpacity
-                    onPress={() => {
-                        if(searchValue != null && searchValue.length != 0) {
-                            trackContext.saveHistory(searchValue);
-                        }
-                        trackContext.setupQueue(data, 0, false)
-                    }}
-                    activeOpacity={1}
-                    style = {styles.playButtonTouable}
-                >
-                    <View style = {styles.playButtonContainer}>
-                        <Ionicons name={ICONS.PLAY} size={30} color={'#626262'}/>
-                        <Text style = {styles.playButtonText} numberOfLines={1}>{i18n.t("Play")}</Text>
-                    </View>
-                </TouchableOpacity>
+            {
+                data.list.length != 0
+                    ? <View style={styles.controllContainer}>
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (searchValue != null && searchValue.length != 0) {
+                                    trackContext.saveHistory(searchValue);
+                                }
+                                trackContext.setupQueue(data, 0, false)
+                            }}
+                            activeOpacity={1}
+                            style={styles.playButtonTouable}
+                        >
+                            <View style={styles.playButtonContainer}>
+                                <Ionicons name={ICONS.PLAY} size={30} color={'#626262'} />
+                                <Text style={styles.playButtonText} numberOfLines={1}>{i18n.t("Play")}</Text>
+                            </View>
+                        </TouchableOpacity>
 
-                <TouchableOpacity
-                    onPress={() => {
-                        if(searchValue != null && searchValue.length != 0) {
-                            trackContext.saveHistory(searchValue);
-                        }
-                        trackContext.setupQueue(data, 0, true)
-                    }}
-                    activeOpacity={1}
-                    style = {styles.playButtonTouable}
-                >
-                    <View style = {styles.playButtonContainer}>
-                        <Ionicons name={ICONS.SHUFFLE} size={30} color={'#626262'}/>
-                        <Text style = {styles.playButtonText} numberOfLines={1}>{i18n.t("Shuffle")}</Text>
+                        <TouchableOpacity
+                            onPress={() => {
+                                if (searchValue != null && searchValue.length != 0) {
+                                    trackContext.saveHistory(searchValue);
+                                }
+                                trackContext.setupQueue(data, 0, true)
+                            }}
+                            activeOpacity={1}
+                            style={styles.playButtonTouable}
+                        >
+                            <View style={styles.playButtonContainer}>
+                                <Ionicons name={ICONS.SHUFFLE} size={30} color={'#626262'} />
+                                <Text style={styles.playButtonText} numberOfLines={1}>{i18n.t("Shuffle")}</Text>
+                            </View>
+                        </TouchableOpacity>
                     </View>
-                </TouchableOpacity>
-            </View>
+                    : null
+            }
+
+
         </View>
-	);
+    );
 }
 
 const styles = StyleSheet.create({
-	headerContainer: {
-		padding: 5,
-	},
-	headerNameContainer: {
-		height: 40,
-		flexDirection: "row",
-		alignItems: 'center',
-		justifyContent: 'space-between',
-	},
-	headerNameText: {
-		fontSize: 18,
-		fontWeight: 'bold',
-	},
-	controllContainer: {
-		flexDirection: 'row',
-		justifyContent: 'space-around',
-	},
-	playButtonTouable: {
-		height: 40,
-		minWidth: "45%",
-		alignSelf: 'flex-start',
-		flexShrink: 1,
-		marginHorizontal: 10,
-	},
-	playButtonContainer: {
-		height: '100%',
-		backgroundColor: '#d0d0d0',
-		borderRadius: 30,
-		flexDirection: 'row',
-		paddingHorizontal: 10,
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-	playButtonText: {
-		marginHorizontal: 5,
-		fontSize: 15,
-		fontWeight: 'bold',
-	},
-	headerButton: {
-		alignItems: 'center',
-		justifyContent: 'center',
-		width: 40,
-		height: 40,
-		borderRadius: 30,
-	},
+    headerContainer: {
+        padding: 5,
+    },
+    headerNameContainer: {
+        height: 40,
+        flexDirection: "row",
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    headerNameText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    controllContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+    },
+    playButtonTouable: {
+        height: 40,
+        minWidth: "45%",
+        alignSelf: 'flex-start',
+        flexShrink: 1,
+        marginHorizontal: 10,
+    },
+    playButtonContainer: {
+        height: '100%',
+        backgroundColor: '#d0d0d0',
+        borderRadius: 30,
+        flexDirection: 'row',
+        paddingHorizontal: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    playButtonText: {
+        marginHorizontal: 5,
+        fontSize: 15,
+        fontWeight: 'bold',
+    },
+    headerButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 40,
+        height: 40,
+        borderRadius: 30,
+    },
 });

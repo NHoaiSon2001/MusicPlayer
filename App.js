@@ -18,6 +18,7 @@ import i18n from './utils/i18n';
 import ICONS from './assets/ICONS';
 import ScreenHeader from './components/ScreenHeader';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import CreatePlaylistModal from './components/CreatePlaylistModal';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -140,6 +141,7 @@ export default function App() {
           </AppContext.Consumer>
 
           <PlayerScreen/>
+          <CreatePlaylistModal/>
         </GestureHandlerRootView>
       </TrackProvider>
     </AppProvider>

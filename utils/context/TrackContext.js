@@ -56,15 +56,6 @@ export function TrackProvider({ children }) {
 					.filter(album => album.list.length != 0)
 					.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)
 				);
-				setPlaylists(albums
-					.map(album => ({
-						name: album.album,
-						type: "Playlist",
-						artist: album.author,
-						list: list.filter(track => track.album == album.album)
-					}))
-					.filter(album => album.list.length != 0)
-					.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1))
 			})
 		await RNAndroidAudioStore.getArtists()
 			.then((artists) => {
@@ -109,6 +100,14 @@ export function TrackProvider({ children }) {
 			}
 		})
 		request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE).then(res => console.log(res));
+	}
+
+	const getPlaylists = async () => {
+		AsyncStorage.getAllKeys((err, keys) => {
+			AsyncStorage.multiGet(keys.filter(key => key.includes("Playlist")), (err, storage) => {
+				setPlaylists(storage.map(item => JSON.parse(item[1])))
+			})
+		});
 	}
 
 	const appContext = useContext(AppContext);
@@ -191,9 +190,24 @@ export function TrackProvider({ children }) {
 		}
 	}
 
+	const createPlaylist = (name, list, navigateDetail) => {
+		const newPlaylist = {
+			createTime: (new Date()).getTime(),
+			name: name,
+			type: "Playlist",
+			list: list
+		};
+		setPlaylists([...playlists, newPlaylist]);
+		if(navigateDetail) {
+			appContext.mainNavigationRef.navigate("PlaylistDetailScreen", {playlist: newPlaylist});
+		}
+		AsyncStorage.setItem("Playlist" + name + newPlaylist.createTime, JSON.stringify(newPlaylist));
+	}
+
 	useEffect(() => {
 		setupPlayer();
 		getPermissions();
+		getPlaylists();
 	}, [])
 
 	useEffect(async () => {
@@ -238,6 +252,7 @@ export function TrackProvider({ children }) {
 			saveHistory: saveHistory,
 			setFavorites: setFavorites,
 			toggleFavorite: toggleFavorite,
+			createPlaylist: createPlaylist,
 		}}>
 			{children}
 		</TrackContext.Provider>

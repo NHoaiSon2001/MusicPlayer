@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { createStackNavigator } from '@react-navigation/stack';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
@@ -15,11 +15,12 @@ const Stack = createStackNavigator();
 
 const Screen = ({ navigation }) => {
     const trackContext = useContext(TrackContext);
+    const appContext = useContext(AppContext);
 
     return (
         <View style={styles.container}>
             <TouchableOpacity
-                onPress={() => { }}
+                onPress={() => appContext.createPlaylistModalRef.current?.open()}
                 activeOpacity={1}
                 style={styles.newPlaylistTouchable}
             >
@@ -27,14 +28,16 @@ const Screen = ({ navigation }) => {
                     <MaterialIcons
                         name={ICONS.NEW_PLAYLIST}
                         size={30}
-                        color={'#626262'}
+                        color={'#004c7e'}
                     />
                     <Text style={styles.newPlaylistText}>{i18n.t("New playlist")}</Text>
                     <View style={{ width: 30 }} />
                 </View>
             </TouchableOpacity>
 
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+            >
                 <PlaylistList
                     playlists={trackContext.playlists}
                     navigation={navigation}
@@ -62,7 +65,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
     },
     newPlaylistTouchable: {
-        backgroundColor: '#d0d0d0',
+        backgroundColor: '#cdeaff',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 5,
@@ -78,6 +81,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     newPlaylistText: {
+        color: '#004c7e',
         fontSize: 15,
         fontWeight: 'bold',
         paddingHorizontal: 5,

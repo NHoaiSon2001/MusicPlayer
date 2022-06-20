@@ -25,5 +25,9 @@
     "Favorites all" : "Favorites songs",
     "Favorites artist" : "Favorites artist",
     "Favorites album" : "Favorites album",
-    "New playlist": "New playlist"
+    "New playlist": "New playlist",
+    "Create new playlist": "Create new playlist",
+    "Playlist name": "Playlist name",
+    "Cancel": "Cancel",
+    "Done": "Done"
 }

@@ -26,7 +26,7 @@ const Screen = ({ navigation }) => {
 
 			<ScrollView
         showsVerticalScrollIndicator={false}
-        style = {{marginHorizontal: 10, marginTop: 5}}
+        contentContainerStyle = {{marginHorizontal: 10, marginTop: 5}}
       >
         <AlbumList
           albums={trackContext.albums}

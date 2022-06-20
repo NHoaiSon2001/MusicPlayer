@@ -7,8 +7,8 @@ import TrackContext from "../utils/context/TrackContext";
 const ListControllbutton = ({ data, searchValue }) => {
     const trackContext = useContext(TrackContext);
 
-    return (
-        <View style = {styles.container}>
+    return (data.list.length != 0
+        ? <View style = {styles.container}>
             <TouchableOpacity
                 onPress={() => {
                     if(searchValue != null && searchValue.length != 0) {
@@ -35,6 +35,7 @@ const ListControllbutton = ({ data, searchValue }) => {
                 <Ionicons name={ICONS.SHUFFLE} size={30} color={'#626262'}/>
             </TouchableOpacity>
         </View>
+        : null
     )
 }
 

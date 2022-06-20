@@ -26,6 +26,7 @@ const SearchScreenHeader = ({ searchValue, setSearchValue, placeholder }) => {
                 <TextInput
                     style = {styles.searchInput}
                     value={searchValue}
+                    autoFocus={true}
                     placeholder = {placeholder}
                     onChangeText={(text) => {
                         setSearchValue(text);

@@ -9,6 +9,7 @@ export function AppProvider({ children }) {
 	const playerScreenRef = useRef();
 	const queueScreenRef = useRef();
 	const queueRef = useRef();
+    const createPlaylistModalRef = useRef();
 	const mainNavigationRef = useNavigationContainerRef();
 	const [havingPlayer, setHavingPlayer] = useState(false);
 	const [firstRender, setFirstRender] = useState(true);
@@ -37,6 +38,7 @@ export function AppProvider({ children }) {
 			playerScreenRef: playerScreenRef,
 			queueScreenRef: queueScreenRef,
 			queueRef: queueRef,
+			createPlaylistModalRef: createPlaylistModalRef,
 			mainNavigationRef: mainNavigationRef,
 			havingPlayer: havingPlayer,
 			firstRender: firstRender,
