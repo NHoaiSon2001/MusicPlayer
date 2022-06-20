@@ -24,7 +24,10 @@ const Screen = ({ navigation }) => {
     <View style={styles.container}>
       <FavoriteButton/>
 
-      <ScrollView>
+			<ScrollView
+        showsVerticalScrollIndicator={false}
+        style = {{marginHorizontal: 10, marginTop: 5}}
+      >
         <AlbumList
           albums={trackContext.albums}
           navigation={navigation}

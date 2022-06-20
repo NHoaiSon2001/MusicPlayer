@@ -50,7 +50,9 @@ const ScreenHeader = ({ name, icon }) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-                onPress={() => console.log(inFavoriteScreen)}
+                onPress={() => {
+                    console.log(appContext.havingPlayer)
+                }}
                 style = {styles.settingTouchable}
             >
                 <Ionicons name={ICONS.SETTING} size={25}/>

@@ -1,5 +1,6 @@
 import React from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import TextTicker from "react-native-text-ticker";
 import TrackContext from "../utils/context/TrackContext";
@@ -17,6 +18,15 @@ const MusicInfo = () => {
 		artist: "Artist"
 	});
 
+	useEffect(async () => {
+		const queue = JSON.parse(await AsyncStorage.getItem("Queue"));
+		const index = JSON.parse(await AsyncStorage.getItem("Index"));
+		if(queue != null && index != null && index < queue.length) {
+			setTrack(queue[index]);
+		}
+	}, [])
+
+
 	useTrackPlayerEvents([Event.PlaybackTrackChanged], async (event) => {
 		if (event.type === Event.PlaybackTrackChanged) {
 			setTrack(await TrackPlayer.getTrack(await TrackPlayer.getCurrentTrack()));
@@ -28,12 +38,12 @@ const MusicInfo = () => {
 			<View style={styles.coverWrapper}>
 				<Image
 					source={require('../assets/defaults/cover_default.jpg')}
-					style = {styles.coverImage}
+					style={styles.coverImage}
 				/>
 			</View>
 
-			<View style = {styles.musicInfoView}>
-				<View style = {styles.musicInfoWrapper}>
+			<View style={styles.musicInfoView}>
+				<View style={styles.musicInfoWrapper}>
 					<TextTicker
 						style={styles.titleText}
 						duration={15000}
@@ -51,12 +61,12 @@ const MusicInfo = () => {
 							appContext.mainNavigationRef.navigate("MainNavigator");
 							appContext.mainNavigationRef.navigate("Artists");
 							setTimeout(() => {
-								appContext.mainNavigationRef.navigate("ArtistDetailScreen", {artist: trackContext.artists.find(({name}) => name === track.artist)});
+								appContext.mainNavigationRef.navigate("ArtistDetailScreen", { artist: trackContext.artists.find(({ name }) => name === track.artist) });
 							}, 10);
 						}}
-						style = {{alignSelf: "flex-start"}}
+						style={{ alignSelf: "flex-start" }}
 					>
-						<Text style = {{fontSize: 15}}>{track.artist}</Text>
+						<Text style={{ fontSize: 15 }}>{track.artist}</Text>
 					</TouchableOpacity>
 				</View>
 
@@ -103,13 +113,13 @@ const styles = StyleSheet.create({
 	},
 	titleText: {
 		fontSize: 25,
-		fontWeight:'bold',
+		fontWeight: 'bold',
 	},
 	favouriteButton: {
 		borderRadius: 20,
-        height: 40,
-        width: 40,
-        justifyContent: 'center',
-        alignItems: 'center',
+		height: 40,
+		width: 40,
+		justifyContent: 'center',
+		alignItems: 'center',
 	}
 });

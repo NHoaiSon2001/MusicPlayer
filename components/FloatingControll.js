@@ -1,5 +1,6 @@
 import { useContext, useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import TextTicker from "react-native-text-ticker";
@@ -36,10 +37,11 @@ function FloatingControll() {
     const [canNext, setCanNext] = useState(false);
 
     useEffect(async () => {
-        const index = await TrackPlayer.getCurrentTrack();
-        if(index != null) {
-            setTrack(await TrackPlayer.getTrack(index));
-        }
+		const queue = JSON.parse(await AsyncStorage.getItem("Queue"));
+		const index = JSON.parse(await AsyncStorage.getItem("Index"));
+		if(queue != null && index != null && index < queue.length) {
+			setTrack(queue[index]);
+		}
         checkCanNext();
     }, [])
 

@@ -1,13 +1,16 @@
 import { useState, useEffect, useContext } from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import TrackContext from "../utils/context/TrackContext";
 import TrackPlayer, { State, useProgress, usePlaybackState, RepeatMode, Event, useTrackPlayerEvents } from "react-native-track-player";
 import ICONS from "../assets/ICONS";
+import AppContext from "../utils/context/AppContext";
 
 const MusicControll = () => {
+    const appContext = useContext(AppContext);
     const trackContext = useContext(TrackContext);
     const progress = useProgress();
     const playbackState = usePlaybackState();
@@ -31,8 +34,40 @@ const MusicControll = () => {
         }
 	}, [playbackState])
 
+    useEffect(async () => {
+        if(appContext.firstRender) {
+            const storage = await AsyncStorage.getItem("Repeat");
+            if(storage != null) {
+                switch(storage) {
+                    case "0":
+                        setRepeat(0);
+                        TrackPlayer.setRepeatMode(RepeatMode.Off);
+                        break;
+                    case "1":
+                        setRepeat(1);
+                        TrackPlayer.setRepeatMode(RepeatMode.Queue);
+                        break;
+                    case "2":
+                        setRepeat(2);
+                        TrackPlayer.setRepeatMode(RepeatMode.Track);
+                }
+            }
+        } else {
+            AsyncStorage.setItem("Repeat", JSON.stringify(repeat));
+        }
+	}, [repeat])
+
+    useEffect(async () => {
+        if(appContext.firstRender) {
+            const storage = await AsyncStorage.getItem("Shuffle");
+            if(storage != null) setShuffle(JSON.parse(storage));
+        } else {
+            AsyncStorage.setItem("Shuffle", JSON.stringify(shuffle));
+        }
+	}, [shuffle])
+
     useEffect(() => {
-        setShuffle(trackContext.shuffle);
+        setShuffle(trackContext.shuffle > 0);
 	}, [trackContext.shuffle])
 
     const togglePlayback = () => {
@@ -100,6 +135,8 @@ const MusicControll = () => {
 			TrackPlayer.add(newQueue);
             checkCanPrevNext();
 		}
+        AsyncStorage.setItem("Queue", JSON.stringify(await TrackPlayer.getQueue()));
+        AsyncStorage.setItem("Index", JSON.stringify(await TrackPlayer.getCurrentTrack()));
 	}
 
     const checkCanPrevNext = async () => {

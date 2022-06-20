@@ -13,6 +13,8 @@ import ICONS from '../assets/ICONS';
 import i18n from '../utils/i18n';
 import TrackList from '../components/TrackList';
 import ArtistList from '../components/ArtistList';
+import AlbumList from '../components/AlbumList';
+import PlaylistList from '../components/PlaylistList';
 import TrackContext from '../utils/context/TrackContext';
 import SearchHistory from '../components/SearchHistory';
 import SearchScreenHeader from '../components/SearchScreenHeader';
@@ -61,11 +63,12 @@ const Screen = ({ route, navigation }) => {
 		});
 		setArtistResult(artists.filter(artist => (artist.name.toLowerCase()).includes(searchValue.toLowerCase())))
 		setAlbumResult(albums.filter(album => (album.name.toLowerCase()).includes(searchValue.toLowerCase())))
+		setPlaylistResult(trackContext.playlists.filter(playlist => (playlist.name.toLowerCase()).includes(searchValue.toLowerCase())))
 	}, [searchValue])
 
 	const SongResult = () => (
 		songResult.list.length != 0
-			? <ScrollView>
+			? <ScrollView showsVerticalScrollIndicator={false}>
 				<TrackList
 					tracks={songResult}
 					searchValue={searchValue}
@@ -77,7 +80,7 @@ const Screen = ({ route, navigation }) => {
 
 	const ArtistResult = () => (
 		artistResult.length != 0
-			? <ScrollView>
+			? <ScrollView showsVerticalScrollIndicator={false}>
 				<ArtistList
 					artists={artistResult}
 					searchValue={searchValue}
@@ -89,35 +92,30 @@ const Screen = ({ route, navigation }) => {
 
 	const AlbumResult = () => (
 		albumResult.length != 0
-			? <ScrollView>
-				{albumResult.map((album, index) => (
-					<TouchableHighlight
-						onPress={() => navigation.navigate("AlbumDetailScreen", {
-							album: album,
-							searchValue: searchValue
-						})}
-						underlayColor={'#d0d0d0'}
-						key={index.toString()}
-					>
-						<Album album={album} />
-					</TouchableHighlight>
-				))}
+			? <ScrollView
+				showsVerticalScrollIndicator={false}
+				style = {{marginHorizontal: 10}}
+			>
+				<AlbumList
+					albums={albumResult}
+					searchValue={searchValue}
+					navigation={navigation}
+				/>
 			</ScrollView>
 			: <NoResult />
 	)
 
 	const PlaylistResult = () => (
 		playlistResult.length != 0
-			? <ScrollView>
-				{/* {playlistResult.map((album, index) => (
-          <TouchableHighlight
-            onPress={() => navigation.navigate("AlbumDetailScreen", {album: album})}
-            underlayColor={'#d0d0d0'}
-            key={index.toString()}
-          >
-            <Album album={album}/>
-          </TouchableHighlight>
-        ))} */}
+			? <ScrollView
+				showsVerticalScrollIndicator={false}
+				style = {{marginHorizontal: 10}}
+			>
+				<PlaylistList
+					playlists={playlistResult}
+					searchValue={searchValue}
+					navigation={navigation}
+				/>
 			</ScrollView>
 			: <NoResult />
 	)
@@ -139,7 +137,7 @@ const Screen = ({ route, navigation }) => {
 	}
 
 	const Result = () => (
-		<View>
+		<View style = {{flex: 1}}>
 			<View style={styles.typeTouchableContainer}>
 				<TouchableOpacity
 					onPress={() => setType("Songs")}

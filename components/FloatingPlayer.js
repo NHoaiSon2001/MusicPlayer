@@ -19,7 +19,7 @@ function FloatingPlayer() {
 		} else {
 			floatingPlayerRef.current?.close();
 		}
-	}, [appContext.havingPlayer])
+	}, [appContext.havingPlayer, appContext.firstRender])
 
     return (
         <Modalize
@@ -31,7 +31,9 @@ function FloatingPlayer() {
             onBackButtonPress={() => appContext.playerBack()}
             velocity={1000}
             modalStyle={styles.model}
-            onClosed={() => appContext.setHavingPlayer(false)}
+            onClosed={() => {
+                if(!appContext.firstRender) appContext.setHavingPlayer(false)
+            }}
         >
             <TouchableOpacity
                 activeOpacity={1}

@@ -21,7 +21,7 @@ export default function FavoriteSongScreen({ navigation }) {
 				navigation={navigation}
 			/>
 
-			<ScrollView>
+			<ScrollView showsVerticalScrollIndicator={false}>
 				<TrackList
 					tracks={favoriteSongs}
 					navigation={navigation}

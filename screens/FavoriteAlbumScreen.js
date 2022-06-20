@@ -35,7 +35,10 @@ const Screen = ({ navigation }) => {
                 <Feather name={ICONS.BACK} size={30}/>
             </TouchableOpacity>
 
-			<ScrollView>
+			<ScrollView
+				showsVerticalScrollIndicator={false}
+				style = {{marginHorizontal: 10}}
+			>
 				<AlbumList
 					albums={favoriteAlbums}
 					navigation={navigation}

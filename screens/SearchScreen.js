@@ -47,7 +47,7 @@ export default function SearchScreen({ route, navigation }) {
                 searchValue.length != 0
                 ? (
                     result.list.length != 0
-                        ? <ScrollView>
+                        ? <ScrollView showsVerticalScrollIndicator={false}>
                             <TrackList tracks={result} searchValue={searchValue} navigation={navigation}/>
                         </ScrollView>
                         : <NoResult/>

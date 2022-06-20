@@ -28,6 +28,7 @@ const ICONS = {
     SETTING: 'settings-outline',
     FAVORITE: 'heart',
     NOT_FAVORITE: 'heart-outline',
+    NEW_PLAYLIST: 'library-add',
 }
 
 export default ICONS;

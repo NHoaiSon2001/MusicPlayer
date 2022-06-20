@@ -1,22 +1,22 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { TouchableHighlight } from 'react-native';
-import Album from './Album';
+import Playlist from './Playlist';
 
-const AlbumList = ({ albums, searchValue, navigation }) => {
+const PlaylistList = ({ playlists, searchValue, navigation }) => {
     return (
         <View style = {styles.container}>
-            {albums.map((album, index) => (
+            {playlists.map((playlist, index) => (
                 <TouchableHighlight
-                    onPress={() => navigation.navigate("AlbumDetailScreen", {
-                        album: album,
+                    onPress={() => navigation.navigate("PlaylistDetailScreen", {
+                        playlist: playlist,
                         searchValue: searchValue
                     })}
                     style = {styles.touchable}
                     underlayColor={'#d0d0d0'}
                     key={index.toString()}
                 >
-                    <Album
-                        album={album}
+                    <Playlist
+                        playlist={playlist}
                         searchValue={searchValue}
                     />
                 </TouchableHighlight>
@@ -25,7 +25,7 @@ const AlbumList = ({ albums, searchValue, navigation }) => {
     );
 }
 
-export default AlbumList;
+export default PlaylistList;
 
 const styles = StyleSheet.create({
     container: {

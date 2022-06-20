@@ -1,34 +1,85 @@
-import { Component, useContext } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
-import TrackContext from '../utils/context/TrackContext';
-import AppContext from '../utils/context/AppContext';
-import TrackPlayer from 'react-native-track-player';
+import { useContext } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { createStackNavigator } from '@react-navigation/stack';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import ICONS from "../assets/ICONS";
+import AppContext from "../utils/context/AppContext";
+import i18n from "../utils/i18n";
+import FloatingPlayer from "../components/FloatingPlayer";
+import FloatingPlayerArea from "../components/FloatingPlayerArea";
+import PlaylistList from "../components/PlaylistList";
+import TrackContext from "../utils/context/TrackContext";
+import PlaylistDetailScreen from "./PlaylistDetailScreen";
+
+const Stack = createStackNavigator();
+
+const Screen = ({ navigation }) => {
+    const trackContext = useContext(TrackContext);
+
+    return (
+        <View style={styles.container}>
+            <TouchableOpacity
+                onPress={() => { }}
+                activeOpacity={1}
+                style={styles.newPlaylistTouchable}
+            >
+                <View style={styles.newPlaylistContainer}>
+                    <MaterialIcons
+                        name={ICONS.NEW_PLAYLIST}
+                        size={30}
+                        color={'#626262'}
+                    />
+                    <Text style={styles.newPlaylistText}>{i18n.t("New playlist")}</Text>
+                    <View style={{ width: 30 }} />
+                </View>
+            </TouchableOpacity>
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <PlaylistList
+                    playlists={trackContext.playlists}
+                    navigation={navigation}
+                />
+                <FloatingPlayerArea />
+            </ScrollView>
+
+            <FloatingPlayer />
+        </View>
+    )
+}
 
 export default function PlaylistScreen() {
-	const appContext = useContext(AppContext);
-	const trackContext = useContext(TrackContext);
-	return (
-		<View style = {styles.container}>
-			<ScrollView>
-				{trackContext.allTrack.list.map((track, index) => (
-					<TouchableOpacity
-						onPress={async () => {
-							await TrackPlayer.add(track);
-							await appContext.setHavingPlayer(true);
-						}}
-						key={index.toString()}
-					>
-						<Text>{track.title}</Text>
-					</TouchableOpacity>
-				))}
-			</ScrollView>
-		</View>
-	);
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name='PlaylistListScreen' component={Screen} />
+            <Stack.Screen name='PlaylistDetailScreen' component={PlaylistDetailScreen} />
+        </Stack.Navigator>
+    );
 }
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#fff',
-	},
-});
+    container: {
+        flex: 1,
+        marginHorizontal: 10,
+    },
+    newPlaylistTouchable: {
+        backgroundColor: '#d0d0d0',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 5,
+        marginBottom: 10,
+        height: 40,
+        borderRadius: 30,
+    },
+    newPlaylistContainer: {
+        height: '100%',
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    newPlaylistText: {
+        fontSize: 15,
+        fontWeight: 'bold',
+        paddingHorizontal: 5,
+    },
+})

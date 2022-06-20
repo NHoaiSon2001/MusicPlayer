@@ -20,9 +20,9 @@ const FavoriteButton = () => {
                         name={ICONS.FAVORITE}
                         size={30}
                         color={'#ff8181'}
-                        style = {{position: 'absolute', paddingRight: 110}}
                     />
                     <Text style = {styles.favoriteText}>{i18n.t("Favorites")}</Text>
+                    <View style = {{width: 30}}/>
                 </View>
             </TouchableOpacity>
         </View>

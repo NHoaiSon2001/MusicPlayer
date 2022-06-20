@@ -19,7 +19,7 @@ const Screen = ({ navigation }) => {
     <View style={styles.container}>
       <FavoriteButton/>
 
-      <ScrollView>
+			<ScrollView showsVerticalScrollIndicator={false}>
         <ArtistList
           artists={trackContext.artists}
           navigation={navigation}

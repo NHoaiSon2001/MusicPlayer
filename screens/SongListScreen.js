@@ -57,7 +57,7 @@ const Screen = ({ navigation }) => {
 				</View>
 			</View>
 
-			<ScrollView>
+			<ScrollView showsVerticalScrollIndicator={false}>
 				<TrackList tracks={trackContext.allTrack} navigation={navigation}/>
 				<FloatingPlayerArea/>
 			</ScrollView>

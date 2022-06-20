@@ -13,32 +13,19 @@ import i18n from '../utils/i18n';
 import TextTicker from "react-native-text-ticker";
 import DetailScreenHeader from '../components/DetailScreemHeader';
 
-export default function AlbumDetailScreen({ route, navigation }) {
-	const trackContext = useContext(TrackContext);
-    const [album, setAlbum] = useState(route.params.album);
-
-	useEffect(() => {
-		if(album.type.includes("Favorite")) {
-			setAlbum({
-				...album,
-				list: trackContext.favorites.filter(favorite => favorite.album == album.name)
-			})
-			if(!trackContext.favorites.some(favorite => favorite.album === album.name)) {
-				navigation.goBack();
-			}
-		}
-	}, [trackContext.favorites])
+export default function PlaylistDetailScreen({ route, navigation }) {
+    const playlist = route.params.playlist;
 
 	return (
 		<View style = {styles.container}>
 			<DetailScreenHeader
-				data={album}
+				data={playlist}
 				navigation={navigation}
 				searchValue={route.params.searchValue}
 			/>
 
 			<ScrollView>
-				<View style = {styles.albumInfoContainer}>
+				<View style = {styles.playlistInfoContainer}>
 					<View style = {styles.coverWrapper}>
 						<Image
 							source={require('../assets/defaults/cover_default.jpg')}
@@ -47,13 +34,16 @@ export default function AlbumDetailScreen({ route, navigation }) {
 					</View>
 
 					<View style = {styles.infoView}>
-						<Text style = {styles.nameText} numberOfLines={3}>{album.name}</Text>
-						<Text style = {styles.artistText} numberOfLines={2}>{i18n.t("By")} {album.artist}</Text>
-						<Text style = {styles.totalSongText} numberOfLines={1}>{album.list.length} {i18n.t((album.list.length < 2) ? "Song": "Songs")}</Text>
+						<Text style = {styles.nameText} numberOfLines={3}>{playlist.name}</Text>
+						<Text style = {styles.totalSongText} numberOfLines={1}>{playlist.list.length} {i18n.t((playlist.list.length < 2) ? "Song": "Songs")}</Text>
 					</View>
 				</View>
 
-				<TrackList tracks={album} navigation={navigation} searchValue={route.params.searchValue}/>
+				<TrackList
+                    tracks={playlist}
+                    navigation={navigation}
+                    searchValue={route.params.searchValue}
+                />
 
 				<FloatingPlayerArea/>
 			</ScrollView>
@@ -70,7 +60,7 @@ const styles = StyleSheet.create({
 	headerContainer: {
 		margin: 5,
 	},
-	albumInfoContainer: {
+	playlistInfoContainer: {
 		margin: 5,
 		flexDirection: 'row',
 	},
@@ -93,9 +83,6 @@ const styles = StyleSheet.create({
 	nameText: {
 		fontSize: 20,
 		fontWeight: 'bold',
-	},
-	artistText: {
-		fontSize: 15,
 	},
 	totalSongText: {
 		fontSize: 14,

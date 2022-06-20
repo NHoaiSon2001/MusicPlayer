@@ -13,7 +13,6 @@ import ICONS from '../assets/ICONS';
 import TextTicker from "react-native-text-ticker";
 
 const SCREEN_HEIGHT = Dimensions.get('screen').height;
-const SCREEN_WIDTH = Dimensions.get('screen').width;
 const PLAYER_SCREEN_HEIGHT = SCREEN_HEIGHT / 1.1;
 
 const Screen = () => {

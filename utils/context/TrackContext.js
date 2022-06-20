@@ -7,7 +7,6 @@ import AppContext from "./AppContext";
 var RNFS = require('react-native-fs');
 
 const TrackContext = createContext();
-const data_path = RNFS.DocumentDirectoryPath + "/data.txt";
 
 export function TrackProvider({ children }) {
 	const getAudioFile = async () => {
@@ -57,6 +56,15 @@ export function TrackProvider({ children }) {
 					.filter(album => album.list.length != 0)
 					.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1)
 				);
+				setPlaylists(albums
+					.map(album => ({
+						name: album.album,
+						type: "Playlist",
+						artist: album.author,
+						list: list.filter(track => track.album == album.album)
+					}))
+					.filter(album => album.list.length != 0)
+					.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1))
 			})
 		await RNAndroidAudioStore.getArtists()
 			.then((artists) => {
@@ -100,7 +108,7 @@ export function TrackProvider({ children }) {
 					break;
 			}
 		})
-		request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE).then(res =>console.log(res));
+		request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE).then(res => console.log(res));
 	}
 
 	const appContext = useContext(AppContext);
@@ -108,6 +116,7 @@ export function TrackProvider({ children }) {
 	const [allTrack, setAllTrack] = useState({ list: [] });
 	const [albums, setAlbums] = useState([]);
 	const [artists, setArtists] = useState([]);
+	const [playlists, setPlaylists] = useState([]);
 	const [favorites, setFavorites] = useState([]);
 
 	const [searchHistory, setSearchHistory] = useState([]);
@@ -116,7 +125,7 @@ export function TrackProvider({ children }) {
 		name: "",
 		type: ""
 	});
-	const [shuffle, setShuffle] = useState(false);
+	const [shuffle, setShuffle] = useState(-1);
 
 	const setupPlayer = async () => {
 		await TrackPlayer.setupPlayer();
@@ -129,22 +138,31 @@ export function TrackProvider({ children }) {
 				Capability.Stop,
 			]
 		})
+		const queue = await AsyncStorage.getItem("Queue");
+		if(queue != null) TrackPlayer.add(JSON.parse(queue));
+		const index = await AsyncStorage.getItem("Index");
+		if(index != null) TrackPlayer.skip(JSON.parse(index));
 	}
 
-	const setupQueue = async (queue, index, shuffle) => {
-		saveData();
+	const setupQueue = async (tracks, index, newShuffle) => {
 		appContext.playerScreenRef.current?.open('top');
 		appContext.setHavingPlayer(true);
-		setShuffle(shuffle);
+		if(newShuffle) {
+			setShuffle(3 - Math.abs(shuffle));
+		} else {
+			setShuffle(-3 + Math.abs(shuffle));
+		}
 		setQueueInfo({
-			name: queue.name,
-			type: queue.type
+			name: tracks.name,
+			type: tracks.type
 		})
 		TrackPlayer.reset();
-		TrackPlayer.add(shuffle
-			? ([].concat(queue.list).sort(() => Math.random() - 0.5))
-			: queue.list);
+		TrackPlayer.add(newShuffle > 0
+			? ([].concat(tracks.list).sort(() => Math.random() - 0.5))
+			: tracks.list);
 		TrackPlayer.skip(index);
+		AsyncStorage.setItem("Queue", JSON.stringify(await TrackPlayer.getQueue()));
+		AsyncStorage.setItem("Index", JSON.stringify(index));
 		setTimeout(() => {
 			TrackPlayer.play();
 		}, 500);
@@ -152,61 +170,65 @@ export function TrackProvider({ children }) {
 
 	const saveHistory = (value) => {
 		if (value != null) {
-			setSearchHistory([
-				value,
-				...(searchHistory.filter(history => history != value))
-			]);
+			const newSearchHistory = [value, ...(searchHistory.filter(history => history != value))];
+			setSearchHistory(newSearchHistory);
+			AsyncStorage.setItem("SearchHistory", JSON.stringify(newSearchHistory));
 		} else {
 			setSearchHistory([]);
+			AsyncStorage.setItem("SearchHistory", "[]");
 		}
-		AsyncStorage.setItem("SearchHistory", JSON.stringify(searchHistory));
 	}
-
-	useEffect(async () => {
-		getPermissions();
-		setupPlayer();
-		const storageSearchHistory = await AsyncStorage.getItem("SearchHistory");
-		if(storageSearchHistory != null) setSearchHistory(JSON.parse(storageSearchHistory));
-		// const backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
-		// 	//console.log(appContext.mainNavigationRef.getState())
-		// 	BackHandler.exitApp();
-		// 	return true;
-		// });
-		// const appState = AppState.addEventListener('change', nextAppState => {
-		// 	console.log(nextAppState)
-		// 	// if (nextAppState === '') {
-		// 	// 	console.log('the app is closed');
-		// 	// }
-		// })
-		// return () => {
-		// 	// backHandler.remove();
-		// 	appState.remove();
-		// }
-	}, [])
 
 	const toggleFavorite = (favorite, track) => {
 		if (!favorite) {
-			setFavorites(favorites.filter(favorite => favorite.id != track.id));
+			const newFavorites = favorites.filter(favorite => favorite.id != track.id);
+			setFavorites(newFavorites);
+			AsyncStorage.setItem("Favorites", JSON.stringify(newFavorites));
 		} else {
-			setFavorites([...favorites, track].sort((a, b) => a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1));
+			const newFavorites = [...favorites, track].sort((a, b) => a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1);
+			setFavorites(newFavorites);
+			AsyncStorage.setItem("Favorites", JSON.stringify(newFavorites));
 		}
 	}
 
-	const saveData = () => {
-		RNFS.writeFile(data_path, "this is data", 'utf8')
-			.then((success) => {
-			console.log('FILE WRITTEN!');
-		   })
-			.catch((err) => {
-				console.log(err.message);
-			});
-	}
+	useEffect(() => {
+		setupPlayer();
+		getPermissions();
+	}, [])
+
+	useEffect(async () => {
+		if(appContext.firstRender) {
+			const storage = await AsyncStorage.getItem("Favorites");
+			if (storage != null) setFavorites(JSON.parse(storage));
+		} else {
+			AsyncStorage.setItem("Favorites", JSON.stringify(favorites));
+		}
+	}, [favorites])
+
+	useEffect(async () => {
+		if(appContext.firstRender) {
+			const storage = await AsyncStorage.getItem("SearchHistory");
+			if (storage != null) setSearchHistory(JSON.parse(storage));
+		} else {
+			AsyncStorage.setItem("SearchHistory", JSON.stringify(searchHistory));
+		}
+	}, [searchHistory])
+
+	useEffect(async () => {
+		if(appContext.firstRender) {
+			const storage = await AsyncStorage.getItem("QueueInfo");
+			if (storage != null) setQueueInfo(JSON.parse(storage));
+		} else {
+			AsyncStorage.setItem("QueueInfo", JSON.stringify(queueInfo));
+		}
+	}, [queueInfo])
 
 	return (
 		<TrackContext.Provider value={{
 			allTrack: allTrack,
 			albums: albums,
 			artists: artists,
+			playlists: playlists,
 			searchHistory: searchHistory,
 			queueInfo: queueInfo,
 			shuffle: shuffle,
@@ -216,7 +238,6 @@ export function TrackProvider({ children }) {
 			saveHistory: saveHistory,
 			setFavorites: setFavorites,
 			toggleFavorite: toggleFavorite,
-			saveData: saveData,
 		}}>
 			{children}
 		</TrackContext.Provider>

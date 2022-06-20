@@ -1,6 +1,7 @@
 import { Component, useCallback, useContext, useEffect, useState } from 'react';
 import { Dimensions, View, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { Modalize } from 'react-native-modalize';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppContext from '../utils/context/AppContext';
 import FloatingControll from '../components/FloatingControll';
 import TrackContext from '../utils/context/TrackContext';
@@ -29,15 +30,27 @@ export default function QueueScreen(props) {
 		}
 	});
 
+	useEffect(async () => {
+		if(!appContext.firstRender) {
+			AsyncStorage.setItem("Queue", JSON.stringify(queue));
+		}
+	}, [queue])
+
+	useEffect(async () => {
+		if(!appContext.firstRender) {
+			AsyncStorage.setItem("Index", JSON.stringify(currentIndex));
+		}
+	}, [currentIndex])
+
 	const getQueue = async () => {
 		setQueue(await TrackPlayer.getQueue());
 		setCurrentIndex(await TrackPlayer.getCurrentTrack());
 	}
 
 	const moveTrack = async (index, newIndex) => {
-		if(index == newIndex) return;
+		if (index == newIndex) return;
 		const track = await TrackPlayer.getTrack(index);
-		if(currentIndex != index) {
+		if (currentIndex != index) {
 			TrackPlayer.remove(index);
 			TrackPlayer.add(track, newIndex);
 		} else {
@@ -53,23 +66,23 @@ export default function QueueScreen(props) {
 		getQueue();
 	}
 
-	const removeTrack = async(index) => {
+	const removeTrack = async (index) => {
 		trackContext.setQueueInfo({
 			name: "",
 			type: "Custom",
 		})
-		if(index != currentIndex) {
+		if (index != currentIndex) {
 			TrackPlayer.remove(index);
 			getQueue();
 			return;
 		}
 		const queueLength = queue.length;
-		if(queueLength == 1) {
+		if (queueLength == 1) {
 			appContext.setHavingPlayer(false);
 			getQueue();
 			return;
 		}
-		if (currentIndex == queueLength - 1){
+		if (currentIndex == queueLength - 1) {
 			TrackPlayer.skipToPrevious();
 		} else {
 			TrackPlayer.skipToNext();
@@ -85,16 +98,16 @@ export default function QueueScreen(props) {
 				<TouchableOpacity
 					onPress={() => {
 						appContext.queueScreenRef.current?.open('top');
-						appContext.queueRef.current?.scrollTo({x: 0, y: ITEM_HEIGHT * currentIndex, animated: true});
+						appContext.queueRef.current?.scrollTo({ x: 0, y: ITEM_HEIGHT * currentIndex, animated: true });
 					}}
-					style = {styles.upNextTouchble}
+					style={styles.upNextTouchble}
 				>
-					<Text style = {styles.upNextText}>{i18n.t("UP NEXT")}</Text>
+					<Text style={styles.upNextText}>{i18n.t("UP NEXT")}</Text>
 				</TouchableOpacity>
 			</View>
 			{
 				moving != -1
-					? <TrackMove/>
+					? <TrackMove />
 					: null
 			}
 		</View>
@@ -105,51 +118,51 @@ export default function QueueScreen(props) {
 			<TouchableOpacity
 				activeOpacity={1}
 				onPress={() => appContext.queueScreenRef.current?.close('alwaysOpen')}
-				style={{height: PLAYER_HEIGHT}}
+				style={{ height: PLAYER_HEIGHT }}
 			>
-				<FloatingControll/>
+				<FloatingControll />
 			</TouchableOpacity>
 		</View>
 	)
 
 	const TrackMove = () => (
-		<View style = {[styles.itemContainer, {backgroundColor: '#7bb6ff'}]}>
-			<Track track={queue[moving]}/>
-			<View style = {[styles.indexWrapper, {marginRight: 0}]}>
-				<Text style = {styles.indexText}>Moving {moving + 1}</Text>
+		<View style={[styles.itemContainer, { backgroundColor: '#7bb6ff' }]}>
+			<Track track={queue[moving]} />
+			<View style={[styles.indexWrapper, { marginRight: 0 }]}>
+				<Text style={styles.indexText}>Moving {moving + 1}</Text>
 			</View>
 			<TouchableOpacity
 				onPress={() => setMoving(-1)}
-				style = {styles.cancelButton}
+				style={styles.cancelButton}
 			>
-				<MaterialIcons name = {ICONS.QUEUE_MOVE_CANCEL} size = {35}/>
+				<MaterialIcons name={ICONS.QUEUE_MOVE_CANCEL} size={35} />
 			</TouchableOpacity>
 		</View>
 	)
 
 	const HiddenButton = () => (
-        <View style={styles.hiddenContainer}>
-            <TouchableOpacity
-                style={[styles.hiddenButton, styles.moveButton]}
-                onPress={() => {
+		<View style={styles.hiddenContainer}>
+			<TouchableOpacity
+				style={[styles.hiddenButton, styles.moveButton]}
+				onPress={() => {
 					setMoving(hidden);
 					setHidden(-1);
-                }}
-            >
-                <MaterialIcons name = {ICONS.QUEUE_MOVE} size = {30}/>
-            </TouchableOpacity>
+				}}
+			>
+				<MaterialIcons name={ICONS.QUEUE_MOVE} size={30} />
+			</TouchableOpacity>
 
-            <TouchableOpacity
-                style={[styles.hiddenButton, styles.deleteButton]}
-                onPress={() => {
-                    removeTrack(hidden);
+			<TouchableOpacity
+				style={[styles.hiddenButton, styles.deleteButton]}
+				onPress={() => {
+					removeTrack(hidden);
 					setHidden(-1);
-                }}
-            >
-                <MaterialIcons name = {ICONS.DELETE} size = {30}/>
-            </TouchableOpacity>
-        </View>
-    )
+				}}
+			>
+				<MaterialIcons name={ICONS.DELETE} size={30} />
+			</TouchableOpacity>
+		</View>
+	)
 
 	return (
 		<Modalize
@@ -163,9 +176,9 @@ export default function QueueScreen(props) {
 			scrollViewProps={{ onScroll: () => setHidden(-1), }}
 			panGestureComponentEnabled={true}
 			onPositionChange={async (position) => {
-				if(position != 'top') return;
+				if (position != 'top') return;
 				getQueue();
-				appContext.queueRef.current?.scrollTo({x: 0, y: ITEM_HEIGHT * (await TrackPlayer.getCurrentTrack()), animated: true});
+				appContext.queueRef.current?.scrollTo({ x: 0, y: ITEM_HEIGHT * (await TrackPlayer.getCurrentTrack()), animated: true });
 			}}
 			HeaderComponent={QueueHeader}
 			FooterComponent={QueueFooter}
@@ -174,7 +187,7 @@ export default function QueueScreen(props) {
 				queue.map((track, index) => (
 					<TouchableHighlight
 						onPress={() => {
-							if(moving == -1) {
+							if (moving == -1) {
 								TrackPlayer.skip(index)
 							} else {
 								setMoving(-1);
@@ -182,22 +195,22 @@ export default function QueueScreen(props) {
 							}
 						}}
 						onLongPress={() => setHidden(index)}
-						style={{backgroundColor: currentIndex == index ? '#dcdcdc' : '#ffffff'}}
+						style={{ backgroundColor: currentIndex == index ? '#dcdcdc' : '#ffffff' }}
 						underlayColor={'#d0d0d0'}
 						key={index.toString()}
 					>
-						<View style = {styles.itemContainer}>
-							<Track track={track}/>
-							<View style = {styles.indexWrapper}>
+						<View style={styles.itemContainer}>
+							<Track track={track} />
+							<View style={styles.indexWrapper}>
 								{moving != -1
-									? <MaterialIcons name={ICONS.QUEUE_MOVE_COMPLETE} size = {30}/>
+									? <MaterialIcons name={ICONS.QUEUE_MOVE_COMPLETE} size={30} />
 									: null
 								}
-								<Text style = {styles.indexText}>{index + 1}</Text>
+								<Text style={styles.indexText}>{index + 1}</Text>
 							</View>
 							{
 								hidden == index
-									? <HiddenButton/>
+									? <HiddenButton />
 									: null
 							}
 						</View>
@@ -220,7 +233,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	upNextTouchble: {
-		justifyContent:'center',
+		justifyContent: 'center',
 		alignItems: 'center',
 		padding: 10,
 		borderBottomWidth: 3,
@@ -235,37 +248,37 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	indexWrapper: {
-        marginHorizontal: 10,
-        flexDirection: 'row',
+		marginHorizontal: 10,
+		flexDirection: 'row',
 		justifyContent: 'flex-end',
 		alignItems: 'center',
-    },
-    indexText: {
-        fontSize: 15,
-        fontWeight:'bold',
-    },
+	},
+	indexText: {
+		fontSize: 15,
+		fontWeight: 'bold',
+	},
 	cancelButton: {
-        borderRadius: 30,
-        width: 50,
-        height: 50,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
+		borderRadius: 30,
+		width: 50,
+		height: 50,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
 	hiddenContainer: {
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-    },
+		alignItems: 'center',
+		flexDirection: 'row',
+		justifyContent: 'flex-end',
+	},
 	hiddenButton: {
-        alignItems: 'center',
-        justifyContent: 'center',
+		alignItems: 'center',
+		justifyContent: 'center',
 		height: ITEM_HEIGHT,
-        width: ITEM_HEIGHT,
-    },
-    moveButton: {
-        backgroundColor: '#7bb6ff',
-    },
-    deleteButton: {
-        backgroundColor: '#ff4f4f',
-    },
+		width: ITEM_HEIGHT,
+	},
+	moveButton: {
+		backgroundColor: '#7bb6ff',
+	},
+	deleteButton: {
+		backgroundColor: '#ff4f4f',
+	},
 });
