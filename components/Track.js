@@ -1,13 +1,17 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import TrackPlayer from "react-native-track-player";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import TrackPlayer, {useTrackPlayerEvents, Event} from 'react-native-track-player';
 import TrackContext from "../utils/context/TrackContext";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import ICONS from '../assets/ICONS';
+import TrackIcon from "./TrackIcon";
 
 const ITEM_HEIGHT = 65;
 
-const Track = (props) => {
+const Track = ({ track }) => {
     return (
         <View style = {[styles.container]}>
             <View style = {styles.coverWrapper}>
@@ -18,13 +22,12 @@ const Track = (props) => {
             </View>
 
             <View style = {styles.musicInfo}>
-                <Text numberOfLines={2} style = {styles.titleText}>{props.track.title}</Text>
+                <Text numberOfLines={2} style = {styles.titleText}>{track.title}</Text>
                 <View style = {{flexDirection: 'row'}}>
-                    <Text style = {{flexShrink: 1}} numberOfLines={1}>{props.track.artist}</Text>
-                    <Text> • {new Date(props.track.duration * 1000).toLocaleTimeString().substring(3)}</Text>
+                    <Text style = {{flexShrink: 1}} numberOfLines={1}>{track.artist}</Text>
+                    <Text> • {new Date(track.duration * 1000).toLocaleTimeString().substring(3)}</Text>
                 </View>
             </View>
-
         </View>
     )
 }

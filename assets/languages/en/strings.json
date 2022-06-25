@@ -8,9 +8,11 @@
     "Album": "Album",
     "Playlists": "Playlists",
     "Playlist": "Playlist",
+    "Favorites" : "Favorites",
+    "Queue": "Queue",
     "PLAYING FROM": "PLAYING FROM",
-    "All": "ALL SONGS",
-    "Custom": "CUSTOM PLAYLISTS",
+    "All": "All songs",
+    "Custom": "Custom playlist",
     "item selected": "item selected",
     "items selected": "items selected",
     "Shuffle playback": "Shuffle playback",
@@ -18,6 +20,7 @@
     "Shuffle": "Shuffle",
     "By": "By",
     "Search songs from": "Search songs from",
+    "Search for songs": "Search for songs",
     "Search history": "Search history",
     "Search all": "Search songs, artists, albums and playlists",
     "Search all favorite": "Search favorite songs, artists, albums and playlists",
@@ -29,5 +32,15 @@
     "Create new playlist": "Create new playlist",
     "Playlist name": "Playlist name",
     "Cancel": "Cancel",
-    "Done": "Done"
+    "Done": "Done",
+    "Add songs": "Add songs",
+    "Play next": "Play next",
+    "Play next shuffle": "Play next shuffle",
+    "Add to queue": "Add to queue",
+    "Add to queue shuffle": "Add to queue shuffle",
+    "Add to playlist": "Add to playlist",
+    "Delete playlist": "Delete playlist",
+    "Edit playlist info": "Edit playlist info",
+    "New playlist name": "New playlist name"
+
 }

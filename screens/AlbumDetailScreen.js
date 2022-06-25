@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		flexGrow: 1,
 		marginVertical: 10,
+		marginRight: 5,
 		height: 150,
 	},
 	nameText: {

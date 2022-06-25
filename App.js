@@ -17,8 +17,9 @@ import SearchAllScreen from './screens/SearchAllScreen';
 import i18n from './utils/i18n';
 import ICONS from './assets/ICONS';
 import ScreenHeader from './components/ScreenHeader';
+import AddSongScreen from './screens/AddSongScreen';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import CreatePlaylistModal from './components/CreatePlaylistModal';
+import MenuModal from './components/MenuModal';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -135,13 +136,14 @@ export default function App() {
                   <Stack.Screen name='SelectItemScreen' component={SelectItemScreen}/>
                   <Stack.Screen name='SearchScreen' component={SearchScreen}/>
                   <Stack.Screen name='SearchAllScreen' component={SearchAllScreen}/>
+                  <Stack.Screen name='AddSongScreen' component={AddSongScreen}/>
                 </Stack.Navigator>
               </NavigationContainer>
             )}
           </AppContext.Consumer>
 
           <PlayerScreen/>
-          <CreatePlaylistModal/>
+          <MenuModal/>
         </GestureHandlerRootView>
       </TrackProvider>
     </AppProvider>

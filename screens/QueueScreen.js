@@ -11,6 +11,7 @@ import Track from '../components/Track';
 import ICONS from '../assets/ICONS';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { useTrackPlayerEvents, Event } from 'react-native-track-player';
+import TrackIcon from '../components/TrackIcon';
 
 const HEADER_HEIGHT = 60;
 const ITEM_HEIGHT = 65;
@@ -29,18 +30,6 @@ export default function QueueScreen(props) {
 			setCurrentIndex(await TrackPlayer.getCurrentTrack());
 		}
 	});
-
-	useEffect(async () => {
-		if(!appContext.firstRender) {
-			AsyncStorage.setItem("Queue", JSON.stringify(queue));
-		}
-	}, [queue])
-
-	useEffect(async () => {
-		if(!appContext.firstRender) {
-			AsyncStorage.setItem("Index", JSON.stringify(currentIndex));
-		}
-	}, [currentIndex])
 
 	const getQueue = async () => {
 		setQueue(await TrackPlayer.getQueue());
@@ -74,12 +63,14 @@ export default function QueueScreen(props) {
 		if (index != currentIndex) {
 			TrackPlayer.remove(index);
 			getQueue();
+			trackContext.updateQueue();
 			return;
 		}
 		const queueLength = queue.length;
 		if (queueLength == 1) {
 			appContext.setHavingPlayer(false);
 			getQueue();
+			trackContext.updateQueue();
 			return;
 		}
 		if (currentIndex == queueLength - 1) {
@@ -87,9 +78,9 @@ export default function QueueScreen(props) {
 		} else {
 			TrackPlayer.skipToNext();
 		}
-		console.log(0);
 		TrackPlayer.remove(index);
 		getQueue();
+		trackContext.updateQueue();
 	}
 
 	const QueueHeader = () => (
@@ -201,6 +192,13 @@ export default function QueueScreen(props) {
 					>
 						<View style={styles.itemContainer}>
 							<Track track={track} />
+
+							{
+								currentIndex === index
+									? <TrackIcon trackId={track.id}/>
+									: null
+							}
+
 							<View style={styles.indexWrapper}>
 								{moving != -1
 									? <MaterialIcons name={ICONS.QUEUE_MOVE_COMPLETE} size={30} />

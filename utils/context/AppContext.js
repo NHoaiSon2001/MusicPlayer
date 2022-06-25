@@ -9,7 +9,8 @@ export function AppProvider({ children }) {
 	const playerScreenRef = useRef();
 	const queueScreenRef = useRef();
 	const queueRef = useRef();
-    const createPlaylistModalRef = useRef();
+    const menuModalRef = useRef();
+	const [menuModalContent, setMenuModalContent] = useState(null);
 	const mainNavigationRef = useNavigationContainerRef();
 	const [havingPlayer, setHavingPlayer] = useState(false);
 	const [firstRender, setFirstRender] = useState(true);
@@ -33,18 +34,25 @@ export function AppProvider({ children }) {
 		playerScreenRef.current?.close('alwaysOpen');
 	}
 
+	const openMenuModal = (content) => {
+		setMenuModalContent(content);
+		menuModalRef.current.open();
+	}
+
 	return (
 		<AppContext.Provider value={{
 			playerScreenRef: playerScreenRef,
 			queueScreenRef: queueScreenRef,
 			queueRef: queueRef,
-			createPlaylistModalRef: createPlaylistModalRef,
+			menuModalRef: menuModalRef,
 			mainNavigationRef: mainNavigationRef,
 			havingPlayer: havingPlayer,
 			firstRender: firstRender,
+			menuModalContent: menuModalContent,
 			setHavingPlayer: setHavingPlayer,
 			playerBack: playerBack,
 			setFirstRender: setFirstRender,
+			openMenuModal: openMenuModal,
 		}}>
 			{children}
 		</AppContext.Provider>

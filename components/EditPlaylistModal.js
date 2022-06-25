@@ -1,19 +1,21 @@
 import { useContext, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, Image, TextInput, TouchableOpacity, View } from 'react-native';
 import { Modalize } from 'react-native-modalize';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
 import i18n from '../utils/i18n';
+import ICONS from '../assets/ICONS';
 
-const CreatePlaylistModal = ({ tracks, navigateDetail }) => {
+const EditPlaylistModal = ({ playlistCreateTime }) => {
     const appContext = useContext(AppContext);
     const trackContext = useContext(TrackContext);
     const [name, setName] = useState("")
 
     return (
         <View style = {styles.container}>
-            <Text style = {styles.headerText}>{i18n.t("Create new playlist")}</Text>
-            <Text style = {styles.nameInputTitle}>{i18n.t("Playlist name")}</Text>
+            <Text style = {styles.headerText}>{i18n.t("Edit playlist info")}</Text>
+            <Text style = {styles.nameInputTitle}>{i18n.t("New playlist name")}</Text>
             <TextInput
                 style = {styles.nameInput}
                 value={name}
@@ -22,6 +24,25 @@ const CreatePlaylistModal = ({ tracks, navigateDetail }) => {
                     setName(text);
                 }}
             />
+
+                <View style = {styles.coverWrapper}>
+                    <Image
+                        source={require('../assets/defaults/cover_default.jpg')}
+                        style = {styles.coverImage}
+                    />
+
+                    <TouchableOpacity
+
+                        activeOpacity={1}
+                        style = {styles.browseImage}
+                    >
+                        <AntDesign
+                            name={ICONS.EDIT_IMAGE}
+                            size={30}
+                        />
+                    </TouchableOpacity>
+                </View>
+
             <View style = {styles.actionTouchableContainer}>
                 <TouchableOpacity
                     onPress={() => appContext.menuModalRef.current?.close()}
@@ -33,7 +54,11 @@ const CreatePlaylistModal = ({ tracks, navigateDetail }) => {
                 <TouchableOpacity
                     onPress={() => {
                         appContext.menuModalRef.current?.close();
-                        trackContext.createPlaylist(name, tracks, navigateDetail);
+                        trackContext.editPlaylist({
+                            createTime: playlistCreateTime,
+                            name: name,
+                            type: "Playlist"
+                        })
                     }}
                     style = {[styles.actionTouchable, {backgroundColor: (name.length != 0) ? '#cdeaff' : "#bcbcbc" ,}]}
                     disabled={name.length == 0}
@@ -45,12 +70,12 @@ const CreatePlaylistModal = ({ tracks, navigateDetail }) => {
     )
 }
 
-export default CreatePlaylistModal;
+export default EditPlaylistModal;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        height:  230,
+        // height:  230,
         width: '100%',
         borderRadius: 10,
         alignItems: 'center',
@@ -92,5 +117,26 @@ const styles = StyleSheet.create({
         color: '#2e2e2e',
         fontWeight: 'bold',
         fontSize: 18,
+    },
+    coverWrapper: {
+        height: 200,
+        width: 200,
+        margin: 20,
+    },
+    coverImage: {
+		height: '100%',
+		width: '100%',
+        borderRadius: 15,
+	},
+    browseImage: {
+        position: 'absolute',
+        bottom: 10,
+        right: 10,
+        height: 50,
+        width: 50,
+        backgroundColor: "#bcbcbc",
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 30,
     },
 })

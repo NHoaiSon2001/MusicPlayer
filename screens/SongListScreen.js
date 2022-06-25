@@ -5,6 +5,7 @@ import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
 import Track from '../components/Track';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FloatingPlayerArea from '../components/FloatingPlayerArea';
 import ICONS from '../assets/ICONS';
 import FloatingPlayer from '../components/FloatingPlayer';
@@ -55,7 +56,7 @@ const Screen = ({ navigation }) => {
 							})}
 							style = {styles.headerButton}
 						>
-							<Ionicons name={ICONS.SELECT_ITEM} size={30}/>
+							<MaterialCommunityIcons name={ICONS.SELECT_ITEM} size={30}/>
 						</TouchableOpacity>
 					</View>
 				</View>

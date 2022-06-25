@@ -55,7 +55,7 @@ const Screen = () => {
                     onPress={() => {}}
                     style = {styles.headerButton}
                 >
-                    <Ionicons name='ellipsis-vertical-outline' size={25} color={'#676767'}/>
+                    <Ionicons name={ICONS.MENU} size={25} color={'#676767'}/>
                 </TouchableOpacity>
             </View>
 
@@ -70,6 +70,8 @@ const Screen = () => {
 
 export default function PlayerScreen() {
     const appContext = useContext(AppContext);
+    const trackContext = useContext(TrackContext);
+    const [check, setCheck] = useState(0);
 
     return (
         <Modalize
@@ -80,6 +82,12 @@ export default function PlayerScreen() {
             withHandle={false}
             alwaysOpen={-200}
             velocity={100}
+            onPositionChange={(position) => {
+                if(position = 'initial' && check != trackContext.shuffle && !appContext.firstRender) {
+                    setCheck(trackContext.shuffle);
+                    trackContext.updateQueue();
+                }
+            }}
         >
             <Screen/>
         </Modalize>

@@ -6,11 +6,17 @@ import Track from '../components/Track';
 import ICONS from '../assets/ICONS';
 import i18n from '../utils/i18n';
 import TrackFavourite from '../components/TrackFavorite';
+import TrackIcon from '../components/TrackIcon';
+import AppContext from '../utils/context/AppContext';
+import AddToPlaylistModal from '../components/AddToPlaylistModal';
+import { SelectedItemMenu } from '../components/MenuModal';
 
 const ITEM_HEIGHT = 65;
 
 export default function SelectItemScreen({ route, navigation }) {
+	const appContext = useContext(AppContext);
 	const [selected, setSelected] = useState(route.params.index != null ? 1 : 0);
+	const data = route.params.data;
 	const length = route.params.data.length;
 	const [indexSelected, setIndexSelected] = useState(route.params.data.map((track, index) => (index == route.params.index) ? true : false));
 
@@ -49,7 +55,7 @@ export default function SelectItemScreen({ route, navigation }) {
 			<ScrollView
 				contentOffset={{x: 0, y: route.params.index * ITEM_HEIGHT}}
 			>
-				{route.params.data.map((track, index) => (
+				{data.map((track, index) => (
 					<TouchableHighlight
 						onPress={() => {
 							setSelected(selected + ((indexSelected[index]) ? -1 : 1));
@@ -60,6 +66,8 @@ export default function SelectItemScreen({ route, navigation }) {
 					>
 						<View style = {styles.itemContainer}>
 							<Track track={track} index={index}/>
+
+							<TrackIcon trackId={track.id}/>
 
 							<View style = {styles.indexWrapper}>
 								<Text style = {styles.indexText}>{index + 1}</Text>
@@ -79,6 +87,40 @@ export default function SelectItemScreen({ route, navigation }) {
 					</TouchableHighlight>
 				))}
 			</ScrollView>
+
+			<View style = {styles.controllContainer}>
+				<TouchableOpacity
+					onPress={() => appContext.openMenuModal(<SelectedItemMenu data={{
+						name: "",
+						type: "Custom",
+						list: data.filter((track, index) => indexSelected[index])}}
+					/>)}
+					activeOpacity={0.5}
+					style = {styles.controllTouchable}
+				>
+					<View style = {{alignItems: 'center'}}>
+						<MaterialCommunityIcons
+							name={ICONS.QUEUE}
+							size={30}
+						/>
+						<Text style = {styles.controllTouchableText}>{i18n.t("Queue")}</Text>
+					</View>
+				</TouchableOpacity>
+
+				<TouchableOpacity
+					onPress={() => appContext.openMenuModal(<AddToPlaylistModal tracks={data.filter((track, index) => indexSelected[index])}/>)}
+					activeOpacity={0.5}
+					style = {styles.controllTouchable}
+				>
+					<View style = {{alignItems: 'center'}}>
+						<MaterialCommunityIcons
+							name={ICONS.PLAYLISTS}
+							size={30}
+						/>
+						<Text style = {styles.controllTouchableText}>{i18n.t("Playlists")}</Text>
+					</View>
+				</TouchableOpacity>
+			</View>
         </View>
 	)
 }
@@ -121,4 +163,18 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight:'bold',
     },
+	controllContainer: {
+		height: 60,
+		flexDirection: 'row',
+	},
+	controllTouchable: {
+		height: '100%',
+		width: '50%',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	controllTouchableText: {
+		fontWeight: 'bold',
+		fontSize: 12,
+	},
 });

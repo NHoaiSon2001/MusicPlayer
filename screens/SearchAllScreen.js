@@ -85,6 +85,7 @@ const Screen = ({ route, navigation }) => {
 					artists={artistResult}
 					searchValue={searchValue}
 					navigation={navigation}
+					inSearch={true}
 				/>
 			</ScrollView>
 			: <NoResult />

@@ -1,8 +1,6 @@
 import { useContext } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, TouchableHighlight } from 'react-native';
 import i18n from '../utils/i18n';
-import Feather from 'react-native-vector-icons/Feather';
-import ICONS from '../assets/ICONS';
 
 const ITEM_HEIGHT = 65;
 
@@ -20,8 +18,6 @@ const Artist = (props) => {
                 <Text numberOfLines={2} style = {styles.nameText}>{props.artist.name}</Text>
                 <Text>{props.artist.list.length} {i18n.t((props.artist.list.length < 2) ? "Song": "Songs")}</Text>
             </View>
-
-            <Feather name={ICONS.NEXT} size={25} style={{marginHorizontal: 5}}/>
         </View>
     )
 }

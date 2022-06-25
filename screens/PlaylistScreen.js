@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react";
+import { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { createStackNavigator } from '@react-navigation/stack';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
@@ -10,40 +10,46 @@ import FloatingPlayerArea from "../components/FloatingPlayerArea";
 import PlaylistList from "../components/PlaylistList";
 import TrackContext from "../utils/context/TrackContext";
 import PlaylistDetailScreen from "./PlaylistDetailScreen";
+import CreatePlaylistModal from "../components/CreatePlaylistModal";
+import NewPlaylistButton from "../components/NewPlaylistButton";
 
 const Stack = createStackNavigator();
 
 const Screen = ({ navigation }) => {
     const trackContext = useContext(TrackContext);
-    const appContext = useContext(AppContext);
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity
-                onPress={() => appContext.createPlaylistModalRef.current?.open()}
-                activeOpacity={1}
-                style={styles.newPlaylistTouchable}
-            >
-                <View style={styles.newPlaylistContainer}>
-                    <MaterialIcons
-                        name={ICONS.NEW_PLAYLIST}
-                        size={30}
-                        color={'#004c7e'}
+            {
+                trackContext.playlists.length !== 0
+                    ? <NewPlaylistButton
+                        touchableStyle={styles.newPlaylistTouchable}
+                        tracks={[]}
+                        navigateDetail={true}
                     />
-                    <Text style={styles.newPlaylistText}>{i18n.t("New playlist")}</Text>
-                    <View style={{ width: 30 }} />
-                </View>
-            </TouchableOpacity>
+                    : null
+            }
 
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-            >
-                <PlaylistList
-                    playlists={trackContext.playlists}
-                    navigation={navigation}
-                />
-                <FloatingPlayerArea />
-            </ScrollView>
+            {
+                trackContext.playlists.length !== 0
+                    ? <ScrollView
+                        showsVerticalScrollIndicator={false}
+                    >
+                        <PlaylistList
+                            playlists={trackContext.playlists}
+                            navigation={navigation}
+                        />
+                        <FloatingPlayerArea />
+                    </ScrollView>
+                    : <View style={[styles.container, { flexGrow: 1 }]}>
+                        <View style={styles.endIcon} />
+                        <NewPlaylistButton
+                            touchableStyle={styles.newPlaylistArea}
+                            tracks={[]}
+                            navigateDetail={true}
+                        />
+                    </View>
+            }
 
             <FloatingPlayer />
         </View>
@@ -62,7 +68,7 @@ export default function PlaylistScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginHorizontal: 10,
+        paddingHorizontal: 10,
     },
     newPlaylistTouchable: {
         backgroundColor: '#cdeaff',
@@ -74,10 +80,13 @@ const styles = StyleSheet.create({
         borderRadius: 30,
     },
     newPlaylistContainer: {
-        height: '100%',
-        width: '100%',
+        backgroundColor: '#cdeaff',
+        borderRadius: 30,
+        paddingHorizontal: 30,
+        height: 40,
         flexDirection: 'row',
         alignItems: 'center',
+        alignSelf: 'center',
         justifyContent: 'center',
     },
     newPlaylistText: {
@@ -85,5 +94,16 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: 'bold',
         paddingHorizontal: 5,
+    },
+    newPlaylistArea: {
+        flexGrow: 1,
+        justifyContent: 'center',
+    },
+    endIcon: {
+        height: 5,
+        alignSelf: 'center',
+        width: 200,
+        backgroundColor: '#ababab',
+        borderRadius: 30,
     },
 })

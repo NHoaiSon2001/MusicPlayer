@@ -6,9 +6,12 @@ import ICONS from "../assets/ICONS";
 import { useContext } from "react";
 import AppContext from "../utils/context/AppContext";
 import { useNavigationState } from "@react-navigation/native";
+import TrackContext from "../utils/context/TrackContext";
 
 const ScreenHeader = ({ name, icon }) => {
     const appContext = useContext(AppContext);
+    const trackContext = useContext(TrackContext);
+
     const inFavoriteScreen = useNavigationState(state => {
         const currentState = state.routes.find(route => route.name === name);
         if(typeof currentState.state != 'object') return false;
@@ -51,7 +54,7 @@ const ScreenHeader = ({ name, icon }) => {
 
             <TouchableOpacity
                 onPress={() => {
-                    console.log(appContext.havingPlayer)
+                    console.log(trackContext.playlists);
                 }}
                 style = {styles.settingTouchable}
             >

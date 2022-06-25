@@ -11,6 +11,7 @@ const ICONS = {
     REPEAT_QUEUE: "repeat",
     SHUFFLE: "shuffle",
     REFRESH: 'refresh',
+    QUEUE: 'playlist-play',
     QUEUE_MOVE: 'format-line-spacing',
     QUEUE_MOVE_COMPLETE: 'playlist-add-check',
     QUEUE_MOVE_CANCEL: 'cancel',
@@ -21,7 +22,7 @@ const ICONS = {
     ITEM_UNSELECT: 'checkbox-blank-circle',
     ITEM_SELECT: 'check-circle',
     TRACK_OPTION: 'ellipsis-vertical',
-    SELECT_ITEM: 'ios-list-outline',
+    SELECT_ITEM: 'playlist-check',
     SEARCH: 'search-outline',
     SEARCH_DELETE: 'close-circle',
     SEARCH_HISTORY_DELETE: 'delete',
@@ -29,6 +30,12 @@ const ICONS = {
     FAVORITE: 'heart',
     NOT_FAVORITE: 'heart-outline',
     NEW_PLAYLIST: 'library-add',
+    MENU: "ellipsis-vertical",
+    ADD_SONGS: 'add-to-list',
+    ADD: 'add-circle',
+    NOW_PLAY: 'bar-chart',
+    EDIT_PLAYLIST: 'edit',
+    EDIT_IMAGE: 'picture',
 }
 
 export default ICONS;

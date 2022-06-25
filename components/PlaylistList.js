@@ -1,8 +1,13 @@
+import { useContext, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableHighlight } from 'react-native';
+import AppContext from '../utils/context/AppContext';
+import { PlaylistMenu } from './MenuModal';
 import Playlist from './Playlist';
 
 const PlaylistList = ({ playlists, searchValue, navigation }) => {
+    const appContext = useContext(AppContext);
+
     return (
         <View style = {styles.container}>
             {playlists.map((playlist, index) => (
@@ -11,6 +16,7 @@ const PlaylistList = ({ playlists, searchValue, navigation }) => {
                         playlist: playlist,
                         searchValue: searchValue
                     })}
+                    onLongPress={() => appContext.openMenuModal(<PlaylistMenu playlist={playlist}/>)}
                     style = {styles.touchable}
                     underlayColor={'#d0d0d0'}
                     key={index.toString()}

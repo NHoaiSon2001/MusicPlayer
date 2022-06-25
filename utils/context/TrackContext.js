@@ -105,8 +105,9 @@ export function TrackProvider({ children }) {
 	const getPlaylists = async () => {
 		AsyncStorage.getAllKeys((err, keys) => {
 			AsyncStorage.multiGet(keys.filter(key => key.includes("Playlist")), (err, storage) => {
-				setPlaylists(storage.map(item => JSON.parse(item[1])))
+				setPlaylists(storage.map(item => JSON.parse(item[1])).sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1))
 			})
+			// keys.filter(key => key.includes("Playlist")).map(key => AsyncStorage.removeItem(key))
 		});
 	}
 
@@ -124,6 +125,7 @@ export function TrackProvider({ children }) {
 		name: "",
 		type: ""
 	});
+	const [queue, setQueue] = useState([]);
 	const [shuffle, setShuffle] = useState(-1);
 
 	const setupPlayer = async () => {
@@ -138,13 +140,15 @@ export function TrackProvider({ children }) {
 			]
 		})
 		const queue = await AsyncStorage.getItem("Queue");
-		if(queue != null) TrackPlayer.add(JSON.parse(queue));
 		const index = await AsyncStorage.getItem("Index");
-		if(index != null) TrackPlayer.skip(JSON.parse(index));
+		if(queue != null && index != null) {
+			TrackPlayer.add(JSON.parse(queue));
+			TrackPlayer.skip(JSON.parse(index));
+		}
 	}
 
-	const setupQueue = async (tracks, index, newShuffle) => {
-		appContext.playerScreenRef.current?.open('top');
+	const setupQueue = async (tracks, index, newShuffle, isAdd) => {
+		if(isAdd == undefined) appContext.playerScreenRef.current?.open('top');
 		appContext.setHavingPlayer(true);
 		if(newShuffle) {
 			setShuffle(3 - Math.abs(shuffle));
@@ -156,14 +160,14 @@ export function TrackProvider({ children }) {
 			type: tracks.type
 		})
 		TrackPlayer.reset();
-		TrackPlayer.add(newShuffle > 0
+		TrackPlayer.add(newShuffle
 			? ([].concat(tracks.list).sort(() => Math.random() - 0.5))
 			: tracks.list);
 		TrackPlayer.skip(index);
 		AsyncStorage.setItem("Queue", JSON.stringify(await TrackPlayer.getQueue()));
 		AsyncStorage.setItem("Index", JSON.stringify(index));
 		setTimeout(() => {
-			TrackPlayer.play();
+			if(isAdd == undefined) TrackPlayer.play();
 		}, 500);
 	}
 
@@ -190,6 +194,10 @@ export function TrackProvider({ children }) {
 		}
 	}
 
+	const updateQueue = async () => {
+		setQueue(await TrackPlayer.getQueue());
+	}
+
 	const createPlaylist = (name, list, navigateDetail) => {
 		const newPlaylist = {
 			createTime: (new Date()).getTime(),
@@ -197,11 +205,35 @@ export function TrackProvider({ children }) {
 			type: "Playlist",
 			list: list
 		};
-		setPlaylists([...playlists, newPlaylist]);
+		setPlaylists([...playlists, newPlaylist].sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 		if(navigateDetail) {
 			appContext.mainNavigationRef.navigate("PlaylistDetailScreen", {playlist: newPlaylist});
 		}
-		AsyncStorage.setItem("Playlist" + name + newPlaylist.createTime, JSON.stringify(newPlaylist));
+		AsyncStorage.setItem("Playlist" + newPlaylist.createTime, JSON.stringify(newPlaylist));
+	}
+
+	const addSongToPlaylist = (playlistCreateTime, tracks) => {
+		const playlistAdd = playlists.find(playlist => playlist.createTime === playlistCreateTime);
+		const newPlaylist = {
+			...playlistAdd,
+			list: [...playlistAdd.list, ...tracks.filter(track => !playlistAdd.list.some(inPlaylist => inPlaylist.id === track.id))].sort((a, b) => a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1)
+		}
+		setPlaylists([...playlists.filter(playlist => playlist.createTime !== playlistCreateTime), newPlaylist].sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
+		AsyncStorage.setItem("Playlist" + newPlaylist.createTime, JSON.stringify(newPlaylist));
+	}
+
+	const editPlaylist = (playlist) => {
+		const newPlaylist = {
+			...playlist,
+			list: playlists.find(inPlaylists => inPlaylists.createTime === playlist.createTime).list
+		}
+		setPlaylists([...playlists.filter(playlist => playlist.createTime !== newPlaylist.createTime), newPlaylist].sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
+		AsyncStorage.setItem("Playlist" + newPlaylist.createTime, JSON.stringify(newPlaylist));
+	}
+
+	const deletePlaylist = (playlistCreateTime) => {
+		setPlaylists(playlists.filter(playlist => playlist.createTime !== playlistCreateTime));
+		AsyncStorage.removeItem("Playlist" + playlistCreateTime);
 	}
 
 	useEffect(() => {
@@ -237,6 +269,21 @@ export function TrackProvider({ children }) {
 		}
 	}, [queueInfo])
 
+	useEffect(async () => {
+		if(appContext.firstRender) {
+			const storage = await AsyncStorage.getItem("Queue");
+			if (storage != null) setQueue(JSON.parse(storage));
+		} else {
+			AsyncStorage.setItem("Queue", JSON.stringify(queue));
+		}
+	}, [queue])
+
+	useTrackPlayerEvents([Event.PlaybackTrackChanged], async (event) => {
+		if (event.type === Event.PlaybackTrackChanged) {
+			AsyncStorage.setItem("Index", JSON.stringify(await TrackPlayer.getCurrentTrack()));
+		}
+	});
+
 	return (
 		<TrackContext.Provider value={{
 			allTrack: allTrack,
@@ -245,6 +292,7 @@ export function TrackProvider({ children }) {
 			playlists: playlists,
 			searchHistory: searchHistory,
 			queueInfo: queueInfo,
+			queue: queue,
 			shuffle: shuffle,
 			favorites: favorites,
 			setupQueue: setupQueue,
@@ -252,7 +300,11 @@ export function TrackProvider({ children }) {
 			saveHistory: saveHistory,
 			setFavorites: setFavorites,
 			toggleFavorite: toggleFavorite,
+			updateQueue: updateQueue,
 			createPlaylist: createPlaylist,
+			addSongToPlaylist: addSongToPlaylist,
+			deletePlaylist: deletePlaylist,
+			editPlaylist: editPlaylist,
 		}}>
 			{children}
 		</TrackContext.Provider>

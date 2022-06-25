@@ -1,19 +1,37 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
 import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
 import Track from '../components/Track';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FloatingPlayerArea from '../components/FloatingPlayerArea';
 import ICONS from '../assets/ICONS';
 import FloatingPlayer from '../components/FloatingPlayer';
 import TrackList from '../components/TrackList';
 import i18n from '../utils/i18n';
 import TextTicker from "react-native-text-ticker";
+import { AlbumMenu, ArtistMenu, PlaylistMenu } from './MenuModal';
 
 export default function DetailScreenHeader({ data, navigation, searchValue }) {
     const trackContext = useContext(TrackContext);
+    const appContext = useContext(AppContext);
+
+
+    const openMenu = () => {
+        switch(data.type) {
+            case "Artist":
+                appContext.openMenuModal(<ArtistMenu artist={data}/>);
+                break;
+            case "Album":
+                appContext.openMenuModal(<AlbumMenu album={data}/>);
+                break;
+            case "Playlist":
+                appContext.openMenuModal(<PlaylistMenu playlist={data}/>);
+                break;
+        }
+    }
 
     return (
         <View style={styles.headerContainer}>
@@ -56,7 +74,14 @@ export default function DetailScreenHeader({ data, navigation, searchValue }) {
                         })}
                         style={styles.headerButton}
                     >
-                        <Ionicons name={ICONS.SELECT_ITEM} size={30} />
+                        <MaterialCommunityIcons name={ICONS.SELECT_ITEM} size={30} />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={openMenu}
+                        style = {styles.headerButton}
+                    >
+                        <Ionicons name={ICONS.MENU} size={25} color={'#676767'}/>
                     </TouchableOpacity>
                 </View>
             </View>

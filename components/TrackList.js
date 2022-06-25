@@ -1,12 +1,13 @@
-import { useContext} from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, TouchableOpacity, TouchableHighlight } from 'react-native';
 import TrackContext from '../utils/context/TrackContext';
 import Track from '../components/Track';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import ICONS from '../assets/ICONS';
-import FloatingPlayerArea from './FloatingPlayerArea';
+import TrackIcon from './TrackIcon';
+import AppContext from '../utils/context/AppContext';
+import { SongMenu } from './MenuModal';
 
 export default function TrackList({ tracks, searchValue, navigation }) {
+    const appContext = useContext(AppContext);
 	const trackContext = useContext(TrackContext);
 
 	return (
@@ -18,20 +19,14 @@ export default function TrackList({ tracks, searchValue, navigation }) {
                     }
                     trackContext.setupQueue(tracks, index, false);
                 }}
-                onLongPress={() => navigation.navigate("SelectItemScreen", {
-                    data: tracks.list,
-                    index: index
-                })}
+                onLongPress={() => appContext.openMenuModal(<SongMenu track={track}/>)}
+                style = {{paddingRight: 5}}
                 underlayColor={'#d0d0d0'}
                 key={index.toString()}
             >
                 <View style = {styles.itemWrapper}>
                     <Track track={track} index={index}/>
-                    <TouchableOpacity
-                        style = {styles.optionButton}
-                    >
-                        <Ionicons name={ICONS.TRACK_OPTION} size={23}/>
-                    </TouchableOpacity>
+                    <TrackIcon trackId={track.id}/>
                 </View>
             </TouchableHighlight>
         ))
@@ -42,13 +37,5 @@ const styles = StyleSheet.create({
 	itemWrapper: {
 		flexDirection: 'row',
 		alignItems: 'center',
-	},
-	optionButton: {
-		width: 40,
-		height: 40,
-		borderRadius: 20,
-		justifyContent: 'center',
-		alignItems: 'center',
-		marginHorizontal: 5,
 	},
 });

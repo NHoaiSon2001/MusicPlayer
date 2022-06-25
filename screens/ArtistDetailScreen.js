@@ -44,7 +44,11 @@ export default function ArtistDetailScreen({ route, navigation }) {
 				<FloatingPlayerArea/>
 			</ScrollView>
 
-			<FloatingPlayer/>
+			{
+				route.params.inSearch
+					? null
+					: <FloatingPlayer/>
+			}
 		</View>
 	);
 }

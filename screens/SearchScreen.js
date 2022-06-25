@@ -10,10 +10,12 @@ import TrackList from '../components/TrackList';
 import TrackContext from '../utils/context/TrackContext';
 import SearchHistory from '../components/SearchHistory';
 import SearchScreenHeader from '../components/SearchScreenHeader';
+import AddSongList from '../components/AddSongList';
 
 export default function SearchScreen({ route, navigation }) {
     const trackContext = useContext(TrackContext);
 	const data = route.params.data;
+    const playlistCreateTime = route.params.playlistCreateTime;
     const [searchValue, setSearchValue] = useState("");
     const [result, setResult] = useState({
         name: "",
@@ -22,6 +24,7 @@ export default function SearchScreen({ route, navigation }) {
     });
 
     useEffect(() => {
+        console.log(playlistCreateTime);
         setResult({
             ...result,
             list: data.list.filter(track => (track.title.toLowerCase()).includes(searchValue.toLowerCase()))
@@ -34,6 +37,14 @@ export default function SearchScreen({ route, navigation }) {
             <Text style = {{fontSize: 20, fontWeight: 'bold'}}>{i18n.t("No result")} {searchValue}</Text>
         </View>
     )
+
+    const Result = () => {
+        if(playlistCreateTime === undefined) {
+            return <TrackList tracks={result} searchValue={searchValue} navigation={navigation}/>
+        } else {
+            return <AddSongList playlistCreateTime={playlistCreateTime} tracks={result.list} navigation={navigation}/>
+        }
+    }
 
 	return (
 		<View style = {styles.container}>
@@ -48,7 +59,7 @@ export default function SearchScreen({ route, navigation }) {
                 ? (
                     result.list.length != 0
                         ? <ScrollView showsVerticalScrollIndicator={false}>
-                            <TrackList tracks={result} searchValue={searchValue} navigation={navigation}/>
+                            <Result/>
                         </ScrollView>
                         : <NoResult/>
                 )
