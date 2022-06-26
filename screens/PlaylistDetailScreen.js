@@ -14,6 +14,9 @@ import TextTicker from "react-native-text-ticker";
 import DetailScreenHeader from '../components/DetailScreemHeader';
 
 export default function PlaylistDetailScreen({ route, navigation }) {
+	const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
 	const trackContext = useContext(TrackContext);
 	const [playlist, setPlaylist] = useState(route.params.playlist);
 
@@ -31,8 +34,9 @@ export default function PlaylistDetailScreen({ route, navigation }) {
 			<Entypo
 				name={ICONS.ADD_SONGS}
 				size={25}
+				color={darkMode ? '#ffffff' : '#626262'}
 			/>
-			<Text style={{ fontWeight: 'bold', marginLeft: 5 }}>{i18n.t("Add songs")}</Text>
+			<Text style={styles.addSongsText}>{i18n.t("Add songs")}</Text>
 		</View>
 	)
 
@@ -69,7 +73,7 @@ export default function PlaylistDetailScreen({ route, navigation }) {
 								? <TouchableOpacity
 									onPress={() => navigation.navigate("AddSongScreen", { playlistCreateTime: playlist.createTime })}
 									style={styles.addSongsTouchable}
-									activeOpacity={0.5}
+									activeOpacity={1}
 								>
 									<AddSongButton />
 								</TouchableOpacity>
@@ -107,9 +111,10 @@ export default function PlaylistDetailScreen({ route, navigation }) {
 	);
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
 	container: {
 		flex: 1,
+        backgroundColor: darkMode ? '#494949' : '#f0f0f0',
 	},
 	headerContainer: {
 		margin: 5,
@@ -139,16 +144,18 @@ const styles = StyleSheet.create({
 	nameText: {
 		fontSize: 20,
 		fontWeight: 'bold',
+        color: darkMode ? '#ffffff' : '#151515',
 	},
 	totalSongText: {
 		fontSize: 14,
+        color: darkMode ? '#dbdbdb' : '#151515',
 	},
 	addSongsTouchable: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		alignSelf: 'center',
 		justifyContent: 'center',
-		backgroundColor: '#d0d0d0',
+		backgroundColor: darkMode ? '#8a8a8a' : '#d0d0d0',
 		height: 40,
 		borderRadius: 20,
 		paddingHorizontal: 20,
@@ -163,5 +170,10 @@ const styles = StyleSheet.create({
 	addSongsArea: {
 		flexGrow: 1,
 		justifyContent: 'space-around',
+	},
+	addSongsText: {
+		fontWeight: 'bold',
+		marginLeft: 5,
+        color: darkMode ? '#ffffff' : '#151515',
 	},
 });

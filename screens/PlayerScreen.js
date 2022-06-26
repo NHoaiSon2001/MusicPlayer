@@ -20,6 +20,8 @@ const PLAYER_SCREEN_HEIGHT = SCREEN_HEIGHT / 1.1;
 
 const Screen = () => {
     const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const trackContext = useContext(TrackContext);
 
     return (
@@ -29,12 +31,26 @@ const Screen = () => {
                     onPress={() => appContext.playerScreenRef.current?.close('alwaysOpen')}
                     style = {styles.headerButton}
                 >
-                    <Feather name={ICONS.PLAYER_SCREEN_CLOSE} size={35} color={'#676767'}/>
+                    <Feather
+                        name={ICONS.PLAYER_SCREEN_CLOSE}
+                        size={35}
+                        color={darkMode ? '#e8e8e8' : '#626262'}
+                    />
                 </TouchableOpacity>
 
                 <View style = {styles.queueInfo}>
-                    <View>
-                        <Text>{i18n.t('PLAYING FROM')} {i18n.t(trackContext.queueInfo.type).toUpperCase()}</Text>
+                    <View style = {{alignItems: 'center'}}>
+                        <TextTicker
+                            style={{color: darkMode ? '#e6e6e6' : '#151515'}}
+                            duration={15000}
+                            marqueeDelay={500}
+                            animationType={'auto'}
+                            loop={true}
+                            bounce={false}
+                            scroll={false}
+                        >
+                            {i18n.t('PLAYING FROM')} {i18n.t(trackContext.queueInfo.type).toUpperCase()}
+                        </TextTicker>
                     </View>
 
                     {
@@ -64,7 +80,7 @@ const Screen = () => {
                     <Entypo
                         name={ICONS.ADD_SONGS}
                         size={25}
-                        color={'#676767'}
+                        color={darkMode ? '#e5e5e5' : '#626262'}
                     />
                 </TouchableOpacity>
             </View>
@@ -104,10 +120,10 @@ export default function PlayerScreen() {
     )
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#e0e0e0',
+        backgroundColor: darkMode ? '#7b7b7b' : '#f0f0f0',
         height: PLAYER_SCREEN_HEIGHT,
         width:"100%",
     },
@@ -131,5 +147,6 @@ const styles = StyleSheet.create({
     queueName: {
         fontWeight: 'bold',
         fontSize: 15,
+        color: darkMode ? '#eaeaea' : '#151515',
     },
 });

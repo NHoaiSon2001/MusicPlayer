@@ -4,6 +4,7 @@ import AppContext from "../utils/context/AppContext";
 
 const Message = () => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
 
     return (
         <Modal
@@ -12,8 +13,8 @@ const Message = () => {
             visible={appContext.messageVisible}
         >
             <View style={styles.centeredView}>
-                <View style={styles.modalView}>
-                    <Text>{appContext.message}</Text>
+                <View style={[styles.modalView, {backgroundColor: darkMode ? '#666666' : '#fbfbfb'}]}>
+                    <Text style = {{color: darkMode ? '#e3e3e3' : '#1e1e1e'}}>{appContext.message}</Text>
                 </View>
             </View>
         </Modal>
@@ -30,7 +31,6 @@ const styles = StyleSheet.create({
         marginBottom: 60,
     },
     modalView: {
-        backgroundColor: '#fbfbfb',
         borderRadius: 30,
         paddingVertical: 8,
         paddingHorizontal: 20,

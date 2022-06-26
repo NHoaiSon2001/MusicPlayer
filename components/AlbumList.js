@@ -7,6 +7,7 @@ import { AlbumMenu } from './MenuModal';
 
 const AlbumList = ({ albums, searchValue, navigation }) => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
 
     return (
         <View style = {styles.container}>
@@ -18,7 +19,7 @@ const AlbumList = ({ albums, searchValue, navigation }) => {
                     })}
                     onLongPress={() => appContext.openMenuModal(<AlbumMenu album={album}/>)}
                     style = {styles.touchable}
-                    underlayColor={'#d0d0d0'}
+                    underlayColor={darkMode ? '#828282' :'#d0d0d0'}
                     key={index.toString()}
                 >
                     <Album

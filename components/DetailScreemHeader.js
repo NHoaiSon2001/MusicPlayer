@@ -1,15 +1,11 @@
-import { useContext, useEffect } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { useContext } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
-import Track from '../components/Track';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FloatingPlayerArea from '../components/FloatingPlayerArea';
 import ICONS from '../assets/ICONS';
-import FloatingPlayer from '../components/FloatingPlayer';
-import TrackList from '../components/TrackList';
 import i18n from '../utils/i18n';
 import TextTicker from "react-native-text-ticker";
 import { AlbumMenu, ArtistMenu, PlaylistMenu } from './MenuModal';
@@ -17,7 +13,8 @@ import { AlbumMenu, ArtistMenu, PlaylistMenu } from './MenuModal';
 export default function DetailScreenHeader({ data, navigation, searchValue }) {
     const trackContext = useContext(TrackContext);
     const appContext = useContext(AppContext);
-
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
 
     const openMenu = () => {
         switch(data.type) {
@@ -41,7 +38,11 @@ export default function DetailScreenHeader({ data, navigation, searchValue }) {
                         onPress={() => navigation.goBack()}
                         style={styles.headerButton}
                     >
-                        <Feather name={ICONS.BACK} size={30} />
+                         <Feather
+                            name={ICONS.BACK}
+                            size={35}
+                            color={darkMode ? '#d9d9d9' : '#151515'}
+                        />
                     </TouchableOpacity>
 
                     <View style={{ flexShrink: 1 }}>
@@ -64,7 +65,11 @@ export default function DetailScreenHeader({ data, navigation, searchValue }) {
                         onPress={() => navigation.navigate("SearchScreen", { data: data })}
                         style={styles.headerButton}
                     >
-                        <Ionicons name={ICONS.SEARCH} size={25} />
+                        <Ionicons
+                            name={ICONS.SEARCH}
+                            size={25}
+							color={darkMode ? '#e4e4e4' : '#626262'}
+                        />
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -74,14 +79,22 @@ export default function DetailScreenHeader({ data, navigation, searchValue }) {
                         })}
                         style={styles.headerButton}
                     >
-                        <MaterialCommunityIcons name={ICONS.SELECT_ITEM} size={30} />
+                        <MaterialCommunityIcons
+                            name={ICONS.SELECT_ITEM}
+                            size={30}
+							color={darkMode ? '#e4e4e4' : '#626262'}
+                        />
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         onPress={openMenu}
                         style = {styles.headerButton}
                     >
-                        <Ionicons name={ICONS.MENU} size={25} color={'#676767'}/>
+                        <Ionicons
+                            name={ICONS.MENU}
+                            size={25}
+                            color={darkMode ? '#e4e4e4' : '#626262'}
+                        />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -100,7 +113,11 @@ export default function DetailScreenHeader({ data, navigation, searchValue }) {
                             style={styles.playButtonTouable}
                         >
                             <View style={styles.playButtonContainer}>
-                                <Ionicons name={ICONS.PLAY} size={30} color={'#626262'} />
+                                <Ionicons
+                                    name={ICONS.PLAY}
+                                    size={30}
+                                    color={darkMode ? '#ffffff' : '#626262'}
+                                />
                                 <Text style={styles.playButtonText} numberOfLines={1}>{i18n.t("Play")}</Text>
                             </View>
                         </TouchableOpacity>
@@ -116,20 +133,22 @@ export default function DetailScreenHeader({ data, navigation, searchValue }) {
                             style={styles.playButtonTouable}
                         >
                             <View style={styles.playButtonContainer}>
-                                <Ionicons name={ICONS.SHUFFLE} size={30} color={'#626262'} />
+                                <Ionicons
+                                    name={ICONS.SHUFFLE}
+                                    size={30}
+                                    color={darkMode ? '#ffffff' : '#626262'}
+                                />
                                 <Text style={styles.playButtonText} numberOfLines={1}>{i18n.t("Shuffle")}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
                     : null
             }
-
-
         </View>
     );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     headerContainer: {
         padding: 5,
     },
@@ -142,6 +161,7 @@ const styles = StyleSheet.create({
     headerNameText: {
         fontSize: 18,
         fontWeight: 'bold',
+        color: darkMode ? '#ffffff' : '#151515',
     },
     controllContainer: {
         flexDirection: 'row',
@@ -156,7 +176,7 @@ const styles = StyleSheet.create({
     },
     playButtonContainer: {
         height: '100%',
-        backgroundColor: '#d0d0d0',
+        backgroundColor: darkMode ? '#8a8a8a' : '#d0d0d0',
         borderRadius: 30,
         flexDirection: 'row',
         paddingHorizontal: 10,
@@ -167,6 +187,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
         fontSize: 15,
         fontWeight: 'bold',
+        color: darkMode ? '#ffffff' : '#151515',
     },
     headerButton: {
         alignItems: 'center',

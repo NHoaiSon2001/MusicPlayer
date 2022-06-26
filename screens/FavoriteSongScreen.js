@@ -1,16 +1,20 @@
-import { useContext, useEffect} from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { useContext } from 'react';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import TrackContext from '../utils/context/TrackContext';
 import FloatingPlayerArea from '../components/FloatingPlayerArea';
 import FloatingPlayer from '../components/FloatingPlayer';
 import TrackList from '../components/TrackList';
 import DetailScreenHeader from '../components/DetailScreemHeader';
+import AppContext from '../utils/context/AppContext';
 
 export default function FavoriteSongScreen({ navigation }) {
+	const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const trackContext = useContext(TrackContext);
     const favoriteSongs = {
         name: "",
-        type: "Favorite Songs",
+        type: "Favorites all",
         list: trackContext.favorites
     }
 
@@ -34,8 +38,9 @@ export default function FavoriteSongScreen({ navigation }) {
 	);
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: darkMode ? '#494949' : '#f0f0f0',
 	},
 });

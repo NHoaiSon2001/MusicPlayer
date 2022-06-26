@@ -8,6 +8,7 @@ import { ArtistMenu } from './MenuModal';
 
 const ArtistList = ({ artists, searchValue, navigation, inSearch }) => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
 
     return (
         artists.map((artist, index) => (
@@ -18,12 +19,17 @@ const ArtistList = ({ artists, searchValue, navigation, inSearch }) => {
                     inSearch: inSearch,
                 })}
                 onLongPress={() => appContext.openMenuModal(<ArtistMenu artist={artist}/>)}
-                underlayColor={'#d0d0d0'}
+                underlayColor={darkMode ? '#828282' :'#d0d0d0'}
                 key={index.toString()}
             >
                 <View style = {styles.itemWrapper}>
                     <Artist artist={artist} />
-                    <Feather name={ICONS.NEXT} size={25} style={{marginHorizontal: 5}}/>
+                    <Feather
+                        name={ICONS.NEXT}
+                        size={25}
+					    color={darkMode ? '#d9d9d9' : '#151515'}
+                        style={{marginHorizontal: 5}}
+                    />
                 </View>
             </TouchableHighlight>
         ))

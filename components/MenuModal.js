@@ -1,5 +1,5 @@
-import { useContext, useState } from 'react';
-import { StyleSheet, Text, Image, TouchableHighlight, View, TouchableOpacity, Alert } from 'react-native';
+import { useContext } from 'react';
+import { StyleSheet, Text, Image, TouchableHighlight, View, TouchableOpacity } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
@@ -27,6 +27,8 @@ const custom = {
 
 const PlayNext = ({ data, shuffle }) => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const trackContext = useContext(TrackContext);
 
     const albertMessage = (dataListLength) => {
@@ -68,7 +70,7 @@ const PlayNext = ({ data, shuffle }) => {
     return (
         <TouchableHighlight
             onPress={playNext}
-            underlayColor={'#d0d0d0'}
+            underlayColor={darkMode ? '#828282' :'#d0d0d0'}
             style = {styles.touchable}
         >
             <View style = {styles.touchableContainer}>
@@ -76,12 +78,17 @@ const PlayNext = ({ data, shuffle }) => {
                     <Ionicons
                         name={ICONS.SKIP_NEXT}
                         size={30}
+                        color={darkMode ? "#eaeaea" : "#555555"}
                     />
                 </View>
                 <Text style = {styles.touchableText} numberOfLines={2}>{i18n.t(shuffle ? "Play next shuffle" : "Play next")}</Text>
 				{
                     shuffle
-                        ? <Ionicons name={ICONS.SHUFFLE} size={30}/>
+                        ? <Ionicons
+                            name={ICONS.SHUFFLE}
+                            size={30}
+                            color={darkMode ? "#eaeaea" : "#555555"}
+                        />
                         : null
                 }
             </View>
@@ -91,6 +98,8 @@ const PlayNext = ({ data, shuffle }) => {
 
 const AddToQueue = ({ data, shuffle }) => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const trackContext = useContext(TrackContext);
 
     const addToQueue = async () => {
@@ -128,7 +137,7 @@ const AddToQueue = ({ data, shuffle }) => {
     return (
         <TouchableHighlight
             onPress={addToQueue}
-            underlayColor={'#d0d0d0'}
+            underlayColor={darkMode ? '#828282' :'#d0d0d0'}
             style = {styles.touchable}
         >
             <View style = {styles.touchableContainer}>
@@ -136,12 +145,17 @@ const AddToQueue = ({ data, shuffle }) => {
                     <MaterialCommunityIcons
                         name={ICONS.QUEUE}
                         size={30}
+                        color={darkMode ? "#eaeaea" : "#555555"}
                     />
                 </View>
                 <Text style = {styles.touchableText} numberOfLines={2}>{i18n.t(shuffle ? "Add to queue shuffle" : "Add to queue")}</Text>
                 {
                     shuffle
-                        ? <Ionicons name={ICONS.SHUFFLE} size={30}/>
+                        ? <Ionicons
+                            name={ICONS.SHUFFLE}
+                            size={30}
+                            color={darkMode ? "#eaeaea" : "#555555"}
+                        />
                         : null
                 }
             </View>
@@ -151,11 +165,13 @@ const AddToQueue = ({ data, shuffle }) => {
 
 const AddToPlaylist = ({ tracks }) => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
 
     return (
         <TouchableHighlight
             onPress={() => appContext.openMenuModal(<AddToPlaylistModal tracks={tracks}/>)}
-            underlayColor={'#d0d0d0'}
+            underlayColor={darkMode ? '#828282' :'#d0d0d0'}
             style = {styles.touchable}
         >
             <View style = {styles.touchableContainer}>
@@ -163,6 +179,7 @@ const AddToPlaylist = ({ tracks }) => {
                     <Entypo
                         name={ICONS.ADD_SONGS}
                         size={25}
+                        color={darkMode ? "#eaeaea" : "#555555"}
                     />
                 </View>
                 <Text style = {styles.touchableText} numberOfLines={2}>{i18n.t("Add to playlist")}</Text>
@@ -173,6 +190,8 @@ const AddToPlaylist = ({ tracks }) => {
 
 const EditPlaylist = ({ playlist }) => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
 
     return (
         <TouchableOpacity
@@ -185,6 +204,7 @@ const EditPlaylist = ({ playlist }) => {
                     <MaterialIcons
                         name={ICONS.EDIT_PLAYLIST}
                         size={30}
+                        color={darkMode ? "#eaeaea" : "#555555"}
                     />
                 </View>
                 <Text style = {styles.touchableText} numberOfLines={2}>{i18n.t("Edit playlist info")}</Text>
@@ -195,6 +215,8 @@ const EditPlaylist = ({ playlist }) => {
 
 const DeletePlaylist = ({ playlist }) => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
 
     return (
         <TouchableOpacity
@@ -217,6 +239,10 @@ const DeletePlaylist = ({ playlist }) => {
 }
 
 const Album = ({ album }) => {
+    const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
+
     return (
         <View style={[styles.itemContainer]}>
             <View style={styles.coverWrapper}>
@@ -229,8 +255,8 @@ const Album = ({ album }) => {
             <View style={styles.info}>
                 <Text numberOfLines={2} style={styles.titleText}>{album.name}</Text>
                 <View style={{ flexDirection: 'row' }}>
-                    <Text style={{ flexShrink: 1 }} numberOfLines={1}>{album.artist}</Text>
-                    <Text> • {album.list.length} {i18n.t((album.list.length < 2) ? "Song" : "Songs")}</Text>
+                    <Text style={styles.totalSongText} numberOfLines={1}>{album.artist}</Text>
+                    <Text style = {styles.totalSongText}> • {album.list.length} {i18n.t((album.list.length < 2) ? "Song" : "Songs")}</Text>
                 </View>
             </View>
         </View>
@@ -238,6 +264,10 @@ const Album = ({ album }) => {
 }
 
 const Playlist = ({ playlist }) => {
+    const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
+
     return (
         <View style={[styles.itemContainer]}>
             <View style={styles.coverWrapper}>
@@ -253,109 +283,128 @@ const Playlist = ({ playlist }) => {
             <View style={styles.info}>
                 <Text numberOfLines={2} style={styles.titleText}>{playlist.name}</Text>
                 <View style={{ flexDirection: 'row' }}>
-                    <Text>{playlist.list.length} {i18n.t((playlist.list.length < 2) ? "Song" : "Songs")}</Text>
+                    <Text style = {styles.totalSongText}>{playlist.list.length} {i18n.t((playlist.list.length < 2) ? "Song" : "Songs")}</Text>
                 </View>
             </View>
         </View>
     )
 }
 
-export const SongMenu = ({ track }) => (
-    <View>
-        <View style = {styles.infoContainer}>
-            <Track track={track}/>
-            <MaterialCommunityIcons
-                name={ICONS.SONGS}
-                size={25}
-                color={"#555555"}
-            />
-            <TrackIcon trackId={track.id}/>
-        </View>
-        <PlayNext data={{...custom, list: [track]}}/>
-        <AddToQueue data={{...custom, list: [track]}}/>
-        <AddToPlaylist tracks={[track]}/>
-    </View>
-)
+export const SongMenu = ({ track }) => {
+    const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
 
-export const ArtistMenu = ({ artist }) => (
-    <View>
-        <View style = {styles.infoContainer}>
-            <Artist artist={artist}/>
-            <MaterialCommunityIcons
-                name={ICONS.ARTISTS}
-                size={25}
-                color={"#555555"}
-            />
+    return (        <View>
+            <View style = {styles.infoContainer}>
+                <Track track={track}/>
+                <MaterialCommunityIcons
+                    name={ICONS.SONGS}
+                    size={25}
+                    color={darkMode ? "#eaeaea" : "#555555"}
+                />
+                <TrackIcon trackId={track.id}/>
+            </View>
+            <PlayNext data={{...custom, list: [track]}}/>
+            <AddToQueue data={{...custom, list: [track]}}/>
+            <AddToPlaylist tracks={[track]}/>
         </View>
-        <PlayNext data={artist}/>
-        <AddToQueue data={artist}/>
-        {
-            artist.list.length > 1
-                ? <View>
-                    <PlayNext data={artist} shuffle={true}/>
-                    <AddToQueue data={artist} shuffle={true}/>
-                </View>
-                : null
-        }
-        <AddToPlaylist tracks={artist.list}/>
-    </View>
-)
+    )
+}
 
-export const AlbumMenu = ({ album }) => (
-    <View>
-        <View style = {styles.infoContainer}>
-            <Album album={album}/>
-            <MaterialCommunityIcons
-                name={ICONS.ALBUMS}
-                size={25}
-                color={"#555555"}
-            />
-        </View>
-        <PlayNext data={album}/>
-        <AddToQueue data={album}/>
-        {
-            album.list.length > 1
-                ? <View>
-                    <PlayNext data={artist} shuffle={true}/>
-                    <AddToQueue data={artist} shuffle={true}/>
-                </View>
-                : null
-        }
-        <AddToPlaylist tracks={album.list}/>
-    </View>
-)
+export const ArtistMenu = ({ artist }) => {
+    const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
 
-export const PlaylistMenu = ({ playlist }) => (
-    <View>
-        <View style = {styles.infoContainer}>
-            <Playlist playlist={playlist}/>
-            <MaterialCommunityIcons
-                name={ICONS.PLAYLISTS}
-                size={25}
-                color={"#555555"}
-            />
+    return (
+        <View>
+            <View style = {styles.infoContainer}>
+                <Artist artist={artist}/>
+                <MaterialCommunityIcons
+                    name={ICONS.ARTISTS}
+                    size={25}
+                    color={darkMode ? "#eaeaea" : "#555555"}
+                />
+            </View>
+            <PlayNext data={artist}/>
+            <AddToQueue data={artist}/>
+            {
+                artist.list.length > 1
+                    ? <View>
+                        <PlayNext data={artist} shuffle={true}/>
+                        <AddToQueue data={artist} shuffle={true}/>
+                    </View>
+                    : null
+            }
+            <AddToPlaylist tracks={artist.list}/>
         </View>
-        <DeletePlaylist playlist={playlist}/>
-        <EditPlaylist playlist={playlist}/>
-        {
-            playlist.list.length !== 0
-                ? <View>
-                    <PlayNext data={playlist}/>
-                    <AddToQueue data={playlist}/>
-                </View>
-                : null
-        }
-        {
-            playlist.list.length > 1
-                ? <View>
-                    <PlayNext data={playlist} shuffle={true}/>
-                    <AddToQueue data={playlist} shuffle={true}/>
-                </View>
-                : null
-        }
-        <AddToPlaylist tracks={playlist.list}/>
-    </View>
-)
+    )
+}
+
+export const AlbumMenu = ({ album }) => {
+    const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+
+    return (
+        <View>
+            <View style = {styles.infoContainer}>
+                <Album album={album}/>
+                <MaterialCommunityIcons
+                    name={ICONS.ALBUMS}
+                    size={25}
+                    color={darkMode ? "#eaeaea" : "#555555"}
+                />
+            </View>
+            <PlayNext data={album}/>
+            <AddToQueue data={album}/>
+            {
+                album.list.length > 1
+                    ? <View>
+                        <PlayNext data={album} shuffle={true}/>
+                        <AddToQueue data={album} shuffle={true}/>
+                    </View>
+                    : null
+            }
+            <AddToPlaylist tracks={album.list}/>
+        </View>
+    )
+}
+
+export const PlaylistMenu = ({ playlist }) => {
+    const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+
+    return (
+        <View>
+            <View style = {styles.infoContainer}>
+                <Playlist playlist={playlist}/>
+                <MaterialCommunityIcons
+                    name={ICONS.PLAYLISTS}
+                    size={25}
+                    color={darkMode ? "#eaeaea" : "#555555"}
+                />
+            </View>
+            <DeletePlaylist playlist={playlist}/>
+            <EditPlaylist playlist={playlist}/>
+            {
+                playlist.list.length !== 0
+                    ? <View>
+                        <PlayNext data={playlist}/>
+                        <AddToQueue data={playlist}/>
+                    </View>
+                    : null
+            }
+            {
+                playlist.list.length > 1
+                    ? <View>
+                        <PlayNext data={playlist} shuffle={true}/>
+                        <AddToQueue data={playlist} shuffle={true}/>
+                    </View>
+                    : null
+            }
+            <AddToPlaylist tracks={playlist.list}/>
+        </View>
+    )
+}
 
 export const SelectedItemMenu = ({ data }) => (
     <View>
@@ -374,12 +423,13 @@ export const SelectedItemMenu = ({ data }) => (
 
 const MenuModal = () => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
 
     return (
         <Modalize
             ref={appContext.menuModalRef}
             withHandle={false}
-            modalStyle={{backgroundColor: '#e0e0e0'}}
+            modalStyle={{backgroundColor: darkMode ? '#494949' : '#f0f0f0'}}
             tapGestureEnabled={false}
             adjustToContentHeight={true}
         >
@@ -393,6 +443,14 @@ const MenuModal = () => {
 export default MenuModal;
 
 const styles = StyleSheet.create({
+    infoContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingRight: 5,
+    },
+})
+
+const getStyles = (darkMode) => StyleSheet.create({
     touchable: {
         width: '100%',
     },
@@ -409,15 +467,11 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontWeight: 'bold',
         paddingRight: 20,
+        color: darkMode ? '#ffffff' : '#151515',
     },
     iconContainer: {
         width: 70,
         alignItems: 'center',
-    },
-    infoContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingRight: 5,
     },
     itemContainer: {
         height: ITEM_HEIGHT,
@@ -441,7 +495,11 @@ const styles = StyleSheet.create({
         flexShrink: 1,
     },
     titleText: {
-        fontSize: 15,
-        fontWeight: 'bold',
+        flexShrink: 1,
+        fontWeight:'bold',
+        color: darkMode ? '#ffffff' : '#151515',
+    },
+    totalSongText: {
+        color: darkMode ? '#e3e3e3' : '#1e1e1e',
     },
 })

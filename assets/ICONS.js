@@ -37,6 +37,7 @@ const ICONS = {
     EDIT_PLAYLIST: 'edit',
     EDIT_IMAGE: 'picture',
     CAMERA: 'camerao',
+    SAVE_QUEUE: 'playlist-plus',
 }
 
 export default ICONS;

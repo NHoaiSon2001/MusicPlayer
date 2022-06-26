@@ -1,23 +1,23 @@
 import { useContext } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, TouchableHighlight } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import FloatingPlayer from '../components/FloatingPlayer';
 import TrackContext from '../utils/context/TrackContext';
 import FloatingPlayerArea from '../components/FloatingPlayerArea';
 import AlbumDetailScreen from './AlbumDetailScreen';
-import i18n from '../utils/i18n';
-import Feather from 'react-native-vector-icons/Feather';
-import ICONS from '../assets/ICONS';
-import Album from '../components/Album';
 import FavoriteButton from '../components/FavoriteButton';
 import FavoriteAlbumScreen from './FavoriteAlbumScreen';
 import AlbumList from '../components/AlbumList';
+import AppContext from '../utils/context/AppContext';
 
 const Stack = createStackNavigator();
 
 const ITEM_HEIGHT = 65;
 
 const Screen = ({ navigation }) => {
+  const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
   const trackContext = useContext(TrackContext);
 
   return (
@@ -50,9 +50,10 @@ export default function AlbumListScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
   container: {
     flex: 1,
+		backgroundColor: darkMode ? '#494949' : '#f0f0f0',
   },
   itemContainer: {
     height: ITEM_HEIGHT,

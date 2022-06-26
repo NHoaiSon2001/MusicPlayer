@@ -15,6 +15,8 @@ const ITEM_HEIGHT = 65;
 
 export default function SelectItemScreen({ route, navigation }) {
 	const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
 	const [selected, setSelected] = useState(route.params.index != null ? 1 : 0);
 	const data = route.params.data;
 	const length = route.params.data.length;
@@ -27,7 +29,11 @@ export default function SelectItemScreen({ route, navigation }) {
 					onPress={() => navigation.goBack()}
 					style = {styles.headerButton}
 				>
-					<Feather name={ICONS.BACK} size={35}/>
+					<Feather
+                        name={ICONS.BACK}
+                        size={35}
+                        color={darkMode ? '#d9d9d9' : '#151515'}
+                    />
 				</TouchableOpacity>
 
 				<Text style = {styles.headerText}>{selected} {i18n.t((selected < 2) ? 'item selected' : 'items selected')}</Text>
@@ -47,7 +53,7 @@ export default function SelectItemScreen({ route, navigation }) {
 					<MaterialCommunityIcons
 						name={(selected == length) ? ICONS.ITEM_SELECT : ICONS.ITEM_UNSELECT}
 						size={35}
-						color={(selected == length) ? '#81a7ff' : '#b0b0b0'}
+						color={(selected == length) ? '#81a7ff' : '#8e8e8e' }
 					/>
 				</TouchableOpacity>
 			</View>
@@ -61,7 +67,7 @@ export default function SelectItemScreen({ route, navigation }) {
 							setSelected(selected + ((indexSelected[index]) ? -1 : 1));
 							setIndexSelected(indexSelected.map((check, checkIndex) => (checkIndex != index) ? check : !check));
 						}}
-						underlayColor={'#d0d0d0'}
+						underlayColor={darkMode ? '#828282' :'#d0d0d0'}
 						key={index.toString()}
 					>
 						<View style = {styles.itemContainer}>
@@ -80,7 +86,7 @@ export default function SelectItemScreen({ route, navigation }) {
 								<MaterialCommunityIcons
 									name={(indexSelected[index]) ? ICONS.ITEM_SELECT : ICONS.ITEM_UNSELECT}
 									size={35}
-									color={(indexSelected[index]) ? '#81a7ff' : '#b0b0b0'}
+									color={(indexSelected[index]) ? '#81a7ff' : '#8e8e8e'}
 								/>
 							</View>
 						</View>
@@ -103,6 +109,7 @@ export default function SelectItemScreen({ route, navigation }) {
 						<MaterialCommunityIcons
 							name={ICONS.QUEUE}
 							size={30}
+							color={darkMode ? '#d9d9d9' : '#151515'}
 						/>
 						<Text style = {styles.controllTouchableText}>{i18n.t("Queue")}</Text>
 					</View>
@@ -118,6 +125,7 @@ export default function SelectItemScreen({ route, navigation }) {
 						<MaterialCommunityIcons
 							name={ICONS.PLAYLISTS}
 							size={30}
+							color={darkMode ? '#d9d9d9' : '#151515'}
 						/>
 						<Text style = {styles.controllTouchableText}>{i18n.t("Playlists")}</Text>
 					</View>
@@ -127,10 +135,10 @@ export default function SelectItemScreen({ route, navigation }) {
 	)
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#e0e0e0',
+		backgroundColor: darkMode ? '#494949' : '#f0f0f0',
 	},
 	headerContainer: {
 		height: 60,
@@ -149,6 +157,7 @@ const styles = StyleSheet.create({
 	headerText: {
 		fontSize: 20,
 		fontWeight: 'bold',
+        color: darkMode ? '#d9d9d9' : '#151515',
 	},
 	itemContainer: {
 		flexDirection: 'row',
@@ -164,6 +173,7 @@ const styles = StyleSheet.create({
     indexText: {
         fontSize: 15,
         fontWeight:'bold',
+        color: darkMode ? '#d9d9d9' : '#151515',
     },
 	controllContainer: {
 		height: 60,
@@ -178,5 +188,6 @@ const styles = StyleSheet.create({
 	controllTouchableText: {
 		fontWeight: 'bold',
 		fontSize: 12,
+		color: darkMode ? '#d9d9d9' : '#151515',
 	},
 });

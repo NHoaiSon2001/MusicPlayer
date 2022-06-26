@@ -1,12 +1,13 @@
 import { useContext, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Modalize } from 'react-native-modalize';
 import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
 import i18n from '../utils/i18n';
 
-const CreatePlaylistModal = ({ tracks, navigateDetail }) => {
+const CreatePlaylistModal = ({ tracks, navigateDetail, saveFromQueue }) => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const trackContext = useContext(TrackContext);
     const [name, setName] = useState("")
 
@@ -33,7 +34,7 @@ const CreatePlaylistModal = ({ tracks, navigateDetail }) => {
                 <TouchableOpacity
                     onPress={() => {
                         appContext.menuModalRef.current?.close();
-                        trackContext.createPlaylist(name, tracks, navigateDetail);
+                        trackContext.createPlaylist(name, tracks, navigateDetail, saveFromQueue);
                     }}
                     style = {[styles.actionTouchable, {backgroundColor: (name.length != 0) ? '#cdeaff' : "#bcbcbc" ,}]}
                     disabled={name.length == 0}
@@ -47,7 +48,7 @@ const CreatePlaylistModal = ({ tracks, navigateDetail }) => {
 
 export default CreatePlaylistModal;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     container: {
         flex: 1,
         height:  230,
@@ -59,17 +60,20 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 20,
         marginVertical: 20,
+        color: darkMode ? '#e3e3e3' : '#1e1e1e',
     },
     nameInputTitle: {
         fontSize: 17,
         alignSelf: 'flex-start',
         marginLeft: 40,
         marginBottom: 10,
+        color: darkMode ? '#e3e3e3' : '#1e1e1e',
     },
     nameInput: {
         height: 50,
         width: '90%',
-        backgroundColor: "#bcbcbc",
+        backgroundColor: darkMode ? '#8a8a8a' : '#bcbcbc',
+        color: darkMode ? '#e7e7e7' : '#151515',
         borderRadius: 10,
         paddingHorizontal: 10,
         fontSize: 17,
@@ -81,7 +85,7 @@ const styles = StyleSheet.create({
         margin: 20,
     },
     actionTouchable: {
-        backgroundColor: "#bcbcbc",
+        backgroundColor: darkMode ? '#8a8a8a' : '#d0d0d0',
         height: 50,
         width: 150,
         justifyContent: 'center',
@@ -89,7 +93,7 @@ const styles = StyleSheet.create({
         borderRadius: 30,
     },
     actionTouchableText: {
-        color: '#2e2e2e',
+        color: darkMode ? '#ffffff' : '#151515',
         fontWeight: 'bold',
         fontSize: 18,
     },

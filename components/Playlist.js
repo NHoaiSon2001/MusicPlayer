@@ -1,10 +1,16 @@
 import { Text, Dimensions, StyleSheet, View, Image } from "react-native";
 import i18n from "../utils/i18n";
 import ListControllbutton from "./ListControllButton";
+import AppContext from "../utils/context/AppContext";
+import { useContext } from "react";
 
 const ITEM_WIDTH = (Dimensions.get('screen').width - 20) / 2;
 
 const Playlist = ({ playlist, searchValue }) => {
+    const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
+
     return (
         <View style = {styles.container}>
             <View style={styles.coverWrapper}>
@@ -19,7 +25,7 @@ const Playlist = ({ playlist, searchValue }) => {
 
             <View style = {styles.playlistInfoContainer}>
                 <Text style = {styles.nameText} numberOfLines={2}>{playlist.name}</Text>
-                <Text>{playlist.list.length} {i18n.t((playlist.list.length < 2) ? "Song" : "Songs")}</Text>
+                <Text style = {styles.text}>{playlist.list.length} {i18n.t((playlist.list.length < 2) ? "Song" : "Songs")}</Text>
             </View>
 
             <ListControllbutton
@@ -32,7 +38,7 @@ const Playlist = ({ playlist, searchValue }) => {
 
 export default Playlist;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     container: {
         alignItems: 'center',
         height: ITEM_WIDTH + 70,
@@ -56,5 +62,9 @@ const styles = StyleSheet.create({
     nameText: {
         fontSize: 15,
         fontWeight: 'bold',
+        color: darkMode ? '#e1e1e1' : '#151515',
     },
+    text: {
+        color: darkMode ? '#c0c0c0' : '#151515',
+    }
 })

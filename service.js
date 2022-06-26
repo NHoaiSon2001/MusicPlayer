@@ -1,4 +1,4 @@
-import TrackPlayer from 'react-native-track-player';
+import TrackPlayer, {RepeatMode} from 'react-native-track-player';
 
 
 module.exports = async function () {
@@ -12,13 +12,14 @@ module.exports = async function () {
 			TrackPlayer.pause()
 		});
 
-		TrackPlayer.addEventListener('remote-next', () => {
+		TrackPlayer.addEventListener('remote-next', async () => {
+			if(await TrackPlayer.getCurrentTrack() === (await TrackPlayer.getQueue()).length - 1 && await TrackPlayer.getRepeatMode() !== RepeatMode.Queue) return;
 			TrackPlayer.skipToNext()
 		});
 
-		TrackPlayer.addEventListener('remote-previous', () => {
-			//TrackPlayer.skipToPrevious();
-			console.log("remote-previous");
+		TrackPlayer.addEventListener('remote-previous', async () => {
+			if(await TrackPlayer.getCurrentTrack() === 0 && await TrackPlayer.getRepeatMode() !== RepeatMode.Queue) return;
+			TrackPlayer.skipToPrevious();
 		});
 
 		TrackPlayer.addEventListener('remote-stop', () => {

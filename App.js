@@ -1,5 +1,5 @@
-import { Component, createRef, useContext, useRef } from 'react';
-import { Dimensions, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useContext } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from '@react-navigation/native';
@@ -27,6 +27,10 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const MainNavigator = () => {
+  const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -43,12 +47,12 @@ const MainNavigator = () => {
               <MaterialCommunityIcons
                 name={ICONS.SONGS}
                 size={25}
-                color={focused ? '#81a7ff' : "#555555"}
+                color={focused ? '#81a7ff' : (darkMode ? '#dcdcdc' : "#555555")}
               />
               {
                 focused
                   ? null
-                  : <Text style = {{color: "#555555", fontSize: 10}}>{i18n.t('Songs')}</Text>
+                  : <Text style = {{color: (darkMode ? '#dcdcdc' : "#555555"), fontSize: 10}}>{i18n.t('Songs')}</Text>
               }
             </View>
           ),
@@ -65,12 +69,12 @@ const MainNavigator = () => {
               <MaterialCommunityIcons
                 name={ICONS.ARTISTS}
                 size={25}
-                color={focused ? '#81a7ff' : "#555555"}
+                color={focused ? '#81a7ff' : (darkMode ? '#dcdcdc' : "#555555")}
               />
               {
                 focused
                   ? null
-                  : <Text style = {{color: "#555555", fontSize: 10}}>{i18n.t('Artists')}</Text>
+                  : <Text style = {{color: (darkMode ? '#dcdcdc' : "#555555"), fontSize: 10}}>{i18n.t('Artists')}</Text>
               }
             </View>
           ),
@@ -87,12 +91,12 @@ const MainNavigator = () => {
               <MaterialCommunityIcons
                 name={ICONS.ALBUMS}
                 size={25}
-                color={focused ? '#81a7ff' : "#555555"}
+                color={focused ? '#81a7ff' : (darkMode ? '#dcdcdc' : "#555555")}
               />
               {
                 focused
                   ? null
-                  : <Text style = {{color: "#555555", fontSize: 10}}>{i18n.t('Albums')}</Text>
+                  : <Text style = {{color: (darkMode ? '#dcdcdc' : "#555555"), fontSize: 10}}>{i18n.t('Albums')}</Text>
               }
             </View>
           ),
@@ -109,12 +113,12 @@ const MainNavigator = () => {
               <MaterialCommunityIcons
                 name={ICONS.PLAYLISTS}
                 size={25}
-                color={focused ? '#81a7ff' : "#555555"}
+                color={focused ? '#81a7ff' : (darkMode ? '#dcdcdc' : "#555555")}
               />
               {
                 focused
                   ? null
-                  : <Text style = {{color: "#555555", fontSize: 10}}>{i18n.t('Playlists')}</Text>
+                  : <Text style = {{color: (darkMode ? '#dcdcdc' : "#555555"), fontSize: 10}}>{i18n.t('Playlists')}</Text>
               }
             </View>
           ),
@@ -154,10 +158,10 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
   tabBarStyle: {
     position: 'absolute',
-    backgroundColor: '#dcdcdc',
+    backgroundColor: darkMode ? '#585858' :'#dcdcdc',
     marginHorizontal: 10,
     marginVertical: 5,
     borderRadius: 10,

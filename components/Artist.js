@@ -1,22 +1,30 @@
 import { useContext } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, ScrollView, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import i18n from '../utils/i18n';
+import AppContext from '../utils/context/AppContext';
 
 const ITEM_HEIGHT = 65;
 
-const Artist = (props) => {
+const Artist = ({ artist }) => {
+    const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
+
     return (
-        <View style = {[styles.itemContainer]}>
-            <View style = {styles.coverWrapper}>
+        <View style={[styles.itemContainer]}>
+            <View style={styles.coverWrapper}>
                 <Image
-                    source={require('../assets/defaults/cover_default.jpg')}
-                    style = {styles.coverImage}
+                    source={artist.cover === undefined
+                        ? require('../assets/defaults/cover_default.jpg')
+                        : {uri: artist.cover}
+                    }
+                    style={styles.coverImage}
                 />
             </View>
 
-            <View style = {styles.artistInfo}>
-                <Text numberOfLines={2} style = {styles.nameText}>{props.artist.name}</Text>
-                <Text>{props.artist.list.length} {i18n.t((props.artist.list.length < 2) ? "Song": "Songs")}</Text>
+            <View style={styles.artistInfo}>
+                <Text numberOfLines={2} style={styles.nameText}>{artist.name}</Text>
+                <Text style = {styles.totalSongText}>{artist.list.length} {i18n.t((artist.list.length < 2) ? "Song" : "Songs")}</Text>
             </View>
         </View>
     )
@@ -24,7 +32,7 @@ const Artist = (props) => {
 
 export default Artist;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     itemContainer: {
         height: ITEM_HEIGHT,
         flexDirection: 'row',
@@ -38,8 +46,8 @@ const styles = StyleSheet.create({
         marginHorizontal: 10,
     },
     coverImage: {
-      height: '100%',
-      width: '100%',
+        height: '100%',
+        width: '100%',
         borderRadius: 5,
     },
     artistInfo: {
@@ -47,7 +55,11 @@ const styles = StyleSheet.create({
         flexShrink: 1,
     },
     nameText: {
-      fontSize: 15,
-      fontWeight:'bold',
+        fontSize: 15,
+        fontWeight: 'bold',
+        color: darkMode ? '#ffffff' : '#151515',
+    },
+    totalSongText: {
+        color: darkMode ? '#e3e3e3' : '#1e1e1e',
     },
 })

@@ -1,8 +1,8 @@
-import { Component, createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { RNAndroidAudioStore } from "react-native-get-music-files";
-import TrackPlayer, { Capability, Event, RepeatMode, State, usePlaybackState, useProgress, useTrackPlayerEvents } from "react-native-track-player";
+import TrackPlayer, { Capability, Event, useTrackPlayerEvents } from "react-native-track-player";
 import AppContext from "./AppContext";
 import i18n from "../i18n";
 var RNFS = require('react-native-fs');
@@ -10,6 +10,10 @@ var RNFS = require('react-native-fs');
 const TrackContext = createContext();
 
 export function TrackProvider({ children }) {
+	const getCover = (track) => {
+		if(track != undefined) return track.cover;
+		return undefined;
+	}
 	const getAudioFile = async () => {
 		let list;
 		await RNAndroidAudioStore.getAll({
@@ -21,7 +25,7 @@ export function TrackProvider({ children }) {
 			cover: true,
 			minimumSongDuration: 1000,
 		}).then(async tracks => {
-			//console.log(tracks);
+			// console.log(tracks);
 			list = (await Promise.all(tracks.map(async track => ({
 				...track,
 				exists: await RNFS.exists(track.path)
@@ -33,8 +37,8 @@ export function TrackProvider({ children }) {
 					title: track.title,
 					artist: track.author,
 					album: track.album,
+					cover:track.cover,
 					duration: track.duration / 1000,
-					favourite: false
 				}))
 				.sort((a, b) => a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1)
 			setAllTrack({
@@ -47,10 +51,12 @@ export function TrackProvider({ children }) {
 		})
 		await RNAndroidAudioStore.getAlbums()
 			.then(async (albums) => {
+				// console.log(albums);
 				setAlbums(albums
 					.map(album => ({
 						name: album.album,
 						type: "Album",
+						cover: getCover(list.find(track => (track.cover !== undefined && track.album === album.album))),
 						artist: album.author,
 						list: list.filter(track => track.album == album.album)
 					}))
@@ -64,6 +70,7 @@ export function TrackProvider({ children }) {
 					.map(artist => ({
 						name: artist.artist,
 						type: "Artist",
+						cover: getCover(list.find(track => (track.cover !== undefined && track.artist === artist.artist))),
 						list: list.filter(track => track.artist == artist.artist)
 					}))
 					.filter(artist => artist.list.length != 0)
@@ -199,7 +206,7 @@ export function TrackProvider({ children }) {
 		setQueue(await TrackPlayer.getQueue());
 	}
 
-	const createPlaylist = (name, list, navigateDetail) => {
+	const createPlaylist = (name, list, navigateDetail, saveFromQueue) => {
 		const newPlaylist = {
 			createTime: (new Date()).getTime(),
 			name: name,
@@ -212,6 +219,12 @@ export function TrackProvider({ children }) {
 			appContext.mainNavigationRef.navigate("PlaylistDetailScreen", {playlist: newPlaylist});
 		} else {
 			appContext.albertMessage(i18n.t("Created and added to playlist"));
+		}
+		if(saveFromQueue) {
+			setQueueInfo({
+				name: name,
+				type: "Playlist"
+			})
 		}
 		AsyncStorage.setItem("Playlist" + newPlaylist.createTime, JSON.stringify(newPlaylist));
 	}

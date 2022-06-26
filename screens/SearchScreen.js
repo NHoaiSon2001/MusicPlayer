@@ -1,9 +1,6 @@
 import { useContext, useEffect, useState} from 'react';
-import { StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity, TouchableHighlight } from 'react-native';
-import Feather from 'react-native-vector-icons/Feather';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Track from '../components/Track';
 import ICONS from '../assets/ICONS';
 import i18n from '../utils/i18n';
 import TrackList from '../components/TrackList';
@@ -11,8 +8,12 @@ import TrackContext from '../utils/context/TrackContext';
 import SearchHistory from '../components/SearchHistory';
 import SearchScreenHeader from '../components/SearchScreenHeader';
 import AddSongList from '../components/AddSongList';
+import AppContext from '../utils/context/AppContext';
 
 export default function SearchScreen({ route, navigation }) {
+    const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const trackContext = useContext(TrackContext);
 	const data = route.params.data;
     const playlistCreateTime = route.params.playlistCreateTime;
@@ -33,8 +34,12 @@ export default function SearchScreen({ route, navigation }) {
 
     const NoResult = () => (
         <View style = {styles.noResult}>
-            <Ionicons name={ICONS.SEARCH} size={60} color={"#555555"}/>
-            <Text style = {{fontSize: 20, fontWeight: 'bold'}}>{i18n.t("No result")} {searchValue}</Text>
+            <Ionicons
+                name={ICONS.SEARCH}
+                size={60}
+                color={darkMode ? '#d9d9d9' : '#151515'}
+            />
+            <Text style = {styles.noResultText}>{i18n.t("No result")} {searchValue}</Text>
         </View>
     )
 
@@ -73,14 +78,18 @@ export default function SearchScreen({ route, navigation }) {
 	)
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#e0e0e0',
+        backgroundColor: darkMode ? '#494949' : '#f0f0f0',
 	},
     noResult: {
         marginTop: 100,
         alignItems: 'center',
-        backgroundColor: '#e0e0e0',
     },
+    noResultText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: darkMode ? '#d9d9d9' : '#151515',
+    }
 });

@@ -1,18 +1,18 @@
 import React from "react";
 import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Ionicons from 'react-native-vector-icons/Ionicons'
 import TextTicker from "react-native-text-ticker";
 import TrackContext from "../utils/context/TrackContext";
-import { Component, useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import TrackPlayer, { useTrackPlayerEvents, Event } from "react-native-track-player";
 import AppContext from "../utils/context/AppContext";
-import ICONS from "../assets/ICONS";
 import TrackFavourite from "./TrackFavorite";
 import i18n from "../utils/i18n";
 
 const MusicInfo = () => {
 	const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
 	const trackContext = useContext(TrackContext);
 	const [track, setTrack] = useState({
 		title: i18n.t("Title"),
@@ -38,7 +38,10 @@ const MusicInfo = () => {
 		<View style={styles.musicInfoContainer}>
 			<View style={styles.coverWrapper}>
 				<Image
-					source={require('../assets/defaults/cover_default.jpg')}
+					source={track.cover === undefined
+                        ? require('../assets/defaults/cover_default.jpg')
+                        : {uri: track.cover}
+                    }
 					style={styles.coverImage}
 				/>
 			</View>
@@ -67,7 +70,7 @@ const MusicInfo = () => {
 						}}
 						style={{ alignSelf: "flex-start" }}
 					>
-						<Text style={{ fontSize: 15 }}>{track.artist}</Text>
+						<Text style={styles.artistText}>{track.artist}</Text>
 					</TouchableOpacity>
 				</View>
 
@@ -82,7 +85,7 @@ const MusicInfo = () => {
 
 export default MusicInfo;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
 	musicInfoContainer: {
 		borderColor: "#ffffff",
 		flex: 0.6,
@@ -115,6 +118,11 @@ const styles = StyleSheet.create({
 	titleText: {
 		fontSize: 25,
 		fontWeight: 'bold',
+        color: darkMode ? '#ffffff' : '#151515',
+	},
+	artistText: {
+		fontSize: 15,
+        color: darkMode ? '#e3e3e3' : '#1e1e1e',
 	},
 	favouriteButton: {
 		borderRadius: 20,

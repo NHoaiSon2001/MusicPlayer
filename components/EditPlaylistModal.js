@@ -1,6 +1,5 @@
 import { useContext, useState } from 'react';
 import { StyleSheet, Text, Image, TextInput, TouchableOpacity, View } from 'react-native';
-import { Modalize } from 'react-native-modalize';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
@@ -10,6 +9,8 @@ import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 
 const EditPlaylistModal = ({ playlist }) => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const trackContext = useContext(TrackContext);
     const [name, setName] = useState(playlist.name);
     const [coverBase64, setCoverBase64] = useState(playlist.coverBase64);
@@ -111,10 +112,9 @@ const EditPlaylistModal = ({ playlist }) => {
 
 export default EditPlaylistModal;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     container: {
         flex: 1,
-        // height:  230,
         width: '100%',
         borderRadius: 10,
         alignItems: 'center',
@@ -123,17 +123,20 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 20,
         marginVertical: 20,
+        color: darkMode ? '#e3e3e3' : '#1e1e1e',
     },
     nameInputTitle: {
         fontSize: 17,
         alignSelf: 'flex-start',
         marginLeft: 40,
         marginBottom: 10,
+        color: darkMode ? '#e3e3e3' : '#1e1e1e',
     },
     nameInput: {
         height: 50,
         width: '90%',
-        backgroundColor: "#bcbcbc",
+        backgroundColor: darkMode ? '#8a8a8a' : '#bcbcbc',
+        color: darkMode ? '#e7e7e7' : '#151515',
         borderRadius: 10,
         paddingHorizontal: 10,
         fontSize: 17,
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
         margin: 20,
     },
     actionTouchable: {
-        backgroundColor: "#bcbcbc",
+        backgroundColor: darkMode ? '#8a8a8a' : '#d0d0d0',
         height: 50,
         width: 150,
         justifyContent: 'center',
@@ -156,6 +159,7 @@ const styles = StyleSheet.create({
         color: '#2e2e2e',
         fontWeight: 'bold',
         fontSize: 18,
+        color: darkMode ? '#ffffff' : '#151515',
     },
     coverWrapper: {
         height: 200,

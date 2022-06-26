@@ -1,9 +1,8 @@
 import { useContext} from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
-import Track from '../components/Track';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FloatingPlayerArea from '../components/FloatingPlayerArea';
@@ -55,7 +54,7 @@ const Screen = ({ navigation }) => {
 							<Ionicons
 								name={ICONS.SEARCH}
 								size={25}
-								color={darkMode ? '#ffffff' : '#626262'}
+								color={darkMode ? '#e4e4e4' : '#626262'}
 							/>
 						</TouchableOpacity>
 
@@ -69,7 +68,7 @@ const Screen = ({ navigation }) => {
 							<MaterialCommunityIcons
 								name={ICONS.SELECT_ITEM}
 								size={30}
-								color={darkMode ? '#ffffff' : '#626262'}
+								color={darkMode ? '#e4e4e4' : '#626262'}
 							/>
 						</TouchableOpacity>
 					</View>
@@ -100,7 +99,7 @@ export default function SongListScreen() {
 const getStyles = (darkMode) => StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: darkMode ? '#404040' : '#f0f0f0',
+		backgroundColor: darkMode ? '#494949' : '#f0f0f0',
 	},
 	itemWrapper: {
 		flexDirection: 'row',

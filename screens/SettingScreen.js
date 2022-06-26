@@ -1,18 +1,15 @@
-import { useContext, useState, useEffect } from "react";
-import { View, StyleSheet, TouchableOpacity, Text, Picker } from "react-native";
+import { useContext, useState } from "react";
+import { View, StyleSheet, TouchableOpacity, Text, Picker, Switch } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import TrackPlayer from "react-native-track-player";
 import Feather from 'react-native-vector-icons/Feather';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ICONS from "../assets/ICONS";
-import AddSongList from "../components/AddSongList";
 import AppContext from "../utils/context/AppContext";
-import TrackContext from "../utils/context/TrackContext";
 import i18n from "../utils/i18n";
 
 const SettingScreen = () => {
     const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const [language, setLanguage] = useState(i18n.language);
 
     return (
@@ -22,7 +19,11 @@ const SettingScreen = () => {
                     onPress={() => appContext.mainNavigationRef.goBack()}
                     style={styles.backButton}
                 >
-                    <Feather name={ICONS.BACK} size={35} />
+                    <Feather
+                        name={ICONS.BACK}
+                        size={35}
+                        color={darkMode ? '#d9d9d9' : '#151515'}
+                    />
                 </TouchableOpacity>
                 <Text style={styles.headerText}>{i18n.t("Setting")}</Text>
                 <View style={{ width: 40 }} />
@@ -48,7 +49,13 @@ const SettingScreen = () => {
             </View>
 
             <View style = {styles.settingContainer}>
-                <Text style = {styles.settingTitle}>{i18n.t("Language")}</Text>
+                <Text style = {styles.settingTitle}>{i18n.t("Dark mode")}</Text>
+                <Switch
+                    trackColor={{ false: "#848484", true: "#8a8a8a" }}
+                    thumbColor={appContext.darkMode ? "#7ccbff" : "#bababa"}
+                    onValueChange={() => appContext.toggleDarkMode()}
+                    value={appContext.darkMode}
+                />
             </View>
         </View>
     )
@@ -56,11 +63,11 @@ const SettingScreen = () => {
 
 export default SettingScreen;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: '#e0e0e0',
+        backgroundColor: darkMode ? '#494949' : '#f0f0f0',
     },
     headerContainer: {
         height: 60,
@@ -80,9 +87,9 @@ const styles = StyleSheet.create({
     headerText: {
         fontSize: 20,
         fontWeight: 'bold',
+        color: darkMode ? '#d9d9d9' : '#151515',
     },
     settingContainer: {
-        borderWidth: 1,
         width: '100%',
         minHeight: 50,
         alignItems: 'center',
@@ -94,9 +101,10 @@ const styles = StyleSheet.create({
     settingTitle: {
         fontSize: 20,
         fontWeight: 'bold',
+        color: darkMode ? '#d9d9d9' : '#151515',
     },
     pickerContainer: {
-        backgroundColor: "#bcbcbc",
+        backgroundColor: darkMode ? '#919191' : "#bcbcbc",
         borderRadius: 30,
         alignItems: 'center',
         justifyContent: 'center',

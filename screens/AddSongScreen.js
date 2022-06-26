@@ -12,6 +12,8 @@ import i18n from "../utils/i18n";
 
 const AddSongScreen = ({ route, navigation }) => {
     const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const trackContext = useContext(TrackContext);
     const [queue, setQueue] = useState([]);
     const [type, setType] = useState("All");
@@ -38,7 +40,11 @@ const AddSongScreen = ({ route, navigation }) => {
                     onPress={() => appContext.mainNavigationRef.goBack()}
                     style={styles.backButton}
                 >
-                    <Feather name={ICONS.BACK} size={35} />
+                    <Feather
+                        name={ICONS.BACK}
+                        size={35}
+                        color={darkMode ? '#d9d9d9' : '#151515'}
+                    />
                 </TouchableOpacity>
                 <Text style={styles.addSongText}>{i18n.t("Add songs")}</Text>
                 <View style={{ width: 40 }} />
@@ -53,7 +59,11 @@ const AddSongScreen = ({ route, navigation }) => {
                 style={styles.searchTouchable}
             >
                 <View style={styles.searchTouchableContainer}>
-                    <Ionicons name={ICONS.SEARCH} size={20} color={"#555555"} />
+                    <Ionicons
+                        name={ICONS.SEARCH}
+                        size={20}
+                        color={darkMode ? '#ffffff' : '#626262'}
+                    />
                     <Text style={styles.searchTitle} numberOfLines={1}>{i18n.t("Search for songs")}</Text>
                 </View>
             </TouchableOpacity>
@@ -66,11 +76,11 @@ const AddSongScreen = ({ route, navigation }) => {
                     <MaterialCommunityIcons
                         name={ICONS.SONGS}
                         size={30}
-                        color={(type === "All") ? '#81a7ff' : "#555555"}
+                        color={(type === "All") ? '#81a7ff' : (darkMode ? '#dcdcdc' : "#555555")}
                     />
                     {
                         (type !== "All")
-                            ? <Text style={{ fontSize: 12 }}>
+                            ? <Text style={styles.tabText}>
                                 {i18n.t("All")}
                             </Text>
                             : null
@@ -84,11 +94,11 @@ const AddSongScreen = ({ route, navigation }) => {
                     <MaterialCommunityIcons
                         name={ICONS.QUEUE}
                         size={30}
-                        color={(type === "Queue") ? '#81a7ff' : "#555555"}
+                        color={(type === "Queue") ? '#81a7ff' : (darkMode ? '#dcdcdc' : "#555555")}
                     />
                     {
                         (type !== "Queue")
-                            ? <Text style={{ fontSize: 12 }}>
+                            ? <Text style={styles.tabText}>
                                 {i18n.t("Queue")}
                             </Text>
                             : null
@@ -102,11 +112,11 @@ const AddSongScreen = ({ route, navigation }) => {
                     <Ionicons
                         name={ICONS.FAVORITE}
                         size={30}
-                        color={(type === "Favorites") ? '#81a7ff' : "#555555"}
+                        color={(type === "Favorites") ? '#81a7ff' : (darkMode ? '#dcdcdc' : "#555555")}
                     />
                     {
                         (type !== "Favorites")
-                            ? <Text style={{ fontSize: 12 }}>
+                            ? <Text style={styles.tabText}>
                                 {i18n.t("Favorites")}
                             </Text>
                             : null
@@ -123,11 +133,11 @@ const AddSongScreen = ({ route, navigation }) => {
 
 export default AddSongScreen;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: '#e0e0e0',
+        backgroundColor: darkMode ? '#494949' : '#f0f0f0',
     },
     headerContainer: {
         height: 60,
@@ -147,11 +157,12 @@ const styles = StyleSheet.create({
     addSongText: {
         fontSize: 20,
         fontWeight: 'bold',
+        color: darkMode ? '#d9d9d9' : '#151515',
     },
     searchTouchable: {
         height: 35,
         width: '90%',
-        backgroundColor: '#d0d0d0',
+        backgroundColor: darkMode ? '#8a8a8a' : '#d0d0d0',
         borderRadius: 10,
         justifyContent: 'center',
         marginBottom: 5,
@@ -164,6 +175,7 @@ const styles = StyleSheet.create({
     searchTitle: {
         fontSize: 12,
         flexGrow: 1,
+        color: darkMode ? '#ffffff' : '#151515',
     },
     typeTouchableContainer: {
         height: 70,
@@ -174,5 +186,9 @@ const styles = StyleSheet.create({
         width: '33%',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    tabText: {
+        fontSize: 12,
+        color: darkMode ? '#dcdcdc' : "#555555",
     },
 });

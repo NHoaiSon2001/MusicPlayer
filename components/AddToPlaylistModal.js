@@ -1,6 +1,5 @@
-import { useContext, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, TouchableHighlight } from 'react-native';
-import { Modalize } from 'react-native-modalize';
+import { useContext } from 'react';
+import { ScrollView, StyleSheet, Text, View, Image, TouchableHighlight } from 'react-native';
 import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
 import i18n from '../utils/i18n';
@@ -9,6 +8,10 @@ import NewPlaylistButton from './NewPlaylistButton';
 const ITEM_HEIGHT = 65;
 
 const Playlist = ({ playlist }) => {
+    const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
+
     return (
         <View style={[styles.itemContainer]}>
             <View style={styles.coverWrapper}>
@@ -21,7 +24,7 @@ const Playlist = ({ playlist }) => {
             <View style={styles.playlistInfo}>
                 <Text numberOfLines={2} style={styles.titleText}>{playlist.name}</Text>
                 <View style={{ flexDirection: 'row' }}>
-                    <Text>{playlist.list.length} {i18n.t((playlist.list.length < 2) ? "Song" : "Songs")}</Text>
+                    <Text style = {styles.totalSongText}>{playlist.list.length} {i18n.t((playlist.list.length < 2) ? "Song" : "Songs")}</Text>
                 </View>
             </View>
         </View>
@@ -30,6 +33,8 @@ const Playlist = ({ playlist }) => {
 
 const AddToPlaylistModal = ({ tracks }) => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const trackContext = useContext(TrackContext);
 
     return (
@@ -55,7 +60,7 @@ const AddToPlaylistModal = ({ tracks }) => {
                                 appContext.menuModalRef.current?.close();
                                 trackContext.addSongToPlaylist(playlist.createTime, tracks);
                             }}
-                            underlayColor={'#d0d0d0'}
+                            underlayColor={darkMode ? '#828282' :'#d0d0d0'}
                             key={index.toString()}
                         >
                             <Playlist
@@ -72,7 +77,7 @@ const AddToPlaylistModal = ({ tracks }) => {
 
 export default AddToPlaylistModal;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     container: {
         flex: 1,
     },
@@ -101,6 +106,10 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: 15,
         fontWeight: 'bold',
+        color: darkMode ? '#ffffff' : '#151515',
+    },
+    totalSongText: {
+        color: darkMode ? '#e3e3e3' : '#1e1e1e',
     },
     newPlaylistTouchable: {
         backgroundColor: '#cdeaff',
@@ -119,5 +128,6 @@ const styles = StyleSheet.create({
     headerText: {
         fontWeight: 'bold',
         fontSize: 20,
+        color: darkMode ? '#ffffff' : '#151515',
     },
 })

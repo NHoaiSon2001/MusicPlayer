@@ -10,6 +10,7 @@ import AppContext from "../utils/context/AppContext";
 
 const TrackIcon = ({ trackId }) => {
     const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
     const trackContext = useContext(TrackContext);
     const [type, setType] = useState(2);
 
@@ -40,12 +41,14 @@ const TrackIcon = ({ trackId }) => {
             return <MaterialIcons
                 name={ICONS.NOW_PLAY}
                 size={30}
+			    color={darkMode ? '#e4e4e4' : '#626262'}
             />
         }
         if(type === 1) {
             return <MaterialCommunityIcons
                 name={ICONS.QUEUE}
                 size={27}
+				color={darkMode ? '#e4e4e4' : '#626262'}
             />
         }
         return null;

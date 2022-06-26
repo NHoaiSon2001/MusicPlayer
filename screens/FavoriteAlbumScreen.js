@@ -17,11 +17,14 @@ import AlbumDetailScreen from './AlbumDetailScreen';
 const Stack = createStackNavigator();
 
 const Screen = ({ navigation }) => {
+	const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const trackContext = useContext(TrackContext);
     const favoriteAlbums = trackContext.albums
         .map(album => ({
             ...album,
-            type: "Favorite album",
+            type: "Favorites album",
             list: album.list.filter(track => trackContext.favorites.some(favorite => favorite.id == track.id))
         }))
         .filter(album => album.list.length != 0)
@@ -32,7 +35,11 @@ const Screen = ({ navigation }) => {
                 onPress={() => navigation.goBack()}
                 style = {styles.headerButton}
             >
-                <Feather name={ICONS.BACK} size={30}/>
+                <Feather
+					name={ICONS.BACK}
+					size={35}
+					color={darkMode ? '#d9d9d9' : '#151515'}
+				/>
             </TouchableOpacity>
 
 			<ScrollView
@@ -60,9 +67,10 @@ export default function FavoriteArtistScreen() {
     )
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: darkMode ? '#494949' : '#f0f0f0',
 	},
     headerButton: {
 		alignItems: 'center',

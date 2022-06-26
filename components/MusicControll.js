@@ -11,6 +11,8 @@ import AppContext from "../utils/context/AppContext";
 
 const MusicControll = () => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const trackContext = useContext(TrackContext);
     const progress = useProgress();
     const playbackState = usePlaybackState();
@@ -169,10 +171,10 @@ const MusicControll = () => {
                 <Slider
                     style={styles.progressBar}
                     value={progress.position}
-                    thumbTintColor={'#626262'}
+                    thumbTintColor={darkMode ? '#dedede' : '#626262'}
                     maximumValue={progress.duration}
-                    maximumTrackTintColor={'#b0b0b0'}
-                    minimumTrackTintColor={'#626262'}
+                    maximumTrackTintColor={darkMode ? '#666666' : '#b0b0b0'}
+                    minimumTrackTintColor={darkMode ? '#dedede' : '#626262'}
                     onSlidingStart={() => setSliding(true)}
                     onValueChange={(position) => setNewPosition(position)}
                     onSlidingComplete={(position) => {
@@ -181,10 +183,10 @@ const MusicControll = () => {
                     }}
                 />
                 <View style = {styles.progressTitleContainer}>
-                    <Text style = {{fontSize: 13}}>
+                    <Text style = {styles.progressText}>
                         {new Date((sliding ? newPosition : progress.position) * 1000).toLocaleTimeString().substring(3)}
                     </Text>
-                    <Text style = {{fontSize: 13}}>
+                    <Text style = {styles.progressText}>
                         {new Date(progress.duration * 1000).toLocaleTimeString().substring(3)}
                     </Text>
                 </View>
@@ -198,7 +200,10 @@ const MusicControll = () => {
                     <Ionicons
                         name={ICONS.SHUFFLE}
                         size={35}
-                        color={shuffle ? '#626262' : '#b0b0b0'}
+                        color={shuffle
+                            ? (darkMode ? '#dedede' : '#626262')
+                            : (darkMode ? '#666666' : '#b0b0b0')
+                        }
                     />
                 </TouchableOpacity>
 
@@ -210,7 +215,10 @@ const MusicControll = () => {
                     <Ionicons
                         name={ICONS.SKIP_PREV}
                         size={30}
-                        color={(!canPrev && progress.position <= 5) ? '#b0b0b0' : '#626262'}
+                        color={(!canPrev && progress.position <= 5)
+                            ? (darkMode ? '#666666' : '#b0b0b0')
+                            : (darkMode ? '#dedede' : '#626262')
+                        }
                     />
                 </TouchableOpacity>
 
@@ -233,7 +241,10 @@ const MusicControll = () => {
                     <Ionicons
                         name={ICONS.SKIP_NEXT}
                         size={30}
-                        color={!canNext ? '#b0b0b0' : '#626262'}
+                        color={!canNext
+                            ? (darkMode ? '#666666' : '#b0b0b0')
+                            : (darkMode ? '#dedede' : '#626262')
+                        }
                     />
                 </TouchableOpacity>
 
@@ -244,7 +255,10 @@ const MusicControll = () => {
                     <MaterialCommunityIcons
                         name={repeat != 2 ? ICONS.REPEAT_QUEUE : ICONS.REPEAT_TRACK}
                         size={30}
-                        color={repeat != 0 ? '#626262' : '#b0b0b0'}
+                        color={repeat != 0
+                            ? (darkMode ? '#dedede' : '#626262')
+                            : (darkMode ? '#666666' : '#b0b0b0')
+                        }
                     />
                 </TouchableOpacity>
             </View>
@@ -254,7 +268,7 @@ const MusicControll = () => {
 
 export default MusicControll;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     musicControllContainer: {
         flex: 0.25,
         borderColor: "#ffffff",
@@ -291,5 +305,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '85%',
-    }
+    },
+    progressText: {
+        fontSize: 13,
+        color: darkMode ? '#ffffff' : '#151515',
+    },
 });

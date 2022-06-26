@@ -1,13 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from "@react-navigation/stack";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Track from '../components/Track';
 import ArtistDetailScreen from './ArtistDetailScreen';
-import Artist from '../components/Artist';
-import Album from '../components/Album';
 import AlbumDetailScreen from './AlbumDetailScreen';
 import ICONS from '../assets/ICONS';
 import i18n from '../utils/i18n';
@@ -18,10 +14,14 @@ import PlaylistList from '../components/PlaylistList';
 import TrackContext from '../utils/context/TrackContext';
 import SearchHistory from '../components/SearchHistory';
 import SearchScreenHeader from '../components/SearchScreenHeader';
+import AppContext from '../utils/context/AppContext';
 
 const Stack = createStackNavigator();
 
 const Screen = ({ route, navigation }) => {
+	const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
 	const favorite = route.params.favorite;
 	const trackContext = useContext(TrackContext);
 	const [searchValue, setSearchValue] = useState("");
@@ -123,8 +123,12 @@ const Screen = ({ route, navigation }) => {
 
 	const NoResult = () => (
 		<View style={styles.noResult}>
-			<Ionicons name={ICONS.SEARCH} size={60} color={"#555555"} />
-			<Text style={{ fontSize: 20, fontWeight: 'bold' }}>{i18n.t("No result")} {searchValue}</Text>
+			<Ionicons
+                name={ICONS.SEARCH}
+                size={60}
+                color={darkMode ? '#d9d9d9' : '#151515'}
+            />
+            <Text style = {styles.noResultText}>{i18n.t("No result")} {searchValue}</Text>
 		</View>
 	)
 
@@ -147,7 +151,7 @@ const Screen = ({ route, navigation }) => {
 					<MaterialCommunityIcons
 						name={ICONS.SONGS}
 						size={30}
-						color={(type === "Songs") ? '#81a7ff' : "#555555"}
+						color={(type === "Songs") ? '#81a7ff' : (darkMode ? '#dcdcdc' : "#555555")}
 					/>
 				</TouchableOpacity>
 
@@ -158,7 +162,7 @@ const Screen = ({ route, navigation }) => {
 					<MaterialCommunityIcons
 						name={ICONS.ARTISTS}
 						size={30}
-						color={(type === "Artists") ? '#81a7ff' : "#555555"}
+						color={(type === "Artists") ? '#81a7ff' : (darkMode ? '#dcdcdc' : "#555555")}
 					/>
 				</TouchableOpacity>
 
@@ -169,7 +173,7 @@ const Screen = ({ route, navigation }) => {
 					<MaterialCommunityIcons
 						name={ICONS.ALBUMS}
 						size={30}
-						color={(type === "Albums") ? '#81a7ff' : "#555555"}
+						color={(type === "Albums") ? '#81a7ff' : (darkMode ? '#dcdcdc' : "#555555")}
 					/>
 				</TouchableOpacity>
 
@@ -183,7 +187,7 @@ const Screen = ({ route, navigation }) => {
 							<MaterialCommunityIcons
 								name={ICONS.PLAYLISTS}
 								size={30}
-								color={(type === "Playlists") ? '#81a7ff' : "#555555"}
+								color={(type === "Playlists") ? '#81a7ff' : (darkMode ? '#dcdcdc' : "#555555")}
 							/>
 						</TouchableOpacity>
 				}
@@ -228,22 +232,19 @@ export default function SearchAllScreen({ route }) {
 	)
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#e0e0e0',
+		backgroundColor: darkMode ? '#494949' : '#f0f0f0',
 	},
 	noResult: {
-		marginTop: 100,
-		alignItems: 'center',
-		backgroundColor: '#e0e0e0',
-	},
-	tabBarStyle: {
-		backgroundColor: '#e0e0e0',
-	},
-	tabBarIcon: {
-		justifyContent: 'center',
-		alignItems: 'center',
+        marginTop: 100,
+        alignItems: 'center',
+    },
+    noResultText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: darkMode ? '#d9d9d9' : '#151515',
 	},
 	typeTouchableContainer: {
 		height: 70,

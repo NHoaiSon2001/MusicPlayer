@@ -62,22 +62,35 @@
 import { Text, Dimensions, StyleSheet, View, Image } from "react-native";
 import i18n from "../utils/i18n";
 import ListControllbutton from "./ListControllButton";
+import AppContext from "../utils/context/AppContext";
+import { useContext } from "react";
 
 const ITEM_WIDTH = (Dimensions.get('screen').width - 20) / 2;
 
 const Album = ({ album, searchValue }) => {
+    const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
+
     return (
         <View style = {styles.container}>
             <View style={styles.coverWrapper}>
                 <Image
-                    source={require('../assets/defaults/cover_default.jpg')}
+                    source={album.cover === undefined
+                        ? require('../assets/defaults/cover_default.jpg')
+                        : {uri: album.cover}
+                    }
                     style={styles.coverImage}
-                    />
+                />
             </View>
 
             <View style = {styles.playlistInfoContainer}>
                 <Text style = {styles.nameText} numberOfLines={2}>{album.name}</Text>
-                <Text>{album.list.length} {i18n.t((album.list.length < 2) ? "Song" : "Songs")}</Text>
+                {/* <Text style = {styles.totalSongText}>{album.list.length} {i18n.t((album.list.length < 2) ? "Song" : "Songs")}</Text> */}
+                <View style={{ flexDirection: 'row' }}>
+                    <Text style={[styles.text, { flexShrink: 1 }]} numberOfLines={1}>{album.artist}</Text>
+                    <Text style = {styles.text}> • {album.list.length} {i18n.t((album.list.length < 2) ? "Song" : "Songs")}</Text>
+                </View>
             </View>
 
             <ListControllbutton
@@ -90,7 +103,7 @@ const Album = ({ album, searchValue }) => {
 
 export default Album;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     container: {
         alignItems: 'center',
         height: ITEM_WIDTH + 70,
@@ -114,5 +127,9 @@ const styles = StyleSheet.create({
     nameText: {
         fontSize: 15,
         fontWeight: 'bold',
+        color: darkMode ? '#ffffff' : '#151515',
+    },
+    text: {
+        color: darkMode ? '#e3e3e3' : '#1e1e1e',
     },
 })

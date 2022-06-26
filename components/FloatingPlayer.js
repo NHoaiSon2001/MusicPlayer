@@ -1,9 +1,8 @@
 import { useRef, useEffect, useContext } from 'react';
-import { Dimensions, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
 import { Modalize } from "react-native-modalize";
 import AppContext from '../utils/context/AppContext';
 import FloatingControll from './FloatingControll';
-import TrackPlayer from 'react-native-track-player';
 
 const SCREEN_WIDTH = Dimensions.get('screen').width;
 const PLAYER_WIDTH = SCREEN_WIDTH - 20;

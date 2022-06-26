@@ -1,17 +1,14 @@
-import { useContext, useEffect, useState} from 'react';
-import { StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { useContext } from 'react';
+import { StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Track from '../components/Track';
 import ICONS from '../assets/ICONS';
-import i18n from '../utils/i18n';
-import TrackList from '../components/TrackList';
-import TrackContext from '../utils/context/TrackContext';
 import AppContext from '../utils/context/AppContext';
 
 const SearchScreenHeader = ({ searchValue, setSearchValue, placeholder }) => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
 
     return (
         <View style = {styles.headerContainer}>
@@ -19,7 +16,11 @@ const SearchScreenHeader = ({ searchValue, setSearchValue, placeholder }) => {
                 onPress={() => appContext.mainNavigationRef.goBack()}
                 style = {styles.headerButton}
             >
-                <Feather name={ICONS.BACK} size={35}/>
+                <Feather
+					name={ICONS.BACK}
+					size={35}
+					color={darkMode ? '#d9d9d9' : '#151515'}
+				/>
             </TouchableOpacity>
 
             <View style = {styles.searchContainer}>
@@ -49,10 +50,9 @@ const SearchScreenHeader = ({ searchValue, setSearchValue, placeholder }) => {
 
 export default SearchScreenHeader;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
 	headerContainer: {
 		height: 60,
-        backgroundColor: '#e0e0e0',
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
@@ -64,14 +64,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-        backgroundColor: "#bcbcbc",
+        backgroundColor: darkMode ? '#8a8a8a' : '#bcbcbc',
         borderRadius: 5,
     },
     searchInput: {
         height: 40,
         flexShrink: 1,
         flexGrow: 1,
-        backgroundColor: "#bcbcbc",
+        backgroundColor: darkMode ? '#8a8a8a' : '#bcbcbc',
+        color: darkMode ? '#e7e7e7' : '#151515',
         borderRadius: 5,
         marginLeft: 5,
     },

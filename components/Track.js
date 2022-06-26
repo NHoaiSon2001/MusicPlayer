@@ -1,13 +1,5 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import TrackPlayer, {useTrackPlayerEvents, Event} from 'react-native-track-player';
-import TrackContext from "../utils/context/TrackContext";
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import ICONS from '../assets/ICONS';
-import TrackIcon from "./TrackIcon";
 import AppContext from "../utils/context/AppContext";
 
 const ITEM_HEIGHT = 65;
@@ -21,7 +13,10 @@ const Track = ({ track }) => {
         <View style = {[styles.container]}>
             <View style = {styles.coverWrapper}>
                 <Image
-                    source={require('../assets/defaults/cover_default.jpg')}
+                    source={track.cover === undefined
+                        ? require('../assets/defaults/cover_default.jpg')
+                        : {uri: track.cover}
+                    }
                     style = {styles.coverImage}
                 />
             </View>
@@ -67,6 +62,6 @@ const getStyles = (darkMode) => StyleSheet.create({
         color: darkMode ? '#e1e1e1' : '#151515',
 	},
     text: {
-        color: darkMode ? '#c0c0c0' : '#363636',
+        color: darkMode ? '#c0c0c0' : '#151515',
     }
 })

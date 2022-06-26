@@ -9,10 +9,14 @@ import Artist from '../components/Artist';
 import FavoriteButton from '../components/FavoriteButton';
 import FavoriteArtistScreen from './FavoriteArtistScreen';
 import ArtistList from '../components/ArtistList';
+import AppContext from '../utils/context/AppContext';
 
 const Stack = createStackNavigator();
 
 const Screen = ({ navigation }) => {
+  const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
   const trackContext = useContext(TrackContext);
 
   return (
@@ -46,8 +50,9 @@ export default function ArtistListScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
   container: {
     flex: 1,
+		backgroundColor: darkMode ? '#494949' : '#f0f0f0',
   },
 });

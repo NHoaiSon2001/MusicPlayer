@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, TouchableHighlight } from "react-native"
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 import i18n from "../utils/i18n";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -6,11 +6,11 @@ import ICONS from "../assets/ICONS";
 import { useContext } from "react";
 import AppContext from "../utils/context/AppContext";
 import { useNavigationState } from "@react-navigation/native";
-import TrackContext from "../utils/context/TrackContext";
 
 const ScreenHeader = ({ name, icon }) => {
     const appContext = useContext(AppContext);
-    const trackContext = useContext(TrackContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
 
     const inFavoriteScreen = useNavigationState(state => {
         const currentState = state.routes.find(route => route.name === name);
@@ -23,8 +23,8 @@ const ScreenHeader = ({ name, icon }) => {
             <MaterialCommunityIcons
                 name={icon}
                 size={25}
-                color={"#555555"}
-                />
+                color = {darkMode ? '#dcdcdc' : "#555555"}
+            />
             <Text style = {styles.nameText}>{i18n.t(name)}</Text>
 
             {
@@ -47,7 +47,11 @@ const ScreenHeader = ({ name, icon }) => {
                 style = {styles.searchTouchable}
                 >
                 <View style = {styles.searchTouchableContainer}>
-					<Ionicons name={ICONS.SEARCH} size={20} color={"#555555"}/>
+                    <Ionicons
+                        name={ICONS.SEARCH}
+                        size={20}
+                        color={darkMode ? '#ffffff' : '#626262'}
+                    />
                     <Text style = {styles.searchTitle} numberOfLines={1}>{inFavoriteScreen ? i18n.t("Search all favorite") : i18n.t("Search all")}</Text>
                 </View>
             </TouchableOpacity>
@@ -56,30 +60,36 @@ const ScreenHeader = ({ name, icon }) => {
                 onPress={() => appContext.mainNavigationRef.navigate("SettingScreen")}
                 style = {styles.settingTouchable}
             >
-                <Ionicons name={ICONS.SETTING} size={25}/>
+                <Ionicons
+                    name={ICONS.SETTING}
+                    size={25}
+                    color = {darkMode ? '#dcdcdc' : "#555555"}
+                />
             </TouchableOpacity>
         </View>
     )
 }
 export default ScreenHeader;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     container: {
         height: 50,
         flexDirection: 'row',
         alignItems: 'center',
-        marginHorizontal: 10,
+        paddingHorizontal: 10,
+        backgroundColor: darkMode ? '#494949' : '#f0f0f0',
     },
     nameText: {
         fontSize: 20,
         fontWeight: 'bold',
+        color: darkMode ? '#e7e7e7' : '#151515',
     },
     searchTouchable: {
         height: 30,
         flexShrink: 1,
         flexGrow: 1,
         marginLeft: 5,
-        backgroundColor: '#d0d0d0',
+        backgroundColor: darkMode ? '#8a8a8a' : '#bcbcbc',
         borderRadius: 10,
         justifyContent: 'center',
     },
@@ -92,6 +102,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         flexShrink: 1,
         flexGrow: 1,
+        color: darkMode ? '#e7e7e7' : '#151515',
     },
     settingTouchable: {
         height: 40,

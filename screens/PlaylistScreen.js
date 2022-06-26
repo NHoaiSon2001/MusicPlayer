@@ -16,6 +16,9 @@ import NewPlaylistButton from "../components/NewPlaylistButton";
 const Stack = createStackNavigator();
 
 const Screen = ({ navigation }) => {
+    const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
     const trackContext = useContext(TrackContext);
 
     return (
@@ -65,11 +68,11 @@ export default function PlaylistScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     container: {
         flex: 1,
         paddingHorizontal: 10,
-        // backgroundColor: '#ffffff'
+        backgroundColor: darkMode ? '#494949' : '#f0f0f0',
     },
     newPlaylistTouchable: {
         backgroundColor: '#cdeaff',

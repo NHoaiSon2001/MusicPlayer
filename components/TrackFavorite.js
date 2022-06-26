@@ -1,11 +1,14 @@
-import React, { Component, useContext, useEffect, useMemo, useState } from "react";
-import { View, StyleSheet, Image, Text, TouchableOpacity } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import TrackContext from "../utils/context/TrackContext";
+import AppContext from "../utils/context/AppContext";
 import ICONS from "../assets/ICONS";
 
 const TrackFavorite = React.memo(({ track, size }) => {
+    const appContext = useContext(AppContext);
 	const trackContext = useContext(TrackContext);
+	const darkMode = appContext.darkMode;
     const [favorite, setFavorite] = useState(false);
 
 	useEffect(async () => {
@@ -25,7 +28,7 @@ const TrackFavorite = React.memo(({ track, size }) => {
             <Ionicons
                 name={favorite ? ICONS.FAVORITE : ICONS.NOT_FAVORITE}
                 size={size}
-                color={favorite ? '#ff8181' : '#626262'}
+                color={favorite ? '#ff8181' : (darkMode ? '#e4e4e4' : '#626262')}
             />
         </TouchableOpacity>
     )

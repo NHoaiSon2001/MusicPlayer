@@ -1,5 +1,5 @@
-import { useContext, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useContext } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { TouchableHighlight } from 'react-native';
 import AppContext from '../utils/context/AppContext';
 import { PlaylistMenu } from './MenuModal';
@@ -7,6 +7,7 @@ import Playlist from './Playlist';
 
 const PlaylistList = ({ playlists, searchValue, navigation }) => {
     const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
 
     return (
         <View style = {styles.container}>
@@ -18,7 +19,7 @@ const PlaylistList = ({ playlists, searchValue, navigation }) => {
                     })}
                     onLongPress={() => appContext.openMenuModal(<PlaylistMenu playlist={playlist}/>)}
                     style = {styles.touchable}
-                    underlayColor={'#d0d0d0'}
+                    underlayColor={darkMode ? '#828282' :'#d0d0d0'}
                     key={index.toString()}
                 >
                     <Playlist

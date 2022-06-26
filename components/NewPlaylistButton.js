@@ -1,6 +1,5 @@
-import { useContext, useRef } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
-import { createStackNavigator } from '@react-navigation/stack';
+import { useContext } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import ICONS from "../assets/ICONS";
 import AppContext from "../utils/context/AppContext";

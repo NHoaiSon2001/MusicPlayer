@@ -1,7 +1,6 @@
-import { Component, useCallback, useContext, useEffect, useState } from 'react';
+import { Component, useCallback, useContext, useState } from 'react';
 import { Dimensions, View, ScrollView, StyleSheet, Text, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { Modalize } from 'react-native-modalize';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppContext from '../utils/context/AppContext';
 import FloatingControll from '../components/FloatingControll';
 import TrackContext from '../utils/context/TrackContext';
@@ -9,9 +8,10 @@ import TrackPlayer from 'react-native-track-player';
 import i18n from '../utils/i18n';
 import Track from '../components/Track';
 import ICONS from '../assets/ICONS';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useTrackPlayerEvents, Event } from 'react-native-track-player';
 import TrackIcon from '../components/TrackIcon';
+import CreatePlaylistModal from '../components/CreatePlaylistModal';
 
 const HEADER_HEIGHT = 60;
 const ITEM_HEIGHT = 65;
@@ -19,6 +19,8 @@ const PLAYER_HEIGHT = 70;
 
 export default function QueueScreen(props) {
 	const appContext = useContext(AppContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
 	const trackContext = useContext(TrackContext);
 	const [queue, setQueue] = useState([]);
 	const [currentIndex, setCurrentIndex] = useState(0);
@@ -86,6 +88,8 @@ export default function QueueScreen(props) {
 	const QueueHeader = () => (
 		<View>
 			<View style={styles.headerContainer}>
+				<View style = {{width: 40}}/>
+
 				<TouchableOpacity
 					onPress={() => {
 						appContext.queueScreenRef.current?.open('top');
@@ -95,6 +99,24 @@ export default function QueueScreen(props) {
 				>
 					<Text style={styles.upNextText}>{i18n.t("UP NEXT")}</Text>
 				</TouchableOpacity>
+
+				{
+					trackContext.queueInfo.type === "Custom"
+						? <TouchableOpacity
+							onPress={async () => {
+								const queue = await TrackPlayer.getQueue();
+								appContext.openMenuModal(<CreatePlaylistModal tracks={queue} navigateDetail={false} saveFromQueue={true}/>)
+							}}
+							style={styles.saveQueue}
+						>
+							<MaterialIcons
+								name={ICONS.NEW_PLAYLIST}
+								size={25}
+								color={darkMode ? '#e5e5e5' : '#626262'}
+							/>
+						</TouchableOpacity>
+						: <View style = {{width: 40}}/>
+				}
 			</View>
 			{
 				moving != -1
@@ -117,7 +139,7 @@ export default function QueueScreen(props) {
 	)
 
 	const TrackMove = () => (
-		<View style={[styles.itemContainer, { backgroundColor: '#7bb6ff' }]}>
+		<View style={[styles.itemContainer, { backgroundColor: darkMode? '#51749f' : '#b0d3ff' }]}>
 			<Track track={queue[moving]} />
 			<View style={[styles.indexWrapper, { marginRight: 0 }]}>
 				<Text style={styles.indexText}>Moving {moving + 1}</Text>
@@ -171,6 +193,7 @@ export default function QueueScreen(props) {
 				getQueue();
 				appContext.queueRef.current?.scrollTo({ x: 0, y: ITEM_HEIGHT * (await TrackPlayer.getCurrentTrack()), animated: true });
 			}}
+			modalStyle={{backgroundColor: darkMode ? '#494949' :'#ffffff'}}
 			HeaderComponent={QueueHeader}
 			FooterComponent={QueueFooter}
 		>
@@ -186,8 +209,11 @@ export default function QueueScreen(props) {
 							}
 						}}
 						onLongPress={() => setHidden(index)}
-						style={{ backgroundColor: currentIndex == index ? '#dcdcdc' : '#ffffff' }}
-						underlayColor={'#d0d0d0'}
+						style={{ backgroundColor: currentIndex == index 
+							? (darkMode ? '#828282' :'#dcdcdc')
+							: (darkMode ? '#494949' :'#ffffff')
+						}}
+						underlayColor={darkMode ? '#828282' : '#d0d0d0'}
 						key={index.toString()}
 					>
 						<View style={styles.itemContainer}>
@@ -218,27 +244,30 @@ export default function QueueScreen(props) {
 		</Modalize>
 	)
 }
-
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
 	footerContainer: {
-		backgroundColor: '#d0d0d0',
+		backgroundColor: darkMode ? '#585858' :'#dcdcdc',
 	},
 	headerContainer: {
-		backgroundColor: '#f0f0f0',
+		backgroundColor: darkMode ? '#5d5d5d' : '#f0f0f0',
 		width: "100%",
 		height: HEADER_HEIGHT,
-		justifyContent: 'flex-end',
+		flexDirection: 'row',
+		justifyContent: 'space-between',
 		alignItems: 'center',
+		paddingHorizontal: 10,
 	},
 	upNextTouchble: {
 		justifyContent: 'center',
 		alignItems: 'center',
+		alignSelf: 'flex-end',
 		padding: 10,
 		borderBottomWidth: 3,
-		borderBottomColor: '#d0d0d0',
+		borderBottomColor: darkMode ? '#979797' : '#d0d0d0',
 	},
 	upNextText: {
 		fontSize: 15,
+        color: darkMode ? '#ffffff' : '#151515',
 	},
 	itemContainer: {
 		flexDirection: 'row',
@@ -254,6 +283,7 @@ const styles = StyleSheet.create({
 	indexText: {
 		fontSize: 15,
 		fontWeight: 'bold',
+        color: darkMode ? '#ffffff' : '#151515',
 	},
 	cancelButton: {
 		borderRadius: 30,
@@ -278,5 +308,12 @@ const styles = StyleSheet.create({
 	},
 	deleteButton: {
 		backgroundColor: '#ff4f4f',
+	},
+	saveQueue: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		width: 40,
+		height: 40,
+		borderRadius: 30,
 	},
 });

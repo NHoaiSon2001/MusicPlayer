@@ -11,7 +11,7 @@ export function AppProvider({ children }) {
 	const queueScreenRef = useRef();
 	const queueRef = useRef();
     const menuModalRef = useRef();
-	const [darkMode, setDarkMode] = useState(true);
+	const [darkMode, setDarkMode] = useState(false);
 	const [messageVisible, setMessageVisible] = useState(false);
 	const [message, setMessage] = useState("");
 	const [menuModalContent, setMenuModalContent] = useState(null);
@@ -36,6 +36,15 @@ export function AppProvider({ children }) {
 		}
 	}, [havingPlayer])
 
+	useEffect(async () => {
+		if(firstRender) {
+			const storage = await AsyncStorage.getItem("DarkMode");
+			if(storage != null) setDarkMode(JSON.parse(storage));
+		} else {
+			AsyncStorage.setItem("DarkMode", JSON.stringify(darkMode));
+		}
+	}, [darkMode])
+
 	const playerBack = () => {
 		playerScreenRef.current?.close('alwaysOpen');
 	}
@@ -51,6 +60,10 @@ export function AppProvider({ children }) {
 		setTimeout(() => {
 			setMessageVisible(false);
 		}, 100);
+	}
+
+	const toggleDarkMode = () => {
+		setDarkMode(!darkMode);
 	}
 
 	return (
@@ -71,7 +84,7 @@ export function AppProvider({ children }) {
 			setFirstRender: setFirstRender,
 			openMenuModal: openMenuModal,
 			albertMessage: albertMessage,
-			setDarkMode: setDarkMode,
+			toggleDarkMode: toggleDarkMode,
 		}}>
 			{children}
 		</AppContext.Provider>
