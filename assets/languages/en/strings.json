@@ -1,5 +1,6 @@
 {
     "UP NEXT": "UP NEXT",
+    "Title": "Title",
     "Song": "Song",
     "Songs": "Songs",
     "Artists": "Artists",
@@ -41,6 +42,17 @@
     "Add to playlist": "Add to playlist",
     "Delete playlist": "Delete playlist",
     "Edit playlist info": "Edit playlist info",
-    "New playlist name": "New playlist name"
-
+    "New playlist name": "New playlist name",
+    "Delete": "Delete",
+    "will play next": " will play next",
+    "will play next shuffle": " will play next shuffle",
+    "added to queue": " added to queue",
+    "added to queue shuffle": " added to queue shuffle",
+    "Added to playlist": "Added to playlist successfully",
+    "Created and added to playlist": "Created and added to playlist successfully",
+    "Song is playing now": "Song is playing now",
+    "is already in the queue": " is already in the queue",
+    "Setting": "Setting",
+    "Language": "Language",
+    "Change language": "Language has beed changed to English"
 }

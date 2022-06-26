@@ -4,6 +4,7 @@ import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import { RNAndroidAudioStore } from "react-native-get-music-files";
 import TrackPlayer, { Capability, Event, RepeatMode, State, usePlaybackState, useProgress, useTrackPlayerEvents } from "react-native-track-player";
 import AppContext from "./AppContext";
+import i18n from "../i18n";
 var RNFS = require('react-native-fs');
 
 const TrackContext = createContext();
@@ -203,11 +204,14 @@ export function TrackProvider({ children }) {
 			createTime: (new Date()).getTime(),
 			name: name,
 			type: "Playlist",
+			coverBase64: null,
 			list: list
 		};
 		setPlaylists([...playlists, newPlaylist].sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 		if(navigateDetail) {
 			appContext.mainNavigationRef.navigate("PlaylistDetailScreen", {playlist: newPlaylist});
+		} else {
+			appContext.albertMessage(i18n.t("Created and added to playlist"));
 		}
 		AsyncStorage.setItem("Playlist" + newPlaylist.createTime, JSON.stringify(newPlaylist));
 	}
@@ -220,6 +224,7 @@ export function TrackProvider({ children }) {
 		}
 		setPlaylists([...playlists.filter(playlist => playlist.createTime !== playlistCreateTime), newPlaylist].sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
 		AsyncStorage.setItem("Playlist" + newPlaylist.createTime, JSON.stringify(newPlaylist));
+		appContext.albertMessage(i18n.t("Added to playlist"));
 	}
 
 	const editPlaylist = (playlist) => {

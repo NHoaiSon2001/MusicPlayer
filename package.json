@@ -30,6 +30,7 @@
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.4.1",
     "react-native-get-music-files": "https://github.com/cinder92/react-native-get-music-files.git",
+    "react-native-image-picker": "^4.8.4",
     "react-native-modalize": "^2.0.13",
     "react-native-pager-view": "^5.4.17",
     "react-native-permissions": "^3.3.1",

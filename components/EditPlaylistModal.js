@@ -6,11 +6,35 @@ import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
 import i18n from '../utils/i18n';
 import ICONS from '../assets/ICONS';
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 
-const EditPlaylistModal = ({ playlistCreateTime }) => {
+const EditPlaylistModal = ({ playlist }) => {
     const appContext = useContext(AppContext);
     const trackContext = useContext(TrackContext);
-    const [name, setName] = useState("")
+    const [name, setName] = useState(playlist.name);
+    const [coverBase64, setCoverBase64] = useState(playlist.coverBase64);
+
+    const getImageInLibrary = () => {
+        launchImageLibrary({
+            mediaType: 'photo',
+            includeBase64: true,
+            maxHeight: 200,
+            maxWidth: 200,
+        }, res => {
+            if(res.didCancel !== true) setCoverBase64("data:image/png;base64," + res.assets[0].base64);
+        })
+    }
+
+    const getImageFromCamera = () => {
+        launchCamera({
+            mediaType: 'photo',
+            includeBase64: true,
+            maxHeight: 200,
+            maxWidth: 200,
+        }, res => {
+            if(res.didCancel !== true) setCoverBase64("data:image/png;base64," + res.assets[0].base64);
+        })
+    }
 
     return (
         <View style = {styles.container}>
@@ -27,17 +51,31 @@ const EditPlaylistModal = ({ playlistCreateTime }) => {
 
                 <View style = {styles.coverWrapper}>
                     <Image
-                        source={require('../assets/defaults/cover_default.jpg')}
-                        style = {styles.coverImage}
+                        source={coverBase64 === null
+                            ? require('../assets/defaults/cover_default.jpg')
+                            : {uri: coverBase64}
+                        }
+                        style={styles.coverImage}
                     />
 
                     <TouchableOpacity
-
+                        onPress={getImageInLibrary}
                         activeOpacity={1}
                         style = {styles.browseImage}
                     >
                         <AntDesign
                             name={ICONS.EDIT_IMAGE}
+                            size={30}
+                        />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={getImageFromCamera}
+                        activeOpacity={1}
+                        style = {[styles.browseImage, {right: 70}]}
+                    >
+                        <AntDesign
+                            name={ICONS.CAMERA}
                             size={30}
                         />
                     </TouchableOpacity>
@@ -55,9 +93,10 @@ const EditPlaylistModal = ({ playlistCreateTime }) => {
                     onPress={() => {
                         appContext.menuModalRef.current?.close();
                         trackContext.editPlaylist({
-                            createTime: playlistCreateTime,
+                            createTime: playlist.createTime,
                             name: name,
-                            type: "Playlist"
+                            type: "Playlist",
+                            coverBase64: coverBase64
                         })
                     }}
                     style = {[styles.actionTouchable, {backgroundColor: (name.length != 0) ? '#cdeaff' : "#bcbcbc" ,}]}

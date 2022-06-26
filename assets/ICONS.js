@@ -36,6 +36,7 @@ const ICONS = {
     NOW_PLAY: 'bar-chart',
     EDIT_PLAYLIST: 'edit',
     EDIT_IMAGE: 'picture',
+    CAMERA: 'camerao',
 }
 
 export default ICONS;

@@ -9,9 +9,12 @@ const Playlist = ({ playlist, searchValue }) => {
         <View style = {styles.container}>
             <View style={styles.coverWrapper}>
                 <Image
-                    source={require('../assets/defaults/cover_default.jpg')}
+                    source={playlist.coverBase64 === null
+                        ? require('../assets/defaults/cover_default.jpg')
+                        : {uri: playlist.coverBase64}
+                    }
                     style={styles.coverImage}
-                    />
+                />
             </View>
 
             <View style = {styles.playlistInfoContainer}>

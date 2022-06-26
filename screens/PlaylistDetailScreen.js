@@ -50,7 +50,10 @@ export default function PlaylistDetailScreen({ route, navigation }) {
 				<View style={styles.playlistInfoContainer}>
 					<View style={styles.coverWrapper}>
 						<Image
-							source={require('../assets/defaults/cover_default.jpg')}
+							source={playlist.coverBase64 === null
+								? require('../assets/defaults/cover_default.jpg')
+								: {uri: playlist.coverBase64}
+							}
 							style={styles.coverImage}
 						/>
 					</View>

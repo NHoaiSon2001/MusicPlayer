@@ -53,9 +53,7 @@ const ScreenHeader = ({ name, icon }) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-                onPress={() => {
-                    console.log(trackContext.playlists);
-                }}
+                onPress={() => appContext.mainNavigationRef.navigate("SettingScreen")}
                 style = {styles.settingTouchable}
             >
                 <Ionicons name={ICONS.SETTING} size={25}/>

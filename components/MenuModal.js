@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { StyleSheet, Text, Image, TouchableHighlight, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, Image, TouchableHighlight, View, TouchableOpacity, Alert } from 'react-native';
 import { Modalize } from 'react-native-modalize';
 import AppContext from '../utils/context/AppContext';
 import TrackContext from '../utils/context/TrackContext';
@@ -15,6 +15,7 @@ import TrackIcon from './TrackIcon';
 import AddToPlaylistModal from './AddToPlaylistModal';
 import Artist from './Artist';
 import EditPlaylistModal from './EditPlaylistModal';
+import DeleteSuccessModal from './DeleteSuccessModal';
 
 const BUTTON_HEIGHT = 50;
 const ITEM_HEIGHT = 65;
@@ -28,22 +29,39 @@ const PlayNext = ({ data, shuffle }) => {
     const appContext = useContext(AppContext);
     const trackContext = useContext(TrackContext);
 
+    const albertMessage = (dataListLength) => {
+        if(dataListLength !== 0) {
+            appContext.albertMessage(((data.type === "Custom")
+                    ? dataListLength + " " + (i18n.t((dataListLength === 1) ? "Song" : "Songs"))
+                    : i18n.t(data.type)
+                ) + i18n.t(shuffle ? "will play next shuffle" : "will play next")
+            );
+        } else {
+            appContext.albertMessage(i18n.t("Song is playing now"));
+        }
+    }
+
     const playNext = async () => {
         if(appContext.havingPlayer) {
             let removeIndex = [];
-            (await TrackPlayer.getQueue()).forEach((inQueue, index) => {
-                if(data.list.some(track => track.id === inQueue.id)) {
+            const queue = await TrackPlayer.getQueue();
+            const currentTrack = queue[await TrackPlayer.getCurrentTrack()];
+            const dataList = data.list.filter(track => track.id != currentTrack.id);
+            queue.forEach((inQueue, index) => {
+                if(dataList.some(track => track.id === inQueue.id)) {
                     removeIndex.push(index);
                 }
             });
             await TrackPlayer.remove(removeIndex);
-            TrackPlayer.add(shuffle ? data.list.sort(() => Math.random() - 0.5) : data.list, (await TrackPlayer.getCurrentTrack()) + 1);
+            TrackPlayer.add(shuffle ? dataList.sort(() => Math.random() - 0.5) : dataList, (await TrackPlayer.getCurrentTrack()) + 1);
             appContext.menuModalRef.current?.close();
             trackContext.updateQueue();
+            albertMessage(dataList.length);
         } else {
             trackContext.setupQueue(data, 0, shuffle, true);
             appContext.menuModalRef.current?.close();
             trackContext.updateQueue();
+            albertMessage(data.list.length);
         }
     }
 
@@ -76,9 +94,9 @@ const AddToQueue = ({ data, shuffle }) => {
     const trackContext = useContext(TrackContext);
 
     const addToQueue = async () => {
+        const queue = await TrackPlayer.getQueue();
+        const notInQueue = data.list.filter(track => !queue.some(inQueue => inQueue.id === track.id));
         if(appContext.havingPlayer) {
-            const queue = await TrackPlayer.getQueue();
-            const notInQueue = data.list.filter(track => !queue.some(inQueue => inQueue.id === track.id));
             if(shuffle) {
                 notInQueue.forEach((track, index) => {
                     TrackPlayer.add(track, Math.random() * (queue.length + index));
@@ -93,6 +111,17 @@ const AddToQueue = ({ data, shuffle }) => {
             trackContext.setupQueue(data, 0, shuffle, true);
             appContext.menuModalRef.current?.close();
             trackContext.updateQueue();
+        }
+        if(notInQueue.length !== 0) {
+            appContext.albertMessage(((data.type === "Custom")
+                ? notInQueue.length + " " + (i18n.t((notInQueue.length === 1) ? "Song" : "Songs"))
+                : i18n.t(data.type)
+            )+ i18n.t(shuffle ? "added to queue shuffle" : "added to queue"));
+        } else {
+            appContext.albertMessage(((data.type === "Custom")
+                ? (i18n.t((data.list.length === 1) ? "Song" : "Songs"))
+                : i18n.t(data.type)
+            )+ i18n.t("is already in the queue"));
         }
     }
 
@@ -142,12 +171,12 @@ const AddToPlaylist = ({ tracks }) => {
     )
 }
 
-const EditPlaylist = ({ playlistCreateTime }) => {
+const EditPlaylist = ({ playlist }) => {
     const appContext = useContext(AppContext);
 
     return (
         <TouchableOpacity
-            onPress={() => appContext.openMenuModal(<EditPlaylistModal playlistCreateTime={playlistCreateTime}/>)}
+            onPress={() => appContext.openMenuModal(<EditPlaylistModal playlist={playlist}/>)}
             activeOpacity={1}
             style = {[styles.touchable, {marginBottom: 10}]}
         >
@@ -164,16 +193,12 @@ const EditPlaylist = ({ playlistCreateTime }) => {
     )
 }
 
-const DeletePlaylist = ({ playlistCreateTime }) => {
+const DeletePlaylist = ({ playlist }) => {
     const appContext = useContext(AppContext);
-    const trackContext = useContext(TrackContext);
 
     return (
         <TouchableOpacity
-            onPress={() => {
-                trackContext.deletePlaylist(playlistCreateTime);
-                appContext.menuModalRef.current?.close();
-            }}
+            onPress={() => appContext.openMenuModal(<DeleteSuccessModal playlist={playlist}/>)}
             activeOpacity={1}
             style = {[styles.touchable, {backgroundColor: '#ff9696', marginTop: 10}]}
         >
@@ -217,7 +242,10 @@ const Playlist = ({ playlist }) => {
         <View style={[styles.itemContainer]}>
             <View style={styles.coverWrapper}>
                 <Image
-                    source={require('../assets/defaults/cover_default.jpg')}
+                    source={playlist.coverBase64 === null
+                        ? require('../assets/defaults/cover_default.jpg')
+                        : {uri: playlist.coverBase64}
+                    }
                     style={styles.coverImage}
                 />
             </View>
@@ -260,9 +288,15 @@ export const ArtistMenu = ({ artist }) => (
             />
         </View>
         <PlayNext data={artist}/>
-        <PlayNext data={artist} shuffle={true}/>
         <AddToQueue data={artist}/>
-        <AddToQueue data={artist} shuffle={true}/>
+        {
+            artist.list.length > 1
+                ? <View>
+                    <PlayNext data={artist} shuffle={true}/>
+                    <AddToQueue data={artist} shuffle={true}/>
+                </View>
+                : null
+        }
         <AddToPlaylist tracks={artist.list}/>
     </View>
 )
@@ -278,9 +312,15 @@ export const AlbumMenu = ({ album }) => (
             />
         </View>
         <PlayNext data={album}/>
-        <PlayNext data={album} shuffle={true}/>
         <AddToQueue data={album}/>
-        <AddToQueue data={album} shuffle={true}/>
+        {
+            album.list.length > 1
+                ? <View>
+                    <PlayNext data={artist} shuffle={true}/>
+                    <AddToQueue data={artist} shuffle={true}/>
+                </View>
+                : null
+        }
         <AddToPlaylist tracks={album.list}/>
     </View>
 )
@@ -295,12 +335,24 @@ export const PlaylistMenu = ({ playlist }) => (
                 color={"#555555"}
             />
         </View>
-        <DeletePlaylist playlistCreateTime={playlist.createTime}/>
-        <EditPlaylist playlistCreateTime={playlist.createTime}/>
-        <PlayNext data={playlist}/>
-        <PlayNext data={playlist} shuffle={true}/>
-        <AddToQueue data={playlist}/>
-        <AddToQueue data={playlist} shuffle={true}/>
+        <DeletePlaylist playlist={playlist}/>
+        <EditPlaylist playlist={playlist}/>
+        {
+            playlist.list.length !== 0
+                ? <View>
+                    <PlayNext data={playlist}/>
+                    <AddToQueue data={playlist}/>
+                </View>
+                : null
+        }
+        {
+            playlist.list.length > 1
+                ? <View>
+                    <PlayNext data={playlist} shuffle={true}/>
+                    <AddToQueue data={playlist} shuffle={true}/>
+                </View>
+                : null
+        }
         <AddToPlaylist tracks={playlist.list}/>
     </View>
 )
@@ -308,9 +360,15 @@ export const PlaylistMenu = ({ playlist }) => (
 export const SelectedItemMenu = ({ data }) => (
     <View>
         <PlayNext data={data}/>
-        <PlayNext data={data} shuffle={true}/>
         <AddToQueue data={data}/>
-        <AddToQueue data={data} shuffle={true}/>
+        {
+            data.list.length > 1
+                ? <View>
+                    <PlayNext data={data} shuffle={true}/>
+                    <AddToQueue data={data} shuffle={true}/>
+                </View>
+                : null
+        }
     </View>
 )
 

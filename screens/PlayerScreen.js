@@ -5,12 +5,15 @@ import AppContext from '../utils/context/AppContext';
 import QueueScreen from './QueueScreen';
 import Feather from 'react-native-vector-icons/Feather'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import Entypo from 'react-native-vector-icons/Entypo'
 import i18n from '../utils/i18n';
 import MusicControll from '../components/MusicControll';
 import MusicInfo from '../components/MusicInfo';
 import TrackContext from '../utils/context/TrackContext';
 import ICONS from '../assets/ICONS';
 import TextTicker from "react-native-text-ticker";
+import TrackPlayer from "react-native-track-player";
+import AddToPlaylistModal from '../components/AddToPlaylistModal';
 
 const SCREEN_HEIGHT = Dimensions.get('screen').height;
 const PLAYER_SCREEN_HEIGHT = SCREEN_HEIGHT / 1.1;
@@ -52,10 +55,17 @@ const Screen = () => {
                 </View>
 
                 <TouchableOpacity
-                    onPress={() => {}}
+                    onPress={async () => {
+                        const track = await TrackPlayer.getTrack(await TrackPlayer.getCurrentTrack());
+                        appContext.openMenuModal(<AddToPlaylistModal tracks={[track]}/>);
+                    }}
                     style = {styles.headerButton}
                 >
-                    <Ionicons name={ICONS.MENU} size={25} color={'#676767'}/>
+                    <Entypo
+                        name={ICONS.ADD_SONGS}
+                        size={25}
+                        color={'#676767'}
+                    />
                 </TouchableOpacity>
             </View>
 

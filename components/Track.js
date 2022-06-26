@@ -8,10 +8,15 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ICONS from '../assets/ICONS';
 import TrackIcon from "./TrackIcon";
+import AppContext from "../utils/context/AppContext";
 
 const ITEM_HEIGHT = 65;
 
 const Track = ({ track }) => {
+	const appContext = useContext(AppContext);
+    const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
+
     return (
         <View style = {[styles.container]}>
             <View style = {styles.coverWrapper}>
@@ -24,8 +29,8 @@ const Track = ({ track }) => {
             <View style = {styles.musicInfo}>
                 <Text numberOfLines={2} style = {styles.titleText}>{track.title}</Text>
                 <View style = {{flexDirection: 'row'}}>
-                    <Text style = {{flexShrink: 1}} numberOfLines={1}>{track.artist}</Text>
-                    <Text> • {new Date(track.duration * 1000).toLocaleTimeString().substring(3)}</Text>
+                    <Text style = {[styles.text, {flexShrink: 1}]} numberOfLines={1}>{track.artist}</Text>
+                    <Text style = {styles.text}> • {new Date(track.duration * 1000).toLocaleTimeString().substring(3)}</Text>
                 </View>
             </View>
         </View>
@@ -34,7 +39,7 @@ const Track = ({ track }) => {
 
 export default Track;
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
     container: {
         height: ITEM_HEIGHT,
         flexDirection: 'row',
@@ -59,5 +64,9 @@ const styles = StyleSheet.create({
     titleText: {
 		fontSize: 15,
 		fontWeight:'bold',
+        color: darkMode ? '#e1e1e1' : '#151515',
 	},
+    text: {
+        color: darkMode ? '#c0c0c0' : '#363636',
+    }
 })

@@ -8,6 +8,7 @@ import TrackContext from '../utils/context/TrackContext';
 import TrackPlayer, { State, useProgress, usePlaybackState, RepeatMode, Event, useTrackPlayerEvents } from "react-native-track-player";
 import ICONS from "../assets/ICONS";
 import TrackFavourite from './TrackFavorite';
+import i18n from "../utils/i18n";
 
 const TextLoop = (props) => {
     return (
@@ -30,8 +31,8 @@ function FloatingControll() {
     const progress = useProgress();
     const playbackState = usePlaybackState();
     const [track, setTrack] = useState({
-		title: "Title",
-		artist: "Artist"
+		title: i18n.t("Title"),
+		artist: i18n.t("Artist")
 	});
     const [playPauseIcon, setPlayPauseIcon] = useState(ICONS.REFRESH);
     const [canNext, setCanNext] = useState(false);

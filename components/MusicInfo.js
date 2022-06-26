@@ -9,13 +9,14 @@ import TrackPlayer, { useTrackPlayerEvents, Event } from "react-native-track-pla
 import AppContext from "../utils/context/AppContext";
 import ICONS from "../assets/ICONS";
 import TrackFavourite from "./TrackFavorite";
+import i18n from "../utils/i18n";
 
 const MusicInfo = () => {
 	const appContext = useContext(AppContext);
 	const trackContext = useContext(TrackContext);
 	const [track, setTrack] = useState({
-		title: "Title",
-		artist: "Artist"
+		title: i18n.t("Title"),
+		artist: i18n.t("Artist")
 	});
 
 	useEffect(async () => {

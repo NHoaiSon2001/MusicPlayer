@@ -97,6 +97,7 @@ export default function SelectItemScreen({ route, navigation }) {
 					/>)}
 					activeOpacity={0.5}
 					style = {styles.controllTouchable}
+					disabled={selected === 0}
 				>
 					<View style = {{alignItems: 'center'}}>
 						<MaterialCommunityIcons
@@ -111,6 +112,7 @@ export default function SelectItemScreen({ route, navigation }) {
 					onPress={() => appContext.openMenuModal(<AddToPlaylistModal tracks={data.filter((track, index) => indexSelected[index])}/>)}
 					activeOpacity={0.5}
 					style = {styles.controllTouchable}
+					disabled={selected === 0}
 				>
 					<View style = {{alignItems: 'center'}}>
 						<MaterialCommunityIcons

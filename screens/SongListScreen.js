@@ -19,6 +19,8 @@ const Stack = createStackNavigator();
 const Screen = ({ navigation }) => {
 	const appContext = useContext(AppContext);
 	const trackContext = useContext(TrackContext);
+	const darkMode = appContext.darkMode;
+	const styles = getStyles(darkMode);
 
 	return (
 		<View style = {styles.container}>
@@ -34,7 +36,11 @@ const Screen = ({ navigation }) => {
 								style = {styles.shuffleButtonTouable}
 							>
 								<View style = {styles.shuffleButtonContainer}>
-									<Ionicons name={ICONS.SHUFFLE} size={30} color={'#626262'}/>
+									<Ionicons
+										name={ICONS.SHUFFLE}
+										size={30}
+										color={darkMode ? '#ffffff' : '#626262'}
+									/>
 									<Text style = {styles.shuffleButtonText}>{i18n.t("Shuffle playback")}</Text>
 								</View>
 							</TouchableOpacity>
@@ -46,7 +52,11 @@ const Screen = ({ navigation }) => {
 							onPress={() => navigation.navigate("SearchScreen", {data: trackContext.allTrack})}
 							style = {styles.headerButton}
 						>
-							<Ionicons name={ICONS.SEARCH} size={25}/>
+							<Ionicons
+								name={ICONS.SEARCH}
+								size={25}
+								color={darkMode ? '#ffffff' : '#626262'}
+							/>
 						</TouchableOpacity>
 
 						<TouchableOpacity
@@ -56,7 +66,11 @@ const Screen = ({ navigation }) => {
 							})}
 							style = {styles.headerButton}
 						>
-							<MaterialCommunityIcons name={ICONS.SELECT_ITEM} size={30}/>
+							<MaterialCommunityIcons
+								name={ICONS.SELECT_ITEM}
+								size={30}
+								color={darkMode ? '#ffffff' : '#626262'}
+							/>
 						</TouchableOpacity>
 					</View>
 				</View>
@@ -83,9 +97,10 @@ export default function SongListScreen() {
 	);
 }
 
-const styles = StyleSheet.create({
+const getStyles = (darkMode) => StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: darkMode ? '#404040' : '#f0f0f0',
 	},
 	itemWrapper: {
 		flexDirection: 'row',
@@ -115,7 +130,7 @@ const styles = StyleSheet.create({
 	},
 	shuffleButtonContainer: {
 		height: '100%',
-		backgroundColor: '#d0d0d0',
+		backgroundColor: darkMode ? '#8a8a8a' : '#d0d0d0',
 		borderRadius: 30,
 		flexDirection: 'row',
 		paddingHorizontal: 10,
@@ -125,6 +140,7 @@ const styles = StyleSheet.create({
 		marginHorizontal: 5,
 		fontSize: 15,
 		fontWeight: 'bold',
+        color: darkMode ? '#ffffff' : '#151515',
 	},
 	headerButton: {
 		alignItems: 'center',

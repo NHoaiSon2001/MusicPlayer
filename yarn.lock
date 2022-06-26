@@ -4751,6 +4751,11 @@ react-native-gesture-handler@^2.4.1:
   version "2.1.0"
   resolved "https://github.com/cinder92/react-native-get-music-files.git#e0cd0a8f033dfb5c04c0f786e4ae71f09d7f1c6d"
 
+react-native-image-picker@^4.8.4:
+  version "4.8.4"
+  resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-4.8.4.tgz#ac52f1e265458e944664adf1dcd0a9ee408fe083"
+  integrity sha512-Mjh2j/sddyolb16EpmprWzbtyeFvW8Xgzr/8WNi9d6bR2FC/kL78cY/a+7Yzujg5ZDtT1MWys+eWw/qtfwgGiw==
+
 react-native-modalize@^2.0.13:
   version "2.0.13"
   resolved "https://registry.yarnpkg.com/react-native-modalize/-/react-native-modalize-2.0.13.tgz#51517cddd726ddbc19c080d15e7721ade4ee7a66"

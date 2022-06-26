@@ -2,6 +2,7 @@ import { useNavigationContainerRef } from "@react-navigation/native";
 import { useEffect, createContext, useState, useRef } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TrackPlayer from "react-native-track-player";
+import i18n from "../i18n";
 
 const AppContext = createContext();
 
@@ -10,6 +11,9 @@ export function AppProvider({ children }) {
 	const queueScreenRef = useRef();
 	const queueRef = useRef();
     const menuModalRef = useRef();
+	const [darkMode, setDarkMode] = useState(true);
+	const [messageVisible, setMessageVisible] = useState(false);
+	const [message, setMessage] = useState("");
 	const [menuModalContent, setMenuModalContent] = useState(null);
 	const mainNavigationRef = useNavigationContainerRef();
 	const [havingPlayer, setHavingPlayer] = useState(false);
@@ -22,8 +26,10 @@ export function AppProvider({ children }) {
 			TrackPlayer.stop();
 		}
 		if(firstRender) {
-			const storage = await AsyncStorage.getItem("HavingPlayer");
+			let storage = await AsyncStorage.getItem("HavingPlayer");
 			if(storage != null) setHavingPlayer(JSON.parse(storage));
+			storage = await AsyncStorage.getItem("Language");
+			if (storage != null) i18n.changeLanguage(storage);
 			setFirstRender(false);
 		} else {
 			AsyncStorage.setItem("HavingPlayer", JSON.stringify(havingPlayer));
@@ -39,6 +45,14 @@ export function AppProvider({ children }) {
 		menuModalRef.current.open();
 	}
 
+	const albertMessage = (message) => {
+		setMessage(message);
+		setMessageVisible(true);
+		setTimeout(() => {
+			setMessageVisible(false);
+		}, 100);
+	}
+
 	return (
 		<AppContext.Provider value={{
 			playerScreenRef: playerScreenRef,
@@ -49,10 +63,15 @@ export function AppProvider({ children }) {
 			havingPlayer: havingPlayer,
 			firstRender: firstRender,
 			menuModalContent: menuModalContent,
+			messageVisible: messageVisible,
+			message: message,
+			darkMode: darkMode,
 			setHavingPlayer: setHavingPlayer,
 			playerBack: playerBack,
 			setFirstRender: setFirstRender,
 			openMenuModal: openMenuModal,
+			albertMessage: albertMessage,
+			setDarkMode: setDarkMode,
 		}}>
 			{children}
 		</AppContext.Provider>
